@@ -1,0 +1,6 @@
+{
+    "pack": {
+        "description": "CoolCatLib Resources",
+        "pack_format": ${packFormat}
+    }
+}

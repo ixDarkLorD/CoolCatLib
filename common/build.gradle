@@ -1,0 +1,63 @@
+architectury {
+    common(enabled_platforms.split(","))
+    injectInjectables = false
+}
+
+loom {
+    if (file("src/main/resources/${modid}.accesswidener").exists()) {
+        accessWidenerPath = file("src/main/resources/${modid}.accesswidener")
+        logger.info('Access Widener are enabled for this project.')
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${fabric_version}"
+    modCompileOnly "curse.maven:forge-config-api-port-fabric-547434:3960064" //ForgeConfigAPIPort-v4.2.6
+}
+
+processResources {
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+
+    inputs.property "modId", 			        "${modid}"
+    inputs.property "modDescription", 			"${mod_description}"
+    inputs.property "packFormat", 				"${pack_format}"
+    inputs.property "mixinPackagePath", 		"${project.group}.common.mixin"
+
+    filesMatching ('architectury.common.json') {
+        expand (
+                'modId':       "${modid}"
+        )
+    }
+
+    filesMatching ("${modid}.common.mixins.json") {
+        expand (
+                'modId':                	"${modid}",
+                'mixinPackagePath':         "${project.group}.common.mixin"
+        )
+    }
+
+    filesMatching ('pack.mcmeta') {
+        expand (
+                'modDescription':       "${mod_description}",
+                "packFormat":           "${pack_format}"
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version "v${mod_version}-${project_release_type}"
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        maven {
+            url "file://" + System.getenv("local_maven")
+        }
+    }
+}
