@@ -12,7 +12,12 @@ loom {
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_version}"
-    modCompileOnly "curse.maven:forge-config-api-port-fabric-547434:3960064" //ForgeConfigAPIPort-v4.2.6
+
+    implementation 'com.electronwill.night-config:core:3.6.6'
+    implementation 'com.electronwill.night-config:toml:3.6.6'
+    modApi "curse.maven:forge-config-api-port-fabric-547434:${forge_config_api_version_id}"
+
+    modApi "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
 }
 
 processResources {
@@ -49,7 +54,7 @@ publishing {
         mavenCommon(MavenPublication) {
             groupId project.group
             artifactId project.name
-            version "v${mod_version}-${project_release_type}"
+            version "${mc_version}-v${mod_version}-${project_release_type}"
             from components.java
         }
     }

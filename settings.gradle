@@ -11,4 +11,4 @@ include("common")
 include("fabric")
 include("forge")
 
-rootProject.name = "CoolCatLib-1.19.2"
+rootProject.name = "CoolCatLib-1.20.1"

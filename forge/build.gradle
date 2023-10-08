@@ -74,8 +74,8 @@ configurations {
 
 dependencies {
     forge "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    modRuntimeOnly "curse.maven:catalogue-459701:3873264"
-    modRuntimeOnly "curse.maven:configured-457570:4011355"
+    modRuntimeOnly "curse.maven:catalogue-459701:4766090"
+//    modRuntimeOnly "curse.maven:configured-457570:4011355"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
@@ -175,7 +175,7 @@ publishing {
         mavenCommon(MavenPublication) {
             groupId project.group
             artifactId project.name
-            version "v${mod_version}-${project_release_type}"
+            version "${mc_version}-v${mod_version}-${project_release_type}"
             from components.java
         }
     }

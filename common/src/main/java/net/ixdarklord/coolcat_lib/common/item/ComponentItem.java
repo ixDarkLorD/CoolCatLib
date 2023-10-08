@@ -43,13 +43,13 @@ public class ComponentItem extends Item {
         return false;
     }
 
-    public enum ComponentType {
-        CRAFTING(Component.translatable("tooltip.coolcat_lib.component.crafting").withStyle(ChatFormatting.DARK_PURPLE)),
-        TOOLS(Component.translatable("tooltip.coolcat_lib.component.tools").withStyle(ChatFormatting.DARK_PURPLE)),
-        ABILITY(Component.translatable("tooltip.coolcat_lib.component.ability").withStyle(ChatFormatting.DARK_PURPLE));
+    public static class ComponentType {
+        public static ComponentType CRAFTING = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.crafting").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType TOOLS = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.tools").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType ABILITY = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.ability").withStyle(ChatFormatting.DARK_PURPLE));
 
         private final Component component;
-        ComponentType(Component component) {
+        public ComponentType(Component component) {
             this.component = component;
         }
         public Component get() {

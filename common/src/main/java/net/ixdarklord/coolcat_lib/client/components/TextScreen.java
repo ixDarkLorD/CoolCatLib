@@ -6,7 +6,7 @@ import net.ixdarklord.coolcat_lib.util.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TextScreen extends GuiComponent {
+public class TextScreen extends GuiGraphics {
     private final List<Interface> interfacesList = new ArrayList<>();
     private final Font font;
     private final int posX;
@@ -31,6 +31,7 @@ public class TextScreen extends GuiComponent {
     private int boxIndex;
 
     public TextScreen(int posX, int posY, int width, int height) {
+        super(Minecraft.getInstance(), Minecraft.getInstance().renderBuffers().bufferSource());
         this.posX = posX;
         this.posY = posY;
         this.width = width;
@@ -87,9 +88,9 @@ public class TextScreen extends GuiComponent {
                 posY += ((float) this.height / 2);
                 float k = this.font.width(sequences) / 2.0F;
                 float j = (selected.size() * 7.35F) / 2.0F;
-                this.font.draw(poseStack, sequences, posX - k, posY - j + (this.font.lineHeight * m), color);
+                this.drawString(this.font, sequences, (int) (posX - k), (int) (posY - j + (this.font.lineHeight * m)), color);
             } else {
-                this.font.draw(poseStack, sequences, posX, posY + m * this.font.lineHeight, color);
+                this.drawString(this.font, sequences, (int) posX, (int) (posY + m * this.font.lineHeight), color);
             }
         }
     }
@@ -116,9 +117,9 @@ public class TextScreen extends GuiComponent {
                     posY += ((float) this.height / 2);
                     float k = this.font.width(sequence) / 2.0F;
                     float j = (selected.size() * 7.35F) / 2.0F;
-                    this.font.draw(poseStack, sequence, posX - k, posY - j + (this.font.lineHeight * m), color);
+                    this.drawString(this.font, sequence, (int) (posX - k), (int) (posY - j + (this.font.lineHeight * m)), color);
                 } else {
-                    this.font.draw(poseStack, sequence, posX, posY + m * this.font.lineHeight, color);
+                    this.drawString(this.font, sequence, (int) posX, (int) (posY + m * this.font.lineHeight), color);
                 }
             }
             int renderedInterfaces = this.interfacesList.stream().filter(box -> box.render).toList().size();
@@ -128,7 +129,7 @@ public class TextScreen extends GuiComponent {
                 int color = bgColor != null ? ColorUtils.RGBToRGBA(bgColor.getRGB(), bgColor.getAlpha() / 255F) : ColorUtils.RGBToRGBA(backgroundColor, 0.85F);
                 int width = this.widthOld > 1 ? this.widthOld : this.width;
                 int height = this.heightOld > 1 ? this.heightOld : this.height;
-                fill(poseStack, posX-1, posY-1, posX + width, posY + height, color);
+                this.fill(posX-1, posY-1, posX + width, posY + height, color);
             }
             poseStack.popPose();
         }

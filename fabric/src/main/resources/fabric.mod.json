@@ -32,7 +32,7 @@
     "minecraft": ">=${minMinecraftVersion} <${nextMinecraftVersion}",
     "fabricloader": ">=${minFabricVersion}",
     "fabric-api": ">=${minFabricApiVersion}",
-    "forgeconfigapiport": ">=4.2.6",
+    "forgeconfigapiport": ">=${forgeConfigAPIVersion}",
     "com_electronwill_night-config_core": "*",
     "com_electronwill_night-config_toml": "*"
   }
