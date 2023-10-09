@@ -1,7 +1,6 @@
 package net.ixdarklord.coolcat_lib.client.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.ixdarklord.coolcat_lib.util.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -70,7 +69,7 @@ public class TextScreen extends GuiGraphics {
     }
 
     @SuppressWarnings("unused")
-    public void renderBox(PoseStack poseStack) {
+    public void renderBox(GuiGraphics guiGraphics) {
         if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
         if (!interfacesList.get(boxIndex).render) return;
         List<FormattedCharSequence> selected = interfacesList.get(boxIndex).sequences;
@@ -94,7 +93,7 @@ public class TextScreen extends GuiGraphics {
             }
         }
     }
-    public void renderAllBoxes(PoseStack poseStack, int backgroundColor, Color shaderColor) {
+    public void renderAllBoxes(GuiGraphics guiGraphics, int backgroundColor, Color shaderColor) {
         if (interfacesList.isEmpty()) throw new IndexOutOfBoundsException("There is no interface created.");
         for (int i = 0; i < interfacesList.size(); i++) {
             if (!interfacesList.get(i).render) continue;
@@ -104,8 +103,8 @@ public class TextScreen extends GuiGraphics {
             this.interfacesList.get(i).scrollOffset = Mth.clamp(this.interfacesList.get(i).scrollOffset, 0, selected.size() - length);
             int offset = interfacesList.get(i).scrollOffset;
 
-            poseStack.pushPose();
-            poseStack.translate(0, 0, i);
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(0, 0, i);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             for(int m = 0; m < length; m++) {
                 FormattedCharSequence sequence = selected.get(Math.min(m + offset, (selected.size()-1)));
@@ -131,7 +130,7 @@ public class TextScreen extends GuiGraphics {
                 int height = this.heightOld > 1 ? this.heightOld : this.height;
                 this.fill(posX-1, posY-1, posX + width, posY + height, color);
             }
-            poseStack.popPose();
+            guiGraphics.pose().popPose();
         }
     }
     public void scrollTo(int pos, boolean replace) {
