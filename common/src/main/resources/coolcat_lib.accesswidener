@@ -1,3 +1,6 @@
 accessWidener v2 named
 # Arguments
 accessible field net/minecraft/commands/synchronization/ArgumentTypeInfos BY_CLASS Ljava/util/Map;
+
+# Font
+accessible method net/minecraft/client/gui/Font drawInternal (Lnet/minecraft/util/FormattedCharSequence;FFILcom/mojang/math/Matrix4f;Z)I

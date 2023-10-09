@@ -26,15 +26,17 @@ public class TextScreen extends GuiComponent {
     private final int posY;
     private int width;
     private int height;
+    private final boolean drawShadow;
     private int widthOld = -1;
     private int heightOld = -1;
     private int boxIndex;
 
-    public TextScreen(int posX, int posY, int width, int height) {
+    public TextScreen(int posX, int posY, int width, int height, boolean drawShadow) {
         this.posX = posX;
         this.posY = posY;
         this.width = width;
         this.height = height;
+        this.drawShadow = drawShadow;
         this.font = Minecraft.getInstance().font;
         this.boxIndex = -1;
     }
@@ -87,9 +89,9 @@ public class TextScreen extends GuiComponent {
                 posY += ((float) this.height / 2);
                 float k = this.font.width(sequences) / 2.0F;
                 float j = (selected.size() * 7.35F) / 2.0F;
-                this.font.drawShadow(poseStack, sequences, posX - k, posY - j + (this.font.lineHeight * m), color);
+                this.font.drawInternal(sequences, posX - k, posY - j + (this.font.lineHeight * m), color, poseStack.last().pose(), this.drawShadow);
             } else {
-                this.font.drawShadow(poseStack, sequences, posX, posY + m * this.font.lineHeight, color);
+                this.font.drawInternal(sequences, posX, posY + m * this.font.lineHeight, color, poseStack.last().pose(), this.drawShadow);
             }
         }
     }
@@ -116,9 +118,9 @@ public class TextScreen extends GuiComponent {
                     posY += ((float) this.height / 2);
                     float k = this.font.width(sequence) / 2.0F;
                     float j = (selected.size() * 7.35F) / 2.0F;
-                    this.font.drawShadow(poseStack, sequence, posX - k, posY - j + (this.font.lineHeight * m), color);
+                    this.font.drawInternal(sequence, posX - k, posY - j + (this.font.lineHeight * m), color, poseStack.last().pose(), this.drawShadow);
                 } else {
-                    this.font.drawShadow(poseStack, sequence, posX, posY + m * this.font.lineHeight, color);
+                    this.font.drawInternal(sequence, posX, posY + m * this.font.lineHeight, color, poseStack.last().pose(), this.drawShadow);
                 }
             }
             int renderedInterfaces = this.interfacesList.stream().filter(box -> box.render).toList().size();
