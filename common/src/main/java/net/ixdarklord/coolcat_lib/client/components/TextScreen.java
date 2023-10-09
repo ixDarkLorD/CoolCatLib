@@ -1,11 +1,15 @@
 package net.ixdarklord.coolcat_lib.client.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.ixdarklord.coolcat_lib.util.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -30,7 +34,7 @@ public class TextScreen extends GuiGraphics {
     private int boxIndex;
 
     public TextScreen(int posX, int posY, int width, int height) {
-        super(Minecraft.getInstance(), Minecraft.getInstance().renderBuffers().bufferSource());
+        super(Minecraft.getInstance(), MultiBufferSource.immediate(new BufferBuilder(256)));
         this.posX = posX;
         this.posY = posY;
         this.width = width;
@@ -95,6 +99,7 @@ public class TextScreen extends GuiGraphics {
     }
     public void renderAllBoxes(GuiGraphics guiGraphics, int backgroundColor, Color shaderColor) {
         if (interfacesList.isEmpty()) throw new IndexOutOfBoundsException("There is no interface created.");
+        PoseStack poseStack = guiGraphics.pose();
         for (int i = 0; i < interfacesList.size(); i++) {
             if (!interfacesList.get(i).render) continue;
             this.selectBox(i);
@@ -103,8 +108,8 @@ public class TextScreen extends GuiGraphics {
             this.interfacesList.get(i).scrollOffset = Mth.clamp(this.interfacesList.get(i).scrollOffset, 0, selected.size() - length);
             int offset = interfacesList.get(i).scrollOffset;
 
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, i);
+            poseStack.pushPose();
+            poseStack.translate(0, 0, i);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             for(int m = 0; m < length; m++) {
                 FormattedCharSequence sequence = selected.get(Math.min(m + offset, (selected.size()-1)));
@@ -128,9 +133,9 @@ public class TextScreen extends GuiGraphics {
                 int color = bgColor != null ? ColorUtils.RGBToRGBA(bgColor.getRGB(), bgColor.getAlpha() / 255F) : ColorUtils.RGBToRGBA(backgroundColor, 0.85F);
                 int width = this.widthOld > 1 ? this.widthOld : this.width;
                 int height = this.heightOld > 1 ? this.heightOld : this.height;
-                this.fill(posX-1, posY-1, posX + width, posY + height, color);
+                this.fill(RenderType.guiOverlay(),posX-1, posY-1, posX + width, posY + height, color);
             }
-            guiGraphics.pose().popPose();
+            poseStack.popPose();
         }
     }
     public void scrollTo(int pos, boolean replace) {
