@@ -64,13 +64,10 @@ dependencies {
     // Config Dependencies
     implementation 'com.electronwill.night-config:core:3.6.6'
     implementation 'com.electronwill.night-config:toml:3.6.6'
-    modImplementation "curse.maven:forge-config-api-port-fabric-547434:3960064" //ForgeConfigAPIPort-v4.2.6
+    modApi "curse.maven:forge-config-api-port-fabric-547434:${forge_config_api_version_id}"
 
     modCompileOnlyApi "mezz.jei:jei-${mc_version}-fabric-api:${jei_version}"
     modRuntimeOnly "mezz.jei:jei-${mc_version}-fabric:${jei_version}"
-
-//    modRuntimeOnly "com.terraformersmc:modmenu:4.2.0-beta.2"
-//    modRuntimeOnly "curse.maven:catalogue-fabric-667377:4171029"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
@@ -98,6 +95,7 @@ processResources {
     inputs.property "datagenEntryPoint", 		"${project.group}.datagen.DataGeneration"
     inputs.property "mixinPackagePath", 		"${project.group}.fabric.mixin"
     inputs.property "archVersion", 	            "${architectury_version}"
+    inputs.property "forgeConfigAPIVersion",    "${forge_config_api_version}"
 
 
     filesMatching ('fabric.mod.json') {
@@ -120,7 +118,8 @@ processResources {
                 "clientEntryPoint": 		"${project.group}.core.fabric.FabricClientSetup",
                 "datagenEntryPoint": 		"${project.group}.datagen.DataGeneration",
                 "modFabricEnvironment":		"${mod_fabric_environment}",
-                'archVersion':              "${architectury_version}"
+                'archVersion':              "${architectury_version}",
+                'forgeConfigAPIVersion':    "${forge_config_api_version}"
         )
     }
 
@@ -173,7 +172,7 @@ publishing {
         mavenCommon(MavenPublication) {
             groupId project.group
             artifactId project.name
-            version "v${mod_version}-${project_release_type}"
+            version "${mc_version}-v${mod_version}-${project_release_type}"
             from components.java
         }
     }

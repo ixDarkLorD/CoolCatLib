@@ -175,7 +175,7 @@ publishing {
         mavenCommon(MavenPublication) {
             groupId project.group
             artifactId project.name
-            version "v${mod_version}-${project_release_type}"
+            version "${mc_version}-v${mod_version}-${project_release_type}"
             from components.java
         }
     }

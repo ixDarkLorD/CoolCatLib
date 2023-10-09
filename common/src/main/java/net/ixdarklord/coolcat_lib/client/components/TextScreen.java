@@ -87,9 +87,9 @@ public class TextScreen extends GuiComponent {
                 posY += ((float) this.height / 2);
                 float k = this.font.width(sequences) / 2.0F;
                 float j = (selected.size() * 7.35F) / 2.0F;
-                this.font.draw(poseStack, sequences, posX - k, posY - j + (this.font.lineHeight * m), color);
+                this.font.drawShadow(poseStack, sequences, posX - k, posY - j + (this.font.lineHeight * m), color);
             } else {
-                this.font.draw(poseStack, sequences, posX, posY + m * this.font.lineHeight, color);
+                this.font.drawShadow(poseStack, sequences, posX, posY + m * this.font.lineHeight, color);
             }
         }
     }
@@ -116,19 +116,20 @@ public class TextScreen extends GuiComponent {
                     posY += ((float) this.height / 2);
                     float k = this.font.width(sequence) / 2.0F;
                     float j = (selected.size() * 7.35F) / 2.0F;
-                    this.font.draw(poseStack, sequence, posX - k, posY - j + (this.font.lineHeight * m), color);
+                    this.font.drawShadow(poseStack, sequence, posX - k, posY - j + (this.font.lineHeight * m), color);
                 } else {
-                    this.font.draw(poseStack, sequence, posX, posY + m * this.font.lineHeight, color);
+                    this.font.drawShadow(poseStack, sequence, posX, posY + m * this.font.lineHeight, color);
                 }
             }
             int renderedInterfaces = this.interfacesList.stream().filter(box -> box.render).toList().size();
             if (renderedInterfaces > 1 && i < interfacesList.size()-1) {
-                RenderSystem.setShaderColor(shaderColor.getRed() / 255F, shaderColor.getGreen() / 255F, shaderColor.getBlue() / 255F, shaderColor.getAlpha() / 255F);
                 Color bgColor = this.interfacesList.get(i+1).backgroundColor;
                 int color = bgColor != null ? ColorUtils.RGBToRGBA(bgColor.getRGB(), bgColor.getAlpha() / 255F) : ColorUtils.RGBToRGBA(backgroundColor, 0.85F);
                 int width = this.widthOld > 1 ? this.widthOld : this.width;
                 int height = this.heightOld > 1 ? this.heightOld : this.height;
+                RenderSystem.setShaderColor(shaderColor.getRed() / 255F, shaderColor.getGreen() / 255F, shaderColor.getBlue() / 255F, shaderColor.getAlpha() / 255F);
                 fill(poseStack, posX-1, posY-1, posX + width, posY + height, color);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             }
             poseStack.popPose();
         }
