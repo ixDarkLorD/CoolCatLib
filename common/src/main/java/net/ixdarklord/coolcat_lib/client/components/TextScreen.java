@@ -29,16 +29,18 @@ public class TextScreen extends GuiGraphics {
     private final int posY;
     private int width;
     private int height;
+    private final boolean drawShadow;
     private int widthOld = -1;
     private int heightOld = -1;
     private int boxIndex;
 
-    public TextScreen(int posX, int posY, int width, int height) {
+    public TextScreen(int posX, int posY, int width, int height, boolean drawShadow) {
         super(Minecraft.getInstance(), MultiBufferSource.immediate(new BufferBuilder(256)));
         this.posX = posX;
         this.posY = posY;
         this.width = width;
         this.height = height;
+        this.drawShadow = drawShadow;
         this.font = Minecraft.getInstance().font;
         this.boxIndex = -1;
     }
@@ -91,9 +93,9 @@ public class TextScreen extends GuiGraphics {
                 posY += ((float) this.height / 2);
                 float k = this.font.width(sequences) / 2.0F;
                 float j = (selected.size() * 7.35F) / 2.0F;
-                this.drawString(this.font, sequences, (int) (posX - k), (int) (posY - j + (this.font.lineHeight * m)), color);
+                this.drawString(this.font, sequences, (int) (posX - k), (int) (posY - j + (this.font.lineHeight * m)), color, this.drawShadow);
             } else {
-                this.drawString(this.font, sequences, (int) posX, (int) (posY + m * this.font.lineHeight), color);
+                this.drawString(this.font, sequences, (int) posX, (int) (posY + m * this.font.lineHeight), color, this.drawShadow);
             }
         }
     }
@@ -110,7 +112,6 @@ public class TextScreen extends GuiGraphics {
 
             poseStack.pushPose();
             poseStack.translate(0, 0, i);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             for(int m = 0; m < length; m++) {
                 FormattedCharSequence sequence = selected.get(Math.min(m + offset, (selected.size()-1)));
                 float posX = (float)(this.posX);
@@ -121,19 +122,20 @@ public class TextScreen extends GuiGraphics {
                     posY += ((float) this.height / 2);
                     float k = this.font.width(sequence) / 2.0F;
                     float j = (selected.size() * 7.35F) / 2.0F;
-                    this.drawString(this.font, sequence, (int) (posX - k), (int) (posY - j + (this.font.lineHeight * m)), color);
+                    this.drawString(this.font, sequence, (int) (posX - k), (int) (posY - j + (this.font.lineHeight * m)), color, this.drawShadow);
                 } else {
-                    this.drawString(this.font, sequence, (int) posX, (int) (posY + m * this.font.lineHeight), color);
+                    this.drawString(this.font, sequence, (int) posX, (int) (posY + m * this.font.lineHeight), color, this.drawShadow);
                 }
             }
             int renderedInterfaces = this.interfacesList.stream().filter(box -> box.render).toList().size();
             if (renderedInterfaces > 1 && i < interfacesList.size()-1) {
-                RenderSystem.setShaderColor(shaderColor.getRed() / 255F, shaderColor.getGreen() / 255F, shaderColor.getBlue() / 255F, shaderColor.getAlpha() / 255F);
                 Color bgColor = this.interfacesList.get(i+1).backgroundColor;
                 int color = bgColor != null ? ColorUtils.RGBToRGBA(bgColor.getRGB(), bgColor.getAlpha() / 255F) : ColorUtils.RGBToRGBA(backgroundColor, 0.85F);
                 int width = this.widthOld > 1 ? this.widthOld : this.width;
                 int height = this.heightOld > 1 ? this.heightOld : this.height;
+                RenderSystem.setShaderColor(shaderColor.getRed() / 255F, shaderColor.getGreen() / 255F, shaderColor.getBlue() / 255F, shaderColor.getAlpha() / 255F);
                 this.fill(RenderType.guiOverlay(),posX-1, posY-1, posX + width, posY + height, color);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             }
             poseStack.popPose();
         }
