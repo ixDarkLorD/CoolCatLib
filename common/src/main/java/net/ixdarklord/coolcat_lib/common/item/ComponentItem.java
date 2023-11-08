@@ -4,6 +4,8 @@ import net.ixdarklord.coolcat_lib.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,23 +32,23 @@ public class ComponentItem extends Item {
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         if (componentType.get() != null) {
-            tooltipComponents.add(Component.literal("§8| ").append(componentType.get()));
+            tooltipComponents.add(new TextComponent("§8| ").append(componentType.get()));
         }
     }
 
     public boolean isShiftButtonNotPressed(@Nullable List<Component> tooltipComponents) {
         if (!Screen.hasShiftDown()) {
             if (tooltipComponents != null)
-                tooltipComponents.add(Component.literal("§8➤ ").append(Component.translatable("tooltip.coolcat_lib.press.shift").withStyle(ChatFormatting.GRAY)));
+                tooltipComponents.add(new TextComponent("§8➤ ").append(new TranslatableComponent("tooltip.coolcat_lib.press.shift").withStyle(ChatFormatting.GRAY)));
             return true;
         }
         return false;
     }
 
     public static class ComponentType {
-        public static ComponentType CRAFTING = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.crafting").withStyle(ChatFormatting.DARK_PURPLE));
-        public static ComponentType TOOLS = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.tools").withStyle(ChatFormatting.DARK_PURPLE));
-        public static ComponentType ABILITY = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.ability").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType CRAFTING = new ComponentType(new TranslatableComponent("tooltip.coolcat_lib.component.crafting").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType TOOLS = new ComponentType(new TranslatableComponent("tooltip.coolcat_lib.component.tools").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType ABILITY = new ComponentType(new TranslatableComponent("tooltip.coolcat_lib.component.ability").withStyle(ChatFormatting.DARK_PURPLE));
 
         private final Component component;
         public ComponentType(Component component) {
