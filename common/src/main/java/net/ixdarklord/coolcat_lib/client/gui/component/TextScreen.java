@@ -1,10 +1,12 @@
-package net.ixdarklord.coolcat_lib.client.components;
+package net.ixdarklord.coolcat_lib.client.gui.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import net.ixdarklord.coolcat_lib.util.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.locale.Language;
@@ -13,6 +15,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import org.apache.commons.lang3.mutable.MutableObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,7 +33,7 @@ public class TextScreen extends GuiComponent {
     private final boolean drawShadow;
     private int widthOld = -1;
     private int heightOld = -1;
-    private int boxIndex;
+    private int screenIndex;
 
     public TextScreen(int posX, int posY, int width, int height, boolean drawShadow) {
         this.posX = posX;
@@ -38,53 +42,53 @@ public class TextScreen extends GuiComponent {
         this.height = height;
         this.drawShadow = drawShadow;
         this.font = Minecraft.getInstance().font;
-        this.boxIndex = -1;
+        this.screenIndex = -1;
     }
 
     public TextScreen build(int count) {
         for (int i = 0; i < count; i++) {
             this.interfacesList.add(new Interface(new ArrayList<>(), false, this.interfacesList.isEmpty()));
-            boxIndex = 0;
+            screenIndex = 0;
         }
         return this;
     }
-    public TextScreen selectBox(int boxIndex) {
-        if (boxIndex >= interfacesList.size() || boxIndex < 0)
-            throw new IndexOutOfBoundsException("Theres is no such a box with index: " + boxIndex);
-        this.boxIndex = boxIndex;
+    public TextScreen selectScreen(int screenIndex) {
+        if (screenIndex >= interfacesList.size() || screenIndex < 0)
+            throw new IndexOutOfBoundsException("Theres is no such a box with index: " + screenIndex);
+        this.screenIndex = screenIndex;
         return this;
     }
     public TextScreen shouldRender(boolean state) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        this.interfacesList.get(boxIndex).render = state;
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        this.interfacesList.get(screenIndex).render = state;
         return this;
     }
     public TextScreen alignPosToCenter(boolean state) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        this.interfacesList.get(boxIndex).centered = state;
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        this.interfacesList.get(screenIndex).centered = state;
         return this;
     }
     public TextScreen backgroundColor(Color colorRGBA) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        this.interfacesList.get(boxIndex).backgroundColor = colorRGBA;
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        this.interfacesList.get(screenIndex).backgroundColor = colorRGBA;
         return this;
     }
 
     @SuppressWarnings("unused")
     public void renderBox(PoseStack poseStack) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        if (!interfacesList.get(boxIndex).render) return;
-        List<FormattedCharSequence> selected = interfacesList.get(boxIndex).sequences;
-        int offset = interfacesList.get(boxIndex).scrollOffset;
-        int length = getBoxLinesLength();
-        this.interfacesList.get(boxIndex).scrollOffset = Mth.clamp(this.interfacesList.get(boxIndex).scrollOffset, 0, selected.size() - length);
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        if (!interfacesList.get(screenIndex).render) return;
+        List<FormattedCharSequence> selected = interfacesList.get(screenIndex).sequences;
+        int offset = interfacesList.get(screenIndex).scrollOffset;
+        int length = getScreenLinesLength();
+        this.interfacesList.get(screenIndex).scrollOffset = Mth.clamp(this.interfacesList.get(screenIndex).scrollOffset, 0, selected.size() - length);
 
         for(int m = 0; m < length; m++) {
             FormattedCharSequence sequences = selected.get(Math.min(m + offset, (selected.size()-1)));
             float posX = (float)(this.posX);
             float posY = (float)(this.posY);
             int color = Objects.requireNonNull(TextColor.fromLegacyFormat(ChatFormatting.WHITE)).getValue();
-            if (this.interfacesList.get(boxIndex).centered) {
+            if (this.interfacesList.get(screenIndex).centered) {
                 posX += ((float) this.width / 2);
                 posY += ((float) this.height / 2);
                 float k = this.font.width(sequences) / 2.0F;
@@ -99,7 +103,7 @@ public class TextScreen extends GuiComponent {
         if (interfacesList.isEmpty()) throw new IndexOutOfBoundsException("There is no interface created.");
         for (int i = 0; i < interfacesList.size(); i++) {
             if (!interfacesList.get(i).render) continue;
-            this.selectBox(i);
+            this.selectScreen(i);
             List<FormattedCharSequence> selected = interfacesList.get(i).sequences;
             int length = Math.min(this.height / this.font.lineHeight, this.interfacesList.get(i).sequences.size());
             this.interfacesList.get(i).scrollOffset = Mth.clamp(this.interfacesList.get(i).scrollOffset, 0, selected.size() - length);
@@ -137,16 +141,47 @@ public class TextScreen extends GuiComponent {
         }
     }
     public void scrollTo(int pos, boolean replace) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        List<FormattedCharSequence> selected = interfacesList.get(boxIndex).sequences;
-        this.interfacesList.get(boxIndex).scrollOffset = replace ? pos : this.interfacesList.get(boxIndex).scrollOffset+pos;
-        this.interfacesList.get(boxIndex).scrollOffset = Mth.clamp(this.interfacesList.get(boxIndex).scrollOffset, 0, selected.size() - getBoxLinesLength());
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        List<FormattedCharSequence> selected = interfacesList.get(screenIndex).sequences;
+        this.interfacesList.get(screenIndex).scrollOffset = replace ? pos : this.interfacesList.get(screenIndex).scrollOffset+pos;
+        this.interfacesList.get(screenIndex).scrollOffset = Mth.clamp(this.interfacesList.get(screenIndex).scrollOffset, 0, selected.size() - getScreenLinesLength());
+    }
+    
+    public List<FormattedCharSequence> getSequences() {
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        return this.interfacesList.get(screenIndex).sequences;
     }
 
+    @Nullable
+    public FormattedCharSequence getSequenceAt(double mouseX, double mouseY) {
+        var pair = this.getSequenceAndWidthAt(mouseX, mouseY);
+        if (pair == null) return null;
+
+        StringSplitter.WidthLimitedCharSink widthLimitedCharSink = this.font.getSplitter().new WidthLimitedCharSink((float)pair.getSecond());
+        MutableObject<FormattedCharSequence> mutableObject = new MutableObject<>();
+        pair.getFirst().accept((i, style, j) -> {
+            if (!widthLimitedCharSink.accept(i, style, j)) {
+                mutableObject.setValue(pair.getFirst());
+                return false;
+            } else {
+                return true;
+            }
+        });
+        return mutableObject.getValue();
+    }
+
+    @Nullable
     public Style getComponentStyleAt(double mouseX, double mouseY) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        List<FormattedCharSequence> selected = interfacesList.get(boxIndex).sequences;
-        int offset = interfacesList.get(boxIndex).scrollOffset;
+        var pair = this.getSequenceAndWidthAt(mouseX, mouseY);
+        if (pair == null) return null;
+        return this.font.getSplitter().componentStyleAtWidth(pair.getFirst(), pair.getSecond());
+    }
+
+    @Nullable
+    private Pair<FormattedCharSequence, Integer> getSequenceAndWidthAt(double mouseX, double mouseY) {
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        List<FormattedCharSequence> selected = interfacesList.get(screenIndex).sequences;
+        int offset = interfacesList.get(screenIndex).scrollOffset;
 
         if (selected.isEmpty()) return null;
         int i = Mth.floor(mouseX - this.posX);
@@ -155,7 +190,7 @@ public class TextScreen extends GuiComponent {
         if (i > this.width || j > this.height) return null;
 
         int linePos;
-        if (interfacesList.get(boxIndex).centered) {
+        if (interfacesList.get(screenIndex).centered) {
             int textBoxHeight = this.height;
             int lineHeight = this.font.lineHeight;
             int totalLines = selected.size();
@@ -174,56 +209,57 @@ public class TextScreen extends GuiComponent {
         if (linePos >= selected.size()) return null;
         FormattedCharSequence sequence = selected.get(Math.min(linePos + offset, (selected.size()-1)));
 
-        if (interfacesList.get(boxIndex).centered) {
+        if (interfacesList.get(screenIndex).centered) {
             int textBoxWidth = this.width / 2;
             int lineWidth = this.font.width(sequence) / 2;
             i -= textBoxWidth - lineWidth;
         }
-        return this.font.getSplitter().componentStyleAtWidth(sequence, i);
+        return Pair.of(sequence, i);
     }
+    
     public boolean canScroll() {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        return this.height / this.font.lineHeight < this.interfacesList.get(boxIndex).sequences.size();
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        return this.height / this.font.lineHeight < this.interfacesList.get(screenIndex).sequences.size();
     }
 
     public boolean isEmpty() {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        return this.interfacesList.get(boxIndex).sequences.isEmpty();
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        return this.interfacesList.get(screenIndex).sequences.isEmpty();
     }
 
     public TextScreen create(Component text, ChatFormatting... formats) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
         List<FormattedCharSequence> result = new ArrayList<>(Language.getInstance().getVisualOrder(this.font.getSplitter().splitLines(text, this.width, Style.EMPTY.applyFormats(formats))));
-        if (!this.interfacesList.get(boxIndex).sequences.isEmpty()) {
-            this.interfacesList.get(boxIndex).sequences.add(FormattedCharSequence.EMPTY);
-            this.interfacesList.get(boxIndex).sequences.addAll(result);
+        if (!this.interfacesList.get(screenIndex).sequences.isEmpty()) {
+            this.interfacesList.get(screenIndex).sequences.add(FormattedCharSequence.EMPTY);
+            this.interfacesList.get(screenIndex).sequences.addAll(result);
             return this;
         }
-        this.interfacesList.get(boxIndex).sequences.addAll(result);
+        this.interfacesList.get(screenIndex).sequences.addAll(result);
         return this;
     }
     public TextScreen create(Component title, Component description, ChatFormatting... formats) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
         List<FormattedCharSequence> result = new ArrayList<>();
         result.addAll(Language.getInstance().getVisualOrder(this.font.getSplitter().splitLines(title, this.width, Style.EMPTY.applyFormats(formats))));
         result.addAll(Language.getInstance().getVisualOrder(this.font.getSplitter().splitLines(description, this.width, Style.EMPTY.applyFormats(formats))));
-        if (!this.interfacesList.get(boxIndex).sequences.isEmpty()) {
-            this.interfacesList.get(boxIndex).sequences.add(FormattedCharSequence.EMPTY);
-            this.interfacesList.get(boxIndex).sequences.addAll(result);
+        if (!this.interfacesList.get(screenIndex).sequences.isEmpty()) {
+            this.interfacesList.get(screenIndex).sequences.add(FormattedCharSequence.EMPTY);
+            this.interfacesList.get(screenIndex).sequences.addAll(result);
             return this;
         }
-        this.interfacesList.get(boxIndex).sequences.addAll(result);
+        this.interfacesList.get(screenIndex).sequences.addAll(result);
         return this;
     }
 
     public TextScreen add(FormattedCharSequence formattedCharSequence) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        this.interfacesList.get(boxIndex).sequences.add(formattedCharSequence);
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        this.interfacesList.get(screenIndex).sequences.add(formattedCharSequence);
         return this;
     }
     public void addAll(List<FormattedCharSequence> formattedCharSequences) {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        this.interfacesList.get(boxIndex).sequences.addAll(formattedCharSequences);
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        this.interfacesList.get(screenIndex).sequences.addAll(formattedCharSequences);
     }
 
     public void clear() {
@@ -235,19 +271,19 @@ public class TextScreen extends GuiComponent {
 
     @SuppressWarnings("unused")
     public boolean canRender() {
-        return this.interfacesList.get(boxIndex).render;
+        return this.interfacesList.get(screenIndex).render;
     }
-    public int getBoxLinesLength() {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        return Math.min(this.height / this.font.lineHeight, this.interfacesList.get(boxIndex).sequences.size());
+    public int getScreenLinesLength() {
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        return Math.min(this.height / this.font.lineHeight, this.interfacesList.get(screenIndex).sequences.size());
     }
     public int getRemainingLines() {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        return this.interfacesList.get(boxIndex).sequences.size() - getBoxLinesLength();
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        return this.interfacesList.get(screenIndex).sequences.size() - getScreenLinesLength();
     }
     public int getScrollOffset() {
-        if (boxIndex == -1) throw new IndexOutOfBoundsException("There is no selected box.");
-        return this.interfacesList.get(boxIndex).scrollOffset;
+        if (screenIndex == -1) throw new IndexOutOfBoundsException("There is no selected screen.");
+        return this.interfacesList.get(screenIndex).scrollOffset;
     }
     public int getWidth() {
         return width;
