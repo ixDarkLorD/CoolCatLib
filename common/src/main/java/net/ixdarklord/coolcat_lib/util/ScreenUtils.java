@@ -76,17 +76,17 @@ public class ScreenUtils {
         return new Divisor(target, i);
     }
 
-    public static void drawScrollingString(PoseStack poseStack, int currentTick, Font font, Component component, int minX, int minY, int maxX, int maxY, int width, int color) {
-        drawScrollingString(poseStack, currentTick, font, component.getVisualOrderText(), minX, minY, maxX, maxY, width, color);
+    public static void drawScrollingString(PoseStack poseStack, int currentTick, Font font, Component component, boolean center, int minX, int minY, int maxX, int maxY, int width, int color) {
+        drawScrollingString(poseStack, currentTick, font, component.getVisualOrderText(), center, minX, minY, maxX, maxY, width, color);
     }
 
-    public static void drawScrollingString(PoseStack poseStack, int currentTick, Font font, FormattedCharSequence sequence, int minX, int minY, int maxX, int maxY, int width, int color) {
+    public static void drawScrollingString(PoseStack poseStack, int currentTick, Font font, FormattedCharSequence sequence, boolean center, int minX, int minY, int maxX, int maxY, int width, int color) {
         int i = minX + width;
         int j = minX + maxX - width;
-        renderScrollingString(poseStack, currentTick, font, sequence, i, minY, j, minY + maxY, color);
+        renderScrollingString(poseStack, currentTick, font, sequence, center, i, minY, j, minY + maxY, color);
     }
 
-    private static void renderScrollingString(PoseStack poseStack, int currentTick, Font font, FormattedCharSequence sequence, int minX, int minY, int maxX, int maxY, int color) {
+    private static void renderScrollingString(PoseStack poseStack, int currentTick, Font font, FormattedCharSequence sequence, boolean center, int minX, int minY, int maxX, int maxY, int color) {
         int i = font.width(sequence);
         int j = (minY + maxY - 9) / 2 + 1;
         int k = maxX - minX;
@@ -101,8 +101,10 @@ public class ScreenUtils {
             GuiComponent.drawString(poseStack, font, sequence, minX - (int)d3, j, color);
             disableScissor();
         } else {
-            GuiComponent.drawCenteredString(poseStack, font, sequence, (minX + maxX) / 2, j, color);
-        }
+            if (center)
+                GuiComponent.drawCenteredString(poseStack, font, sequence, (minX + maxX) / 2, j, color);
+            else
+                GuiComponent.drawString(poseStack, font, sequence, minX, j, color);        }
     }
 
     public static void enableScissor(int minX, int minY, int maxX, int maxY) {
