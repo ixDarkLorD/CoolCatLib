@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ScreenUtils {
-    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, Component component, int minX, int minY, int maxX, int maxY, int width, int color) {
-        drawScrollingString(guiGraphics, currentTick, font, component.getVisualOrderText(), minX, minY, maxX, maxY, width, color);
+    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, Component component, boolean center, int minX, int minY, int maxX, int maxY, int width, int color) {
+        drawScrollingString(guiGraphics, currentTick, font, component.getVisualOrderText(), center, minX, minY, maxX, maxY, width, color);
     }
 
-    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, FormattedCharSequence sequence, int minX, int minY, int maxX, int maxY, int width, int color) {
+    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, FormattedCharSequence sequence, boolean center, int minX, int minY, int maxX, int maxY, int width, int color) {
         int i = minX + width;
         int j = minX + maxX - width;
-        renderScrollingString(guiGraphics, currentTick, font, sequence, i, minY, j, minY + maxY, color);
+        renderScrollingString(guiGraphics, currentTick, font, sequence, center, i, minY, j, minY + maxY, color);
     }
 
-    private static void renderScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, FormattedCharSequence sequence, int minX, int minY, int maxX, int maxY, int color) {
+    private static void renderScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, FormattedCharSequence sequence, boolean center, int minX, int minY, int maxX, int maxY, int color) {
         int i = font.width(sequence);
         int j = (minY + maxY - 9) / 2 + 1;
         int k = maxX - minX;
@@ -35,7 +35,10 @@ public class ScreenUtils {
             guiGraphics.drawString(font, sequence, minX - (int)d3, j, color);
             guiGraphics.disableScissor();
         } else {
-            guiGraphics.drawCenteredString(font, sequence, (minX + maxX) / 2, j, color);
+            if (center)
+                guiGraphics.drawCenteredString(font, sequence, (minX + maxX) / 2, j, color);
+            else
+                guiGraphics.drawString(font, sequence, minX, j, color);
         }
     }
 
