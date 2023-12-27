@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcat_lib.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,12 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TomlConfigReader {
-    private final Logger LOGGER;
-    private final Map<String, String> configMap = new HashMap<>();;
-    private boolean hasErrorOccurred;
+    private final Map<String, String> configMap = new HashMap<>();
+    private FileErrorState fileErrorState = FileErrorState.NO_ERROR;
 
     public TomlConfigReader(String modName, String filePath) {
-        this.LOGGER = LogManager.getLogger(modName + "/TomlConfigReader");
         parseTOMLFile(filePath);
     }
 
@@ -35,7 +33,7 @@ public class TomlConfigReader {
 
                 if (line.startsWith("[")) {
                     // Handle section headers
-                    Matcher matcher = Pattern.compile("\\[(.*?)\\]").matcher(line);
+                    Matcher matcher = Pattern.compile("\\[(.*?)]").matcher(line);
                     if (matcher.find()) {
                         currentSection = matcher.group(1);
                     }
@@ -49,31 +47,37 @@ public class TomlConfigReader {
                     }
                 }
             }
+        } catch (FileNotFoundException e) {
+            this.fileErrorState = FileErrorState.FILE_NOT_FOUND;
         } catch (IOException e) {
-            LOGGER.error("Failed to load config file: {}", filePath);
-            LOGGER.error("May the game need a restart to fix this issue.", filePath);
-            this.hasErrorOccurred = true;
+            this.fileErrorState = FileErrorState.UNABLE_TO_READ;
+        } catch (Exception e) {
+            this.fileErrorState = FileErrorState.UNEXPECTED_ERROR;
         }
     }
 
-    public String getStringValue(String key, String fallbackValue) {
-        if (this.hasErrorOccurred) return fallbackValue;
-
-        String value = configMap.get(key);
-        return value != null ? value : fallbackValue;
+    @Nullable
+    public String getResult(String key) {
+        if (this.fileErrorState != FileErrorState.NO_ERROR) return null;
+        return configMap.get(key);
     }
 
-    public int getIntValue(String key, int fallbackValue) {
-        if (this.hasErrorOccurred) return fallbackValue;
+    public Map<String, String> getConfigMap() {
+        return configMap;
+    }
 
-        String value = configMap.get(key);
-        if (value != null) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                LOGGER.error("This key does not contain an integer value: {}", key);
-            }
-        }
-        return fallbackValue;
+    public boolean hasErrorOccurred() {
+        return fileErrorState != FileErrorState.NO_ERROR;
+    }
+
+    public FileErrorState getFileErrorState() {
+        return fileErrorState;
+    }
+
+    public enum FileErrorState {
+        NO_ERROR,
+        FILE_NOT_FOUND,
+        UNABLE_TO_READ,
+        UNEXPECTED_ERROR
     }
 }

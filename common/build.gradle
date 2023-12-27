@@ -34,13 +34,6 @@ processResources {
         )
     }
 
-    filesMatching ("${modid}.common.mixins.json") {
-        expand (
-                'modId':                	"${modid}",
-                'mixinPackagePath':         "${project.group}.common.mixin"
-        )
-    }
-
     filesMatching ('pack.mcmeta') {
         expand (
                 'modDescription':       "${mod_description}",

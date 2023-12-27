@@ -6,9 +6,11 @@
   "package": "net.ixdarklord.coolcat_lib.mixin",
   "client": [],
   "mixins": [
+    "fabric.Advancement$BuilderMixin",
     "fabric.BrewingStandBlockEntityMixin",
     "fabric.BrewingStandMenu$IngredientsSlotMixin",
-    "fabric.BrewingStandMenu$PotionSlotMixin"
+    "fabric.BrewingStandMenu$PotionSlotMixin",
+    "fabric.RecipeManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

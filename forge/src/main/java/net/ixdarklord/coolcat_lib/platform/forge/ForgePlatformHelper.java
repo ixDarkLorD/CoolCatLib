@@ -18,7 +18,6 @@ public class ForgePlatformHelper implements IPlatformHelper {
     }
     @Override
     public boolean isDevelopmentEnvironment() {
-        //noinspection UnstableApiUsage
         return !FMLLoader.isProduction();
     }
     @Override
