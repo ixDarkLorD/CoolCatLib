@@ -1,6 +1,17 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v1.0.3 Release | Dec 26, 2023
+### Adding
+- [Fabric] Conditional Recipes
+- Improving the TomlConfigReader class
+
+## v1.0.2 Release | Nov 8, 2023
+### Adding
+- Adding Arabic Translation
+- More methods in ScreenUtils class
+- Moving and rename some of the packages and classes
+
 ## v1.0.1 Release | Oct 10, 2023
 ### Changed
 - Adding parameter for drawShadow in `TextScreen`
