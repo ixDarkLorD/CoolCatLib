@@ -6,11 +6,22 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
+import java.nio.file.Path;
+
 public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public String getPlatformName() {
         return "Fabric";
     }
+
+    @Override
+    public Path getConfigDir() {
+        return FabricLoader.getInstance()
+                .getConfigDir()
+                .toAbsolutePath()
+                .normalize();
+    }
+
     @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
