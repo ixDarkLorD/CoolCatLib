@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.ixdarklord.coolcat_lib.core.CoolCatLib;
+import net.ixdarklord.coolcat_lib.platform.Services;
 import net.minecraft.core.Registry;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,6 +16,8 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,6 +161,7 @@ public class ConditionalRecipe {
     }
 
     public static class Serializer<T extends Recipe<?>> implements RecipeSerializer<T> {
+        public static final Logger LOGGER = LoggerFactory.getLogger(CoolCatLib.MOD_NAME);
         public static final ResourceLocation NAME = new ResourceLocation("fabric", "conditional");
 
         @Override
@@ -175,6 +180,9 @@ public class ConditionalRecipe {
                     return (T) RecipeManager.fromJson(recipeId, GsonHelper.getAsJsonObject(ele.getAsJsonObject(), "recipe"));
                 idx++;
             }
+
+            if (Services.PLATFORM.isModLoaded("kubejs"))
+                LOGGER.info("Skipping loading recipe {} as it's conditions were not met", recipeId);
             return null;
         }
 

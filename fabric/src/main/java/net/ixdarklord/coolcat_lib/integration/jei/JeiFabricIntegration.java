@@ -6,7 +6,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.ixdarklord.coolcat_lib.common.brewing.fabric.BrewingRecipeRegistry;
-import net.ixdarklord.coolcat_lib.core.Constants;
+import net.ixdarklord.coolcat_lib.core.CoolCatLib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ import java.util.List;
 public class JeiFabricIntegration implements IModPlugin {
     @Override
     public @NotNull ResourceLocation getPluginUid() {
-        return Constants.getLocation("jei_fabric_integration");
+        return CoolCatLib.getLocation("jei_fabric_integration");
     }
 
     @Override
