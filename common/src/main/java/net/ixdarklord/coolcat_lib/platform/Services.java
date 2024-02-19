@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcat_lib.platform;
 
 
-import net.ixdarklord.coolcat_lib.core.Constants;
+import net.ixdarklord.coolcat_lib.core.CoolCatLib;
 import net.ixdarklord.coolcat_lib.platform.services.IPlatformHelper;
 
 import java.util.ServiceLoader;
@@ -14,7 +14,7 @@ public class Services {
         final T loadedService = ServiceLoader.load(clazz)
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Failed to load service for " + clazz.getName()));
-        Constants.LOGGER.debug("Loaded {} for service {}", loadedService, clazz);
+        CoolCatLib.LOGGER.debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
 }

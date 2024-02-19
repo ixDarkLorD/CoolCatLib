@@ -4,8 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import net.ixdarklord.coolcat_lib.common.crafting.ConditionalRecipe;
 import net.ixdarklord.coolcat_lib.common.crafting.CraftingHelper;
 import net.ixdarklord.coolcat_lib.common.crafting.ICondition;
+import net.ixdarklord.coolcat_lib.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
@@ -24,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Iterator;
 import java.util.Map;
 
-@Mixin(RecipeManager.class)
+@Mixin(value = RecipeManager.class)
 public abstract class RecipeManagerMixin {
     @Shadow private boolean hasErrors;
 
@@ -35,8 +37,10 @@ public abstract class RecipeManagerMixin {
 
     @Shadow @Final private static Logger LOGGER;
 
-    @Inject(method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "apply*", at = @At("HEAD"), cancellable = true)
     private void apply$Inject(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
+        if (Services.PLATFORM.isModLoaded("kubejs")) return;
+
         this.hasErrors = false;
         Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> map = Maps.newHashMap();
         ImmutableMap.Builder<ResourceLocation, Recipe<?>> builder = ImmutableMap.builder();
@@ -62,7 +66,7 @@ public abstract class RecipeManagerMixin {
 
             try {
                 if (entry.getValue().isJsonObject() && !CraftingHelper.processConditions(entry.getValue().getAsJsonObject(), "conditions", ICondition.IContext.EMPTY)) {
-                    LOGGER.debug("Skipping loading recipe {} as it's conditions were not met", resourcelocation);
+                    ConditionalRecipe.Serializer.LOGGER.info("Skipping loading recipe {} as it's conditions were not met", resourcelocation);
                 } else {
                     Recipe<?> recipe = RecipeManager.fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
                     //noinspection ConstantValue
