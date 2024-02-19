@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "testingmod",
+  "version": "1.0.0",
+
+  "name": "Testing Mod",
+  "description": "Testing Mod",
+  "authors": [
+    "${modAuthor}"
+  ],
+
+  "environment": "${modFabricEnvironment}",
+  "entrypoints": {
+    "main": ["net.ixdarklord.testingmod.TestingMod"]
+  },
+
+  "depends": {
+    "java": ">=17",
+    "minecraft": ">=${minMinecraftVersion} <${nextMinecraftVersion}",
+    "fabricloader": ">=${minFabricVersion}",
+    "fabric-api": ">=${minFabricApiVersion}"
+  }
+}

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 
-public class Constants {
+public class CoolCatLib {
 	public static final String MOD_ID = "coolcat_lib";
 	public static final String MOD_NAME = "CoolCatLib";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
