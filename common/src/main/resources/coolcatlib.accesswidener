@@ -1,0 +1,22 @@
+accessWidener v2 named
+accessible class net/minecraft/world/inventory/BrewingStandMenu$PotionSlot
+accessible class net/minecraft/world/item/alchemy/PotionBrewing$Mix
+
+# Holder.Reference
+accessible  method  net/minecraft/core/Holder$Reference bindValue   (Ljava/lang/Object;)V
+accessible  method  net/minecraft/core/Holder$Reference bindTags    (Ljava/util/Collection;)V
+
+# MenuType
+accessible class net/minecraft/world/inventory/MenuType
+accessible method net/minecraft/world/inventory/MenuType <init> (Lnet/minecraft/world/inventory/MenuType$MenuSupplier;Lnet/minecraft/world/flag/FeatureFlagSet;)V
+accessible class net/minecraft/world/inventory/MenuType$MenuSupplier
+
+# ChunkMap
+accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
+accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible field net/minecraft/server/level/ChunkMap$TrackedEntity seenBy Ljava/util/Set;
+
+# RegistryOps
+accessible field net/minecraft/resources/RegistryOps lookupProvider  Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;
+accessible class net/minecraft/resources/RegistryOps$HolderLookupAdapter
+accessible field net/minecraft/resources/RegistryOps$HolderLookupAdapter lookupProvider  Lnet/minecraft/core/HolderLookup$Provider;
