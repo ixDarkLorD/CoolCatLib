@@ -1,36 +1,42 @@
 {
   "schemaVersion": 1,
-  "id": "${modId}",
-  "version": "${modVersion}",
+  "id": "${modid}",
+  "version": "${mod_version}",
 
-  "name": "${modName}",
-  "description": "${modDescription}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "authors": [
-    "${modAuthor}"
+    "${mod_author}"
   ],
   "contact": {
-    "homepage": "${modPageUrl}",
-    "issues": "${modIssueUrl}",
-    "sources": "${modSourceUrl}"
+    "homepage": "${mod_page_url}",
+    "issues": "${mod_issue_url}",
+    "sources": "${mod_source_url}"
   },
 
-  "license": "${modLicense}",
+  "license": "${mod_license}",
   "icon": "mod_logo.png",
 
-  "environment": "${modFabricEnvironment}",
+  "environment": "${mod_environment}",
   "entrypoints": {
-    "main": ["${mainEntryPoint}"],
-    "client": ["${clientEntryPoint}"],
-    "jei_mod_plugin": ["net.ixdarklord.coolcat_lib.integration.jei.JeiFabricIntegration"]
+    "main": [
+      "net.ixdarklord.coolcatlib.internal.setup.FabricSetup"
+    ],
+    "client": [
+      "net.ixdarklord.coolcatlib.internal.setup.FabricClientSetup"
+    ],
+    "jei_mod_plugin": [
+      "net.ixdarklord.coolcatlib.internal.integration.jei.JeiFabricIntegration"
+    ]
   },
   "mixins": [
-    "${modId}.mixins.json"
+    "${modid}.fabric.mixins.json"
   ],
 
   "depends": {
-    "java": ">=17",
-    "minecraft": ">=${minMinecraftVersion} <${nextMinecraftVersion}",
-    "fabricloader": ">=${minFabricVersion}",
-    "fabric-api": ">=${minFabricApiVersion}"
+    "java": ">=${project_java_version}",
+    "minecraft": ">=${mc_version} <=${max_mc_version}",
+    "fabricloader": ">=${min_fabric_version}",
+    "fabric-api": ">=${min_fabric_api_version}"
   }
 }

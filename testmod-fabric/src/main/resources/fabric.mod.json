@@ -6,18 +6,20 @@
   "name": "Testing Mod",
   "description": "Testing Mod",
   "authors": [
-    "${modAuthor}"
+    "${mod_author}"
   ],
 
-  "environment": "${modFabricEnvironment}",
+  "environment": "${mod_environment}",
   "entrypoints": {
-    "main": ["net.ixdarklord.testingmod.TestingMod"]
+    "main": ["net.ixdarklord.testingmod.TestingMod"],
+    "client": ["net.ixdarklord.testingmod.TestingModClient"],
+    "fabric-datagen": ["net.ixdarklord.testingmod.DataGeneration"]
   },
 
   "depends": {
     "java": ">=17",
-    "minecraft": ">=${minMinecraftVersion} <${nextMinecraftVersion}",
-    "fabricloader": ">=${minFabricVersion}",
-    "fabric-api": ">=${minFabricApiVersion}"
+    "minecraft": ">=${mc_version} <${max_mc_version}",
+    "fabricloader": ">=${min_fabric_version}",
+    "fabric-api": ">=${min_fabric_api_version}"
   }
 }

@@ -1,74 +1,17 @@
-plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
-}
-
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-
-    mixin { useLegacyMixinAp = true }
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
+apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v1/fabric.gradle"
 
 loom {
     runs {
         client {
-            client()
-            setConfigName("TestMod Client")
-            ideConfigGenerated(true)
-            runDir("run")
-            vmArg "-Xms${runtime_min_ram}"
-            vmArg "-Xmx${runtime_max_ram}"
-            vmArg "-Dmixin.debug.export=${mixin_debug}"
-            property 'terminal.ansi', 'true'
+            setConfigName("${helper.uppercaseFirstChar(project.name)} Client ${libs.versions.minecraft.get()}")
         }
         server {
-            server()
-            setConfigName("TestMod Server")
-            ideConfigGenerated(true)
-            runDir("run")
-            vmArg "-Xms${runtime_min_ram}"
-            vmArg "-Xmx${runtime_max_ram}"
-            vmArg "-Dmixin.debug.export=${mixin_debug}"
-            property 'terminal.ansi', 'true'
+            setConfigName("${helper.uppercaseFirstChar(project.name)} Server ${libs.versions.minecraft.get()}")
         }
     }
-}
-
-configurations {
-    common
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${fabric_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}+${mc_version}"
-
-    modImplementation("dev.latvian.mods:kubejs-fabric:2001.6.4-build.138")
-
-    implementation project(path: ":fabric", configuration: "namedElements")
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-}
-
-processResources {
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
-    var replaceProperties = [
-            "modAuthor": 				mod_author,
-            "minFabricVersion": 		min_fabric_version,
-            "minFabricApiVersion": 		min_fabric_api_version,
-            "modFabricEnvironment": 	mod_fabric_environment,
-            "minMinecraftVersion": 		min_mc_version,
-            "nextMinecraftVersion": 	rootProject.getNextVersion("${min_mc_version}"),
-            "packFormat": 				pack_format
-    ]
-
-    inputs.properties replaceProperties
-    filesMatching(['fabric.mod.json', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+    implementation project(path: ":fabric", configuration: "namedElements")
 }
