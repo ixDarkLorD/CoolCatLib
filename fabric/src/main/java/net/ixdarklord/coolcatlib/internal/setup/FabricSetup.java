@@ -4,5 +4,6 @@ import net.fabricmc.api.ModInitializer;
 
 public class FabricSetup implements ModInitializer {
     @Override
-    public void onInitialize() {}
+    public void onInitialize() {
+    }
 }

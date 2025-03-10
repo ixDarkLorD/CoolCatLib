@@ -1,8 +1,7 @@
-package net.ixdarklord.coolcatlib.api.brewing.fabric;
+package net.ixdarklord.coolcatlib.api.brewing;
 
-import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingBuilderExt;
+import com.google.common.collect.Lists;
 import net.minecraft.core.Holder;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
@@ -10,22 +9,23 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 
-public final class BrewingBuilder extends PotionBrewing.Builder implements PotionBrewingBuilderExt {
+import java.util.List;
+
+public final class BrewingBuilder extends PotionBrewing.Builder {
     private final PotionBrewing.Builder builder;
+    private final List<IBrewingRecipe> brewingRecipes = Lists.newArrayList();
 
     public BrewingBuilder(PotionBrewing.Builder builder) {
-        super(builder.getEnabledFeatures());
+        super(null);
         this.builder = builder;
     }
 
-    @Override
     public void addRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
-        ((PotionBrewingBuilderExt) builder).addRecipe(input, ingredient, output);
+        this.addRecipe(new BrewingRecipe(input, ingredient, output));
     }
 
-    @Override
     public void addRecipe(IBrewingRecipe recipe) {
-        ((PotionBrewingBuilderExt) builder).addRecipe(recipe);
+        this.brewingRecipes.add(recipe);
     }
 
     @Override
@@ -53,23 +53,7 @@ public final class BrewingBuilder extends PotionBrewing.Builder implements Potio
         return this.builder.build();
     }
 
-    @Override
-    public void registerItemRecipe(Item input, Ingredient ingredient, Item output) {
-        this.builder.registerItemRecipe(input, ingredient, output);
-    }
-
-    @Override
-    public void registerPotionRecipe(Holder<Potion> input, Ingredient ingredient, Holder<Potion> output) {
-        this.builder.registerPotionRecipe(input, ingredient, output);
-    }
-
-    @Override
-    public void registerRecipes(Ingredient ingredient, Holder<Potion> potion) {
-        this.builder.registerRecipes(ingredient, potion);
-    }
-
-    @Override
-    public FeatureFlagSet getEnabledFeatures() {
-        return this.builder.getEnabledFeatures();
+    public List<IBrewingRecipe> getBrewingRecipes() {
+        return brewingRecipes;
     }
 }

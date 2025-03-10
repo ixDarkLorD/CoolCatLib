@@ -12,6 +12,9 @@ loom {
 }
 
 dependencies {
+    modApi libs.jei.api.fabric
+    modImplementation libs.jei.fabric
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     implementation project(path: ":fabric", configuration: "namedElements")
 }

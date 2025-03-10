@@ -1,12 +1,12 @@
-package net.ixdarklord.coolcatlib.api.brewing.fabric;
+package net.ixdarklord.coolcatlib.api.brewing;
 
-import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingBuilderExt;
+import net.ixdarklord.coolcatlib.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * Interface for more flexible brewing recipes.
  *
- * <p>Register using {@link RegisterBrewingRecipesEvent} and {@link PotionBrewingBuilderExt#addRecipe(IBrewingRecipe)}.
+ * <p>Register using {@link RegisterBrewingRecipesEvent}.
  */
 public interface IBrewingRecipe {
     /**

@@ -2,10 +2,10 @@ package net.ixdarklord.coolcatlib.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.ixdarklord.coolcatlib.api.brewing.fabric.BrewingRecipe;
-import net.ixdarklord.coolcatlib.api.brewing.fabric.BrewingRecipeRegistry;
-import net.ixdarklord.coolcatlib.api.brewing.fabric.IBrewingRecipe;
-import net.ixdarklord.coolcatlib.api.brewing.fabric.RegisterBrewingRecipesEvent;
+import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipe;
+import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipeRegistry;
+import net.ixdarklord.coolcatlib.api.brewing.IBrewingRecipe;
+import net.ixdarklord.coolcatlib.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingBuilderExt;
 import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingExt;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -71,7 +71,10 @@ public abstract class PotionBrewingMixin implements PotionBrewingExt {
             shift = At.Shift.AFTER
     ))
     private static void fireRegisterEvent(FeatureFlagSet featureFlagSet, CallbackInfoReturnable<PotionBrewing> cir, @Local PotionBrewing.Builder builder) {
-        new RegisterBrewingRecipesEvent(builder).sendEvent();
+        RegisterBrewingRecipesEvent event = RegisterBrewingRecipesEvent.invokeEvent(builder);
+        for (IBrewingRecipe recipe : event.getBuilder().getBrewingRecipes()) {
+            ((PotionBrewingBuilderExt) builder).addRecipe(recipe);
+        }
     }
 
     @Inject(method = "isIngredient", at = @At("HEAD"), cancellable = true)

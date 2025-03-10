@@ -1,6 +1,8 @@
-package net.ixdarklord.coolcatlib.api.brewing.fabric;
+package net.ixdarklord.coolcatlib.api.brewing;
 
 import java.util.List;
+
+import net.ixdarklord.coolcatlib.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import org.jetbrains.annotations.ApiStatus;

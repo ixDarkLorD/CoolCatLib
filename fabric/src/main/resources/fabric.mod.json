@@ -26,7 +26,7 @@
       "net.ixdarklord.coolcatlib.internal.setup.FabricClientSetup"
     ],
     "jei_mod_plugin": [
-      "net.ixdarklord.coolcatlib.internal.integration.jei.JeiFabricIntegration"
+      "net.ixdarklord.coolcatlib.internal.integration.jei.JEIIntegration"
     ]
   },
   "mixins": [

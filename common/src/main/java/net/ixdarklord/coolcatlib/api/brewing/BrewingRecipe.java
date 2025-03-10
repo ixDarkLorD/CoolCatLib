@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.api.brewing.fabric;
+package net.ixdarklord.coolcatlib.api.brewing;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
