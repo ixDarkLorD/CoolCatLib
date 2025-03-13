@@ -12,6 +12,8 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+
 @Environment(EnvType.CLIENT)
 public class RenderUtils {
     private static final String RECTANGLE_THROW = "Border must not fill the entire rectangle. [B: %s * 2 = %s || Rect: w:%s, h:%s]";
@@ -20,6 +22,20 @@ public class RenderUtils {
     public static Rect2i createRect2i(GuiEventListener listener) {
         if (listener == null) return EMPTY_RECT2I;
         return new Rect2i(listener.getRectangle().left(), listener.getRectangle().top(), listener.getRectangle().width(), listener.getRectangle().height());
+    }
+
+    public static void renderDebugGradient(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+        renderDiagonalGradient(guiGraphics, x, y, width, height, Color.RED.getRGB(), Color.GREEN.getRGB());
+    }
+
+    public static void renderDiagonalGradient(GuiGraphics guiGraphics, int x, int y, int width, int height, int color1, int color2) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                float factor = Mth.clamp((i + j) / (float) (width + height), 0.0F, 1.0F);
+                int color = ColorUtils.blendColors(new Color(color2), new Color(color1), factor).getRGB();
+                guiGraphics.fill(x + i, y + j, x + i + 1, y + j + 1, color);
+            }
+        }
     }
 
     public static void renderInRectangle(GuiGraphics guiGraphics, @NotNull ScreenRectangle rectangle, boolean shouldScissor, Runnable render) {
