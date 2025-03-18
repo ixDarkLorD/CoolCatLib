@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v1.1.0 Release | Mar 8, 2025
+## v1.1.0 Release | Mar 13, 2025
 - Revamping the Brewing Recipe API
 
 ## v1.0.1 Release | Dec 30, 2024

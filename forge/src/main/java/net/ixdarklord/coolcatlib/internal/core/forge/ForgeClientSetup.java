@@ -1,6 +1,6 @@
-package net.ixdarklord.coolcatlib.internal.forge;
+package net.ixdarklord.coolcatlib.internal.core.forge;
 
-import net.ixdarklord.coolcatlib.internal.CoolCatLib;
+import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

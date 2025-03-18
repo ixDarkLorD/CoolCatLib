@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.internal.setup;
+package net.ixdarklord.coolcatlib.internal.core.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 

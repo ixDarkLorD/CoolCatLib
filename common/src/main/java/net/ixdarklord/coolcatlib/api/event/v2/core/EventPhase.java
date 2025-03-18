@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatlib.api.event.v2.core;
 
-import net.ixdarklord.coolcatlib.internal.CoolCatLib;
+import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;

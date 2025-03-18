@@ -3,7 +3,7 @@ package net.ixdarklord.testingmod;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
-import net.ixdarklord.coolcatlib.internal.CoolCatLib;
+import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeCategory;

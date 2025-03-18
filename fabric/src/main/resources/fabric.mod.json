@@ -20,10 +20,10 @@
   "environment": "${mod_environment}",
   "entrypoints": {
     "main": [
-      "net.ixdarklord.coolcatlib.internal.setup.FabricSetup"
+      "net.ixdarklord.coolcatlib.internal.core.fabric.FabricSetup"
     ],
     "client": [
-      "net.ixdarklord.coolcatlib.internal.setup.FabricClientSetup"
+      "net.ixdarklord.coolcatlib.internal.core.fabric.FabricClientSetup"
     ],
     "jei_mod_plugin": [
       "net.ixdarklord.coolcatlib.internal.integration.jei.JEIIntegration"

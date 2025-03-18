@@ -12,7 +12,7 @@ import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterp
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipe;
 import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingExt;
-import net.ixdarklord.coolcatlib.internal.CoolCatLib;
+import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;

@@ -2,7 +2,7 @@ package net.ixdarklord.coolcatlib.api.brewing.fabric.ext;
 
 import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipeRegistry;
 import net.ixdarklord.coolcatlib.api.brewing.IBrewingRecipe;
-import net.ixdarklord.coolcatlib.internal.CoolCatLib;
+import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.ApiStatus;

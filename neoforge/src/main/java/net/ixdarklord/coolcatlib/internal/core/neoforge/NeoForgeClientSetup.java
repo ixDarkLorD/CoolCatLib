@@ -1,6 +1,6 @@
-package net.ixdarklord.coolcatlib.internal.neoforge;
+package net.ixdarklord.coolcatlib.internal.core.neoforge;
 
-import net.ixdarklord.coolcatlib.internal.CoolCatLib;
+import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 

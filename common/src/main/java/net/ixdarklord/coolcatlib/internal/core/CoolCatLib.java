@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.internal;
+package net.ixdarklord.coolcatlib.internal.core;
 
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
