@@ -5,16 +5,15 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipe;
 import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipeRegistry;
 import net.ixdarklord.coolcatlib.api.brewing.IBrewingRecipe;
-import net.ixdarklord.coolcatlib.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingBuilderExt;
 import net.ixdarklord.coolcatlib.api.brewing.fabric.ext.PotionBrewingExt;
+import net.ixdarklord.coolcatlib.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -28,7 +27,6 @@ public abstract class PotionBrewingMixin implements PotionBrewingExt {
     @Shadow
     protected abstract boolean isContainer(ItemStack itemStack);
 
-    @Unique
     private BrewingRecipeRegistry coolcatlib$registry;
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -73,7 +71,7 @@ public abstract class PotionBrewingMixin implements PotionBrewingExt {
     private static void fireRegisterEvent(FeatureFlagSet featureFlagSet, CallbackInfoReturnable<PotionBrewing> cir, @Local PotionBrewing.Builder builder) {
         RegisterBrewingRecipesEvent event = RegisterBrewingRecipesEvent.invokeEvent(builder);
         for (IBrewingRecipe recipe : event.getBuilder().getBrewingRecipes()) {
-            ((PotionBrewingBuilderExt) builder).addRecipe(recipe);
+            builder.addRecipe(recipe);
         }
     }
 
@@ -99,7 +97,7 @@ public abstract class PotionBrewingMixin implements PotionBrewingExt {
 
         @ModifyReturnValue(method = "build", at = @At("RETURN"))
         private PotionBrewing addCustomRecipes(PotionBrewing original) {
-            ((PotionBrewingExt) original).setBrewingRegistry(new BrewingRecipeRegistry(coolcatlib$recipes));
+            original.setBrewingRegistry(new BrewingRecipeRegistry(coolcatlib$recipes));
             return original;
         }
     }

@@ -33,6 +33,13 @@
     "${modid}.fabric.mixins.json"
   ],
 
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/class_1845": ["net/ixdarklord/coolcatlib/api/brewing/fabric/ext/PotionBrewingExt"],
+      "net/minecraft/class_1845$class_9665": ["net/ixdarklord/coolcatlib/api/brewing/fabric/ext/PotionBrewingBuilderExt"]
+    }
+  },
+
   "depends": {
     "java": ">=${project_java_version}",
     "minecraft": ">=${mc_version} <=${max_mc_version}",

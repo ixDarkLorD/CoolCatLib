@@ -1,6 +1,9 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v1.1.0 Hotfix (Fabric) | Mar 20, 2025
+- Correct implementation of Potion Brewing and Potion Brewing Builder extension interfaces
+
 ## v1.1.0 Release | Mar 19, 2025
 - Revamped the Brewing Recipe API
 - Added two versions of Events (second version is still unstable)
