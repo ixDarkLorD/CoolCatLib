@@ -46,15 +46,10 @@ body:
         placeholder: "e.g. Windows 11, iOS"
       validations:
         required: true
-  -   type: dropdown
+  -   type: input
       attributes:
         label: Minecraft Version
         description: The version of Minecraft you were using when the bug occurred
-        options:
-          - "1.18.2"
-          - "1.19.2"
-          - "1.19.3"
-          - "1.19.4"
       validations:
         required: true
   -   type: dropdown
@@ -69,6 +64,6 @@ body:
   -   type: input
       attributes:
         label: Mod Version
-        description: The mod version you where using when the bug occurred
+        description: The mod version you were using when the bug occurred
       validations:
         required: true
