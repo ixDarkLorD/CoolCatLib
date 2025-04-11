@@ -7,7 +7,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +20,7 @@ import java.awt.*;
 public class RenderUtils {
     private static final String RECTANGLE_THROW = "Border must not fill the entire rectangle. [B: %s * 2 = %s || Rect: w:%s, h:%s]";
     public static Rect2i EMPTY_RECT2I = new Rect2i(0, 0, 0, 0);
+    public static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = RenderStateShard.TRANSLUCENT_TRANSPARENCY;
 
     public static Rect2i createRect2i(GuiEventListener listener) {
         if (listener == null) return EMPTY_RECT2I;
@@ -32,7 +35,7 @@ public class RenderUtils {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 float factor = Mth.clamp((i + j) / (float) (width + height), 0.0F, 1.0F);
-                int color = ColorUtils.blendColors(new Color(color2), new Color(color1), factor).getRGB();
+                int color = FastColor.ARGB32.lerp(factor, color1, color2);
                 guiGraphics.fill(x + i, y + j, x + i + 1, y + j + 1, color);
             }
         }

@@ -2,6 +2,10 @@ accessWidener v2 named
 accessible class net/minecraft/world/inventory/BrewingStandMenu$PotionSlot
 accessible class net/minecraft/world/item/alchemy/PotionBrewing$Mix
 
+# RenderStateShard
+accessible class net/minecraft/client/renderer/RenderStateShard$TransparencyStateShard
+accessible field net/minecraft/client/renderer/RenderStateShard TRANSLUCENT_TRANSPARENCY Lnet/minecraft/client/renderer/RenderStateShard$TransparencyStateShard;
+
 # Holder.Reference
 accessible  method  net/minecraft/core/Holder$Reference bindValue   (Ljava/lang/Object;)V
 accessible  method  net/minecraft/core/Holder$Reference bindTags    (Ljava/util/Collection;)V
