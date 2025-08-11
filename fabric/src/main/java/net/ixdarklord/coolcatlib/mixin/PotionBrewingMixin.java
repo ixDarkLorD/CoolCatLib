@@ -31,7 +31,7 @@ public abstract class PotionBrewingMixin implements PotionBrewingExt {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void createEmptyRegistry(final CallbackInfo ci) {
-        this.coolcatlib$registry = new BrewingRecipeRegistry(List.of()); // Create an empty builder in case a mod doesn't use the builder
+        this.coolcatlib$registry = new BrewingRecipeRegistry(List.of());
     }
 
     @Override
@@ -59,7 +59,7 @@ public abstract class PotionBrewingMixin implements PotionBrewingExt {
             target = "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"
     ), cancellable = true)
     private void doMix(ItemStack itemStack, ItemStack itemStack2, CallbackInfoReturnable<ItemStack> cir) {
-        var customMix = coolcatlib$registry.getOutput(itemStack2, itemStack); // Parameters are swapped compared to what vanilla passes!
+        var customMix = coolcatlib$registry.getOutput(itemStack2, itemStack);
         if (!customMix.isEmpty()) cir.setReturnValue(customMix);
     }
 

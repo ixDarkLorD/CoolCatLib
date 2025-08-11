@@ -163,18 +163,18 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double dragX, double dragY) {
-        if (super.mouseScrolled(mouseX, mouseY, dragX, dragY))
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY))
             return true;
 
-        if (this.scrollHorizontally && dragX != 0) {
-            this.scrollOffsetX += (float) (-dragX * this.getScrollStep(ScreenAxis.HORIZONTAL));
+        if (this.scrollHorizontally && scrollX != 0) {
+            this.scrollOffsetX += (float) (-scrollX * this.getScrollStep(ScreenAxis.HORIZONTAL));
             this.applyScrollLimits();
             return true;
         }
 
-        if (dragY != 0) {
-            this.scrollOffsetY += (float) (-dragY * this.getScrollStep(ScreenAxis.VERTICAL));
+        if (scrollY != 0) {
+            this.scrollOffsetY += (float) (-scrollY * this.getScrollStep(ScreenAxis.VERTICAL));
             this.applyScrollLimits();
             return true;
         }

@@ -7,7 +7,7 @@
   "refmap": "${modid}.${project.name.toLowerCase()}.refmap.json",
   "mixins": [
     "PotionBrewingMixin",
-    "PotionBrewingMixin$BuilderMixin"
+    "PotionBrewingMixin\u0024BuilderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

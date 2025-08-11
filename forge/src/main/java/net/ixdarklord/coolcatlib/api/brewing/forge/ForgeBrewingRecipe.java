@@ -1,16 +1,16 @@
-package net.ixdarklord.coolcatlib.api.brewing.neoforge;
+package net.ixdarklord.coolcatlib.api.brewing.forge;
 
 import net.ixdarklord.coolcatlib.api.brewing.IBrewingRecipe;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipe;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
-public class NeoForgeBrewingRecipe extends BrewingRecipe {
+public class ForgeBrewingRecipe extends BrewingRecipe {
     private final IBrewingRecipe recipe;
 
-    public NeoForgeBrewingRecipe(IBrewingRecipe recipe) {
+    public ForgeBrewingRecipe(IBrewingRecipe recipe) {
         super(recipe.getInput(), recipe.getIngredient(), recipe.getOutput());
         this.recipe = recipe;
     }

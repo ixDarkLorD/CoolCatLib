@@ -2,37 +2,36 @@ package net.ixdarklord.coolcatlib.api.brewing;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.NotNull;
 
-public class BrewingRecipe implements IBrewingRecipe {
-    private final Ingredient input;
-    private final Ingredient ingredient;
-    private final ItemStack output;
+public class BrewingRecipe implements IBrewingRecipe
+{
+    @NotNull private final Ingredient input;
+    @NotNull private final Ingredient ingredient;
+    @NotNull private final ItemStack output;
 
-    public BrewingRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
+    public BrewingRecipe(@NotNull Ingredient input, @NotNull Ingredient ingredient, @NotNull ItemStack output) {
         this.input = input;
         this.ingredient = ingredient;
         this.output = output;
     }
 
     @Override
-    public boolean isInput(ItemStack stack) {
+    public boolean isInput(@NotNull ItemStack stack) {
         return this.input.test(stack);
     }
 
-    @Override
-    public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
-        return isInput(input) && isIngredient(ingredient) ? getOutput().copy() : ItemStack.EMPTY;
-    }
-
-    public Ingredient getInput() {
+    public @NotNull Ingredient getInput() {
         return input;
     }
 
-    public Ingredient getIngredient() {
+    @Override
+    public @NotNull Ingredient getIngredient() {
         return ingredient;
     }
 
-    public ItemStack getOutput() {
+    @Override
+    public @NotNull ItemStack getOutput() {
         return output;
     }
 

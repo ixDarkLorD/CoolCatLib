@@ -44,16 +44,16 @@ public class ComponentItem extends Item {
     public boolean isShiftButtonNotPressed(@Nullable List<Component> tooltipComponents) {
         if (!Screen.hasShiftDown()) {
             if (tooltipComponents != null)
-                tooltipComponents.add(Component.literal("➤ ").withStyle(ChatFormatting.DARK_GRAY).append(Component.translatable("tooltip.coolcat_lib.press.shift").withStyle(ChatFormatting.GRAY)));
+                tooltipComponents.add(Component.literal("➤ ").withStyle(ChatFormatting.DARK_GRAY).append(Component.translatable("tooltip.coolcatlib.press.shift").withStyle(ChatFormatting.GRAY)));
             return true;
         }
         return false;
     }
 
     public static class ComponentType {
-        public static ComponentType CRAFTING = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.crafting").withStyle(ChatFormatting.DARK_PURPLE));
-        public static ComponentType TOOLS = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.tools").withStyle(ChatFormatting.DARK_PURPLE));
-        public static ComponentType ABILITY = new ComponentType(Component.translatable("tooltip.coolcat_lib.component.ability").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType CRAFTING = new ComponentType(Component.translatable("tooltip.coolcatlib.component.crafting").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType TOOLS = new ComponentType(Component.translatable("tooltip.coolcatlib.component.tools").withStyle(ChatFormatting.DARK_PURPLE));
+        public static ComponentType ABILITY = new ComponentType(Component.translatable("tooltip.coolcatlib.component.ability").withStyle(ChatFormatting.DARK_PURPLE));
 
         private final Component component;
         public ComponentType(Component component) {
