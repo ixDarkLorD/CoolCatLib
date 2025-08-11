@@ -1,23 +1,24 @@
 {
   "schemaVersion": 1,
-  "id": "testingmod",
+  "id": "testing_mod",
   "version": "1.0.0",
 
   "name": "Testing Mod",
   "description": "Testing Mod",
   "authors": [
-    "${modAuthor}"
+    "${mod_author}"
   ],
 
-  "environment": "${modFabricEnvironment}",
+  "environment": "${mod_environment}",
   "entrypoints": {
     "main": ["net.ixdarklord.testingmod.TestingMod"]
   },
 
   "depends": {
-    "java": ">=17",
-    "minecraft": ">=${minMinecraftVersion} <${nextMinecraftVersion}",
-    "fabricloader": ">=${minFabricVersion}",
-    "fabric-api": ">=${minFabricApiVersion}"
+    "java": ">=${project_java_version}",
+    "minecraft": ">=${mc_version} <=${max_mc_version}",
+    "fabricloader": ">=${min_fabric_version}",
+    "fabric-api": ">=${min_fabric_api_version}",
+    "coolcatlib": "*"
   }
 }
