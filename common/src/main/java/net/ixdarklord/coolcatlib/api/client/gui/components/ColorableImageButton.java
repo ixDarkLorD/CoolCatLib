@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatlib.api.client.gui.components;
 
 import java.awt.*;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -23,7 +24,8 @@ public class ColorableImageButton extends ImageButton {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (color != null) guiGraphics.setColor(this.color.getRed()/255.0F, this.color.getGreen()/255.0F, this.color.getBlue()/255.0F, this.color.getAlpha()/255.0F);
+        if (color != null)
+            guiGraphics.setColor(this.color.getRed() / 255.0F, this.color.getGreen() / 255.0F, this.color.getBlue() / 255.0F, this.color.getAlpha() / 255.0F);
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
     }

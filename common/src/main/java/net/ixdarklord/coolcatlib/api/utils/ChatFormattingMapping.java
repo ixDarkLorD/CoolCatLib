@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
 import net.minecraft.ChatFormatting;
 
@@ -7,8 +7,13 @@ import java.util.List;
 /**
  * A mapping of percentage thresholds to corresponding ChatFormatting styles.
  */
-public class ChatFormattingMapping {
-    private final List<Entry> entries;
+public record ChatFormattingMapping(List<Entry> entries) {
+    /**
+     * Constructs a new ChatFormattingMapping with the provided entries.
+     *
+     * @param entries The percentage-based formatting entries.
+     */
+    public ChatFormattingMapping {}
 
     /**
      * Constructs a new ChatFormattingMapping with the provided entries.
@@ -16,7 +21,7 @@ public class ChatFormattingMapping {
      * @param entries The percentage-based formatting entries.
      */
     public ChatFormattingMapping(Entry... entries) {
-        this.entries = List.of(entries);
+        this(List.of(entries));
     }
 
     /**
@@ -24,7 +29,8 @@ public class ChatFormattingMapping {
      *
      * @return The list of formatting mappings.
      */
-    public List<Entry> getEntries() {
+    @Override
+    public List<Entry> entries() {
         return entries;
     }
 
@@ -39,7 +45,8 @@ public class ChatFormattingMapping {
          * @param threshold  The percentage threshold.
          * @param formatting The associated ChatFormatting styles.
          */
-        public Entry {}
+        public Entry {
+        }
 
         /**
          * Retrieves the threshold value.

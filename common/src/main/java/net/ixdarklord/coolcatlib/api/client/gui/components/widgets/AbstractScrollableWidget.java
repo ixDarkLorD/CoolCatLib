@@ -2,9 +2,7 @@ package net.ixdarklord.coolcatlib.api.client.gui.components.widgets;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.ixdarklord.coolcatlib.api.util.ColorUtils;
-import net.ixdarklord.coolcatlib.api.util.MouseHelper;
-import net.ixdarklord.coolcatlib.api.util.RenderUtils;
+import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.ScreenAxis;

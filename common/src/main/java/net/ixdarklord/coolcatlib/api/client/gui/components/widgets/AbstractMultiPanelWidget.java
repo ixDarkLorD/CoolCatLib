@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import io.netty.util.internal.UnstableApi;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.ixdarklord.coolcatlib.api.util.ColorUtils;
+import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;

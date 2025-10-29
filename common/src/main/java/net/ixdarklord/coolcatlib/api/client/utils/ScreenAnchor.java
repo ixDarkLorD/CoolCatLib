@@ -1,12 +1,9 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.client.utils;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
-@Environment(EnvType.CLIENT)
-public enum ScreenPosition implements StringRepresentable {
+public enum ScreenAnchor implements StringRepresentable {
     TOP_LEFT("top_left", -1, -1),
     TOP("top", 0, -1),
     TOP_RIGHT("top_right", 1, -1),
@@ -21,7 +18,7 @@ public enum ScreenPosition implements StringRepresentable {
     public final int offsetX;
     public final int offsetY;
 
-    ScreenPosition(String name, int ox, int oy) {
+    ScreenAnchor(String name, int ox, int oy) {
         this.name = name;
         this.offsetX = ox;
         this.offsetY = oy;
@@ -43,12 +40,28 @@ public enum ScreenPosition implements StringRepresentable {
         };
     }
 
-    public ScreenPosition next() {
+    public int computeOffsetX(int x, int width) {
+        return switch (this.offsetX) {
+            case -1 -> x + width;
+            case 1 -> x - width;
+            default -> x;
+        };
+    }
+
+    public int computeOffsetY(int y, int height) {
+        return switch (this.offsetY) {
+            case -1 -> y + height;
+            case 1 -> y - height;
+            default -> y;
+        };
+    }
+
+    public ScreenAnchor next() {
         int nextOrdinal = (this.ordinal() + 1) % values().length;
         return values()[nextOrdinal];
     }
 
-    public ScreenPosition previous() {
+    public ScreenAnchor previous() {
         int previousOrdinal = (this.ordinal() - 1 + values().length) % values().length;
         return values()[previousOrdinal];
     }

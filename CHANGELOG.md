@@ -1,6 +1,11 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.1.0.0 Release | Oct 30, 2025
+### ⚙️ Refactoring
+- Renamed and reorganized several classes.
+- Updated version formatting from X.X.X to MCVR.X.X.X to clearly distinguish between Minecraft release versions.
+
 ## v1.1.2 Release | April 11, 2025
 - Added new methods to MouseHelper and fixed an issue in RenderUtils
 

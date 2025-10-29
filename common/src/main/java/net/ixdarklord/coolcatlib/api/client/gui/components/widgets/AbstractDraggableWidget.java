@@ -5,10 +5,9 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.ixdarklord.coolcatlib.api.util.ColorUtils;
-import net.ixdarklord.coolcatlib.api.util.KeysUtils;
-import net.ixdarklord.coolcatlib.api.util.MouseHelper;
-import net.ixdarklord.coolcatlib.internal.core.ServicePlatform;
+import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
+import net.ixdarklord.coolcatlib.api.utils.KeysUtils;
+import net.ixdarklord.coolcatlib.internal.core.ModPlatform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -236,7 +235,7 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (ServicePlatform.get().isDevelopmentEnvironment() && KeysUtils.isHolden3ComboButtons() && keyCode == GLFW.GLFW_KEY_F12) {
+        if (ModPlatform.get().isDevelopmentEnvironment() && KeysUtils.isHolden3ComboButtons() && keyCode == GLFW.GLFW_KEY_F12) {
             this.debug ^= true;
             return true;
         }

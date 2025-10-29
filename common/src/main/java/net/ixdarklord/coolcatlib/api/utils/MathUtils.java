@@ -1,6 +1,6 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
-public class MathUtils {
+public final class MathUtils {
     public static float cycledBetweenValues(float min, float max, float speed, float time, boolean reverse) {
         float amplitude = (max - min) / 2;
         float offset = (max + min) / 2;

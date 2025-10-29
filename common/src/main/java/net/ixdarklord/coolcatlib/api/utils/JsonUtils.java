@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -6,8 +6,7 @@ import com.google.gson.JsonObject;
 
 import java.util.Map;
 
-public class JsonUtils {
-
+public final class JsonUtils {
     public static JsonObject deepMerge(JsonObject source, JsonObject target) throws JsonIOException {
         for (Map.Entry<String, JsonElement> sourceEntry : source.entrySet()) {
             String key = sourceEntry.getKey();

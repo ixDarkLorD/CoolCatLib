@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
 import net.ixdarklord.coolcatlib.internal.chat.FormattedContentSink;
 import net.minecraft.client.Minecraft;
@@ -10,7 +10,7 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ComponentHelper {
+public final class ComponentHelper {
 
     /**
      * Converts an instance of {@link FormattedText} to a {@link Component}.

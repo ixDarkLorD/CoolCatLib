@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleOptions;

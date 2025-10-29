@@ -1,11 +1,11 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 import java.util.function.Predicate;
 
-public class RecipeHelper {
+public final class RecipeHelper {
 
     /**
      * Helper class to perform a shapeless recipe match when ingredients that require testing are involved.

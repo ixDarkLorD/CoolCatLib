@@ -37,7 +37,7 @@ public class JEIIntegration implements IModPlugin {
 
         List<IJeiBrewingRecipe> jeiBrewingRecipes = Lists.newArrayList();
         PotionBrewing potionBrewing = level.potionBrewing();
-        List<BrewingRecipe> brewingRecipes = ((PotionBrewingExt) potionBrewing).getRecipes().stream()
+        List<BrewingRecipe> brewingRecipes = potionBrewing.getRecipes().stream()
                 .peek(recipe -> {
                     if (!(recipe instanceof BrewingRecipe)) {
                         CoolCatLib.LOGGER.warn("Skipping {} in JEI: Not a valid BrewingRecipe subclass.",

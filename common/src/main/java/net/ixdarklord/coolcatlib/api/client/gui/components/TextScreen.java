@@ -3,7 +3,7 @@ package net.ixdarklord.coolcatlib.api.client.gui.components;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import net.ixdarklord.coolcatlib.api.util.ColorUtils;
+import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

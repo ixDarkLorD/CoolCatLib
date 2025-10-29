@@ -1,4 +1,4 @@
-package net.ixdarklord.coolcatlib.api.util;
+package net.ixdarklord.coolcatlib.api.utils;
 
 import java.util.function.Function;
 

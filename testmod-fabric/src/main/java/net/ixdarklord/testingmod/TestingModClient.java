@@ -3,7 +3,7 @@ package net.ixdarklord.testingmod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.ixdarklord.coolcatlib.api.client.gui.components.TextScreen;
-import net.ixdarklord.coolcatlib.api.util.ColorUtils;
+import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 
 import java.awt.*;
 
