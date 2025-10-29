@@ -1,6 +1,14 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.1.0.0 Release | Oct 30, 2025
+### ⚙️ Refactoring
+- Renamed and reorganized several classes.
+- Updated version formatting from X.X.X to MCVR.X.X.X to clearly distinguish between Minecraft release versions.
+
+### ✨ New Feature
+- Added Language Data Generator to support shared environments.
+
 ## v1.0.3 Release | Feb 19, 2024
 ### Fixed
 - [CCL-1] [Fabric] Incompatibility with KubeJS

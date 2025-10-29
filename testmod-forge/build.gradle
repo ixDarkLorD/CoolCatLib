@@ -1,4 +1,4 @@
-apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v1/fabric.gradle"
+apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v1/forge.gradle"
 
 loom {
     runs {
@@ -12,9 +12,8 @@ loom {
 }
 
 dependencies {
-    modApi libs.jei.api.fabric
-    modImplementation libs.jei.fabric
+    modApi libs.jei.api.forge
+    modImplementation libs.jei.forge
 
-    implementation 'org.reflections:reflections:0.10.2'
-    implementation project(path: ":fabric", configuration: "namedElements")
+    implementation project(path: ":forge", configuration: "namedElements")
 }

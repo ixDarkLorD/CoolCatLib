@@ -11,11 +11,12 @@
 
   "environment": "${mod_environment}",
   "entrypoints": {
-    "main": ["net.ixdarklord.testingmod.TestingMod"]
+    "main": ["net.ixdarklord.testingmod.TestingMod"],
+    "fabric-datagen": ["net.ixdarklord.testingmod.TestingModDataGen"]
   },
 
   "depends": {
-    "java": ">=${project_java_version}",
+    "java": ">=${java_version}",
     "minecraft": ">=${mc_version} <=${max_mc_version}",
     "fabricloader": ">=${min_fabric_version}",
     "fabric-api": ">=${min_fabric_api_version}",

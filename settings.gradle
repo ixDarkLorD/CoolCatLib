@@ -9,7 +9,7 @@ pluginManagement {
     }
 }
 
-include("common", "testmod-fabric")
+include("common", "testmod-forge", "testmod-fabric")
 include(project_loaders.split(","))
 
 apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v1/settings.gradle"
