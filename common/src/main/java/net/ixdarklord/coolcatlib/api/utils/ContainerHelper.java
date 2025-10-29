@@ -67,7 +67,7 @@ public final class ContainerHelper {
     public static boolean equals(Container a, Container b) {
         if (a.getContainerSize() != b.getContainerSize()) return false;
         for (int i = 0; i < a.getContainerSize(); i++) {
-            if (!ItemStack.isSameItemSameTags(a.getItem(i), b.getItem(i))) return false;
+            if (!ItemStack.isSameItemSameComponents(a.getItem(i), b.getItem(i))) return false;
         }
         return true;
     }
@@ -75,7 +75,7 @@ public final class ContainerHelper {
     public static int hashCode(Container container) {
         int code = 31 + container.getContainerSize();
         for (int i = 0; i < container.getContainerSize(); i++) {
-            code += (ItemStackHelper.hashItemAndTags(container.getItem(i)) * 2);
+            code += (ItemStack.hashItemAndComponents(container.getItem(i)) * 2);
         }
         return code;
     }

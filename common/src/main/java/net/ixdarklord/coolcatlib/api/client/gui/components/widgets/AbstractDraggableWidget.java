@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.ixdarklord.coolcatlib.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 import net.ixdarklord.coolcatlib.api.utils.KeysUtils;
 import net.ixdarklord.coolcatlib.internal.core.ModPlatform;
@@ -116,8 +117,8 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
 
     protected void renderDraggingBoxHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         if (this.isMouseOverDraggingRectangle(mouseX, mouseY)) {
-            guiGraphics.setColor(this.getDraggingAreaColor().getRed(), this.getDraggingAreaColor().getGreen(), this.getDraggingAreaColor().getBlue(), this.getDraggingAreaColor().getAlpha());
-            guiGraphics.fill(this.getDraggingRectangle().left(), this.getDraggingRectangle().top(), this.getDraggingRectangle().right(), this.getDraggingRectangle().bottom(), ColorUtils.RGBToRGBA(Color.WHITE.getRGB(), 0.25F));
+            guiGraphics.setColor(this.getDraggingAreaColor().red(), this.getDraggingAreaColor().green(), this.getDraggingAreaColor().blue(), this.getDraggingAreaColor().alpha());
+            guiGraphics.fill(this.getDraggingRectangle().left(), this.getDraggingRectangle().top(), this.getDraggingRectangle().right(), this.getDraggingRectangle().bottom(), ColorUtils.rgbToRgba(Color.WHITE.getRGB(), 0.25F));
             guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
@@ -137,7 +138,7 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
         int minY = mouseY - 10;
         int maxY = minY + (9 * components.size());
         int textWidth = components.stream().mapToInt(this.font::width).max().orElse(this.width);
-        guiGraphics.fill(x - textWidth - 2, minY, x - 1, maxY, ColorUtils.RGBToRGBA(Color.GRAY.getRGB(), 0.5F));
+        guiGraphics.fill(x - textWidth - 2, minY, x - 1, maxY, ColorUtils.rgbToRgba(Color.GRAY.getRGB(), 0.5F));
 
         for (int i = 0; i < components.size(); i++) {
             Component component = components.get(i);

@@ -2,6 +2,8 @@ package net.ixdarklord.coolcatlib.api.client.gui.components.widgets;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.ixdarklord.coolcatlib.api.client.utils.MouseHelper;
+import net.ixdarklord.coolcatlib.api.client.utils.RenderUtils;
 import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -68,7 +70,7 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
             guiGraphics.blitSprite(this.bgSprites.get(this.visible, this.isFocused()), this.x, this.y, this.width, this.height);
         else {
             Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.x, this.y, 0, 0, this.width, this.height);
-            RenderUtils.renderHollowRectangleOrThrow(guiGraphics, this.getRectangle(), this.border, this.border < 0, this.borderColor);
+            RenderUtils.drawHollowRect(guiGraphics, this.getRectangle(), this.border, this.borderColor);
         }
     }
 
@@ -78,7 +80,7 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
 
     @Override
     protected void renderContents(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        RenderUtils.renderInRectangle(guiGraphics, this.layoutRectangle(), !this.isDebug(), () -> {
+        RenderUtils.drawInsideRect(guiGraphics, this.layoutRectangle(), !this.isDebug(), () -> {
             int relativeX = this.layoutRectangle().left() - (int) this.scrollOffsetX;
             int relativeY = this.layoutRectangle().top() - (int) this.scrollOffsetY;
             this.renderScrollableContents(guiGraphics, partialTick, relativeX, relativeY, mouseX, mouseY);
@@ -102,18 +104,18 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
             int barLeft = this.layoutRectangle().right() - this.scrollWidth;
             int barHeight = this.getScrollbarSize(ScreenAxis.VERTICAL);
 
-            guiGraphics.fill(barLeft, layoutRectangle().top(), layoutRectangle().right(), layoutRectangle().bottom(), ColorUtils.RGBToRGBA(this.scrollBgColor, alpha));
+            guiGraphics.fill(barLeft, layoutRectangle().top(), layoutRectangle().right(), layoutRectangle().bottom(), ColorUtils.rgbToRgba(this.scrollBgColor, alpha));
 
             double endPoint = layoutRectangle().bottom() - barHeight;
             int barTop = (int) Mth.lerp(delta, layoutRectangle().top(), endPoint);
-            guiGraphics.fill(barLeft + 1, barTop + 1, layoutRectangle().right() - 1, barTop + barHeight - 1, ColorUtils.RGBToRGBA(this.scrollColor, alpha));
+            guiGraphics.fill(barLeft + 1, barTop + 1, layoutRectangle().right() - 1, barTop + barHeight - 1, ColorUtils.rgbToRgba(this.scrollColor, alpha));
 
             int brighterColor = new Color(this.scrollColor).brighter().getRGB();
             int darkerColor = new Color(this.scrollColor).darker().getRGB();
-            guiGraphics.fill(barLeft, barTop, layoutRectangle().right(), barTop + 1, ColorUtils.RGBToRGBA(brighterColor, alpha));
-            guiGraphics.fill(barLeft, barTop + 1, barLeft + 1, barTop + barHeight, ColorUtils.RGBToRGBA(brighterColor, alpha));
-            guiGraphics.fill(layoutRectangle().right() - 1, barTop, layoutRectangle().right(), barTop + barHeight, ColorUtils.RGBToRGBA(darkerColor, alpha));
-            guiGraphics.fill(barLeft, barTop + barHeight - 1, layoutRectangle().right() - 1, barTop + barHeight, ColorUtils.RGBToRGBA(darkerColor, alpha));
+            guiGraphics.fill(barLeft, barTop, layoutRectangle().right(), barTop + 1, ColorUtils.rgbToRgba(brighterColor, alpha));
+            guiGraphics.fill(barLeft, barTop + 1, barLeft + 1, barTop + barHeight, ColorUtils.rgbToRgba(brighterColor, alpha));
+            guiGraphics.fill(layoutRectangle().right() - 1, barTop, layoutRectangle().right(), barTop + barHeight, ColorUtils.rgbToRgba(darkerColor, alpha));
+            guiGraphics.fill(barLeft, barTop + barHeight - 1, layoutRectangle().right() - 1, barTop + barHeight, ColorUtils.rgbToRgba(darkerColor, alpha));
         }
     }
 

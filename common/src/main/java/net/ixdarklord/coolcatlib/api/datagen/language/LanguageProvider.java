@@ -2,7 +2,9 @@ package net.ixdarklord.coolcatlib.api.datagen.language;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -25,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -91,13 +94,13 @@ public abstract class LanguageProvider {
     }
 
     /** Adds a translation for an {@link Enchantment}. */
-    public void add(Enchantment enchantment, String value) {
-        add(enchantment.getDescriptionId(), value);
+    public void addEnchantment(ResourceKey<Enchantment> enchantment, String value) {
+        this.add(Util.makeDescriptionId("enchantment", enchantment.location()), value);
     }
 
     /** Adds a translation for an {@link Attribute}. */
-    public void add(Attribute attribute, String value) {
-        add(attribute.getDescriptionId(), value);
+    public void add(Holder<Attribute> entityAttribute, String value) {
+        this.add(entityAttribute.value().getDescriptionId(), value);
     }
 
     /** Adds a translation for an {@link EntityType}. */
@@ -107,7 +110,7 @@ public abstract class LanguageProvider {
 
     /** Adds a translation for a {@link StatType}. */
     public void add(StatType<?> statType, String value) {
-        add(statType.getTranslationKey(), value);
+        this.add("stat_type." + Objects.requireNonNull(BuiltInRegistries.STAT_TYPE.getKey(statType)).toString().replace(':', '.'), value);
     }
 
     /** Adds a translation for a {@link ResourceLocation}. */
@@ -144,6 +147,8 @@ public abstract class LanguageProvider {
     /** Adds translation entries for a {@link Potion} with a specific type suffix. */
     public void addPotion(Potion potion, String baseName, @Nullable String type) {
         ResourceLocation key = BuiltInRegistries.POTION.getKey(potion);
+        assert key != null;
+
         String id = key.getPath();
         String name = (type == null) ? baseName : baseName.replace("%t", type);
 

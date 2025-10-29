@@ -99,7 +99,7 @@ public class TextScreen extends GuiGraphics {
             int renderEnabledScreens = this.componentList.stream().filter(box -> box.render).toList().size();
             if (renderEnabledScreens > 1 && i < this.componentList.size()-1) {
                 Color bgColor = this.componentList.get(i+1).backgroundColor;
-                int color = bgColor != null ? ColorUtils.RGBToRGBA(bgColor.getRGB(), bgColor.getAlpha() / 255F) : ColorUtils.RGBToRGBA(backgroundColor, 0.85F);
+                int color = bgColor != null ? ColorUtils.rgbToRgba(bgColor.getRGB(), bgColor.getAlpha() / 255F) : ColorUtils.rgbToRgba(backgroundColor, 0.85F);
                 int width = this.widthOld > 1 ? this.widthOld : this.width;
                 int height = this.heightOld > 1 ? this.heightOld : this.height;
 

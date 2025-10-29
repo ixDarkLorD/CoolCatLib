@@ -165,7 +165,7 @@ public abstract class AbstractMultiPanelWidget extends AbstractScrollableWidget 
 
             int enabledPanels = components.stream().filter(c -> c.render).toList().size();
             if (enabledPanels > 1 && i < components.size() - 1) {
-                guiGraphics.fill(layoutRectangle().left(), layoutRectangle().top(), layoutRectangle().right(), layoutRectangle().bottom(), ColorUtils.RGBToRGBA(this.dividerColor.getRGB(), this.dividerColor.getAlpha() / 255F));
+                guiGraphics.fill(layoutRectangle().left(), layoutRectangle().top(), layoutRectangle().right(), layoutRectangle().bottom(), ColorUtils.rgbToRgba(this.dividerColor.getRGB(), this.dividerColor.getAlpha() / 255F));
             }
         }
     }
@@ -177,12 +177,12 @@ public abstract class AbstractMultiPanelWidget extends AbstractScrollableWidget 
             this.selectPanel((this.manager.selectedIndex + 1) % this.manager.components.size());
             this.shouldRender(true);
             this.setControl(true);
-            CoolCatLib.LOGGER.debug("Cycled index from: %s to: %s".formatted(i, this.manager.selectedIndex));
+            CoolCatLib.LOGGER.debug("Cycled index from: {} to: {}", i, this.manager.selectedIndex);
             return true;
         }
         if (this.isDebug() && keyCode == GLFW.GLFW_KEY_F4) {
             this.setControl(!this.isControlling());
-            CoolCatLib.LOGGER.debug("Selected Panel: %s | Control: %s".formatted(manager.selectedIndex, this.isControlling()));
+            CoolCatLib.LOGGER.debug("Selected Panel: {} | Control: {}", manager.selectedIndex, this.isControlling());
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
