@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatlib.api.client.utils;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class NineSliceInfo {
 
@@ -69,25 +69,25 @@ public final class NineSliceInfo {
     }
 
     public static final class TextureInfo {
-        private final ResourceLocation texture;
+        private final Identifier texture;
         private final int width;
         private final int height;
 
-        private TextureInfo(ResourceLocation texture, int width, int height) {
+        private TextureInfo(Identifier texture, int width, int height) {
             this.texture = texture;
             this.width = width;
             this.height = height;
         }
 
-        public static TextureInfo of(ResourceLocation texture, int width, int height) {
+        public static TextureInfo of(Identifier texture, int width, int height) {
             return new TextureInfo(texture, width, height);
         }
 
-        public static TextureInfo of(ResourceLocation texture) {
+        public static TextureInfo of(Identifier texture) {
             return new TextureInfo(texture, 256, 256);
         }
 
-        public ResourceLocation texture() { return texture; }
+        public Identifier texture() { return texture; }
         public int width() { return width; }
         public int height() { return height; }
     }

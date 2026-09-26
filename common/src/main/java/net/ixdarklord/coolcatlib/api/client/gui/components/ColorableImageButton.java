@@ -1,8 +1,11 @@
 package net.ixdarklord.coolcatlib.api.client.gui.components;
 
+import net.minecraft.util.ARGB;
+import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.RenderPipelines;
 import java.awt.*;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
@@ -23,11 +26,14 @@ public class ColorableImageButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (color != null)
-            guiGraphics.setColor(this.color.getRed() / 255.0F, this.color.getGreen() / 255.0F, this.color.getBlue() / 255.0F, this.color.getAlpha() / 255.0F);
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
+    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (this.color == null) {
+            super.extractContents(guiGraphics, mouseX, mouseY, partialTick);
+            return;
+        }
+        Identifier sprite = this.sprites.get(this.isActive(), this.isHoveredOrFocused());
+        int tint = ARGB.color(Math.round(this.color.getAlpha() * this.alpha), this.color.getRed(), this.color.getGreen(), this.color.getBlue());
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX(), this.getY(), this.width, this.height, tint);
     }
 
     public void setColor(Color color) {

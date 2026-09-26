@@ -1,11 +1,8 @@
 package net.ixdarklord.coolcatlib.api.client.utils;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 
-@Environment(EnvType.CLIENT)
 public final class MouseHelper {
     public static boolean isMouseOver(double mouseX, double mouseY, int x, int y, int size) {
         return isMouseOver(mouseX, mouseY, x, y, size, size);

@@ -3,13 +3,13 @@ package net.ixdarklord.coolcatlib.api.utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.netty.handler.codec.CodecException;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 import java.awt.*;
@@ -29,11 +29,11 @@ import java.util.stream.IntStream;
 public final class CodecUtils {
     /**
      * A codec for serializing and deserializing {@link Item} instances using their
-     * {@link ResourceLocation} identifiers in the {@link BuiltInRegistries#ITEM} registry.
+     * {@link Identifier} identifiers in the {@link BuiltInRegistries#ITEM} registry.
      */
-    public static final Codec<Item> ITEM_CODEC = ResourceLocation.CODEC.comapFlatMap(location -> {
+    public static final Codec<Item> ITEM_CODEC = Identifier.CODEC.comapFlatMap(location -> {
         try {
-            return DataResult.success(BuiltInRegistries.ITEM.get(location));
+            return DataResult.success(BuiltInRegistries.ITEM.getValue(location));
         } catch (CodecException e) {
             return DataResult.error(() -> location + " is not a registered item.");
         }

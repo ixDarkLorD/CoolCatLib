@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatlib.internal.core;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +13,8 @@ public class CoolCatLib {
 	public static final UnsupportedOperationException OPERATION_EXCEPTION =
 			new UnsupportedOperationException("This loader is not supported to do this operation!");
 
-	public static ResourceLocation rl(String name) {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, name.toLowerCase(Locale.ROOT));
+	public static Identifier rl(String name) {
+		return Identifier.fromNamespaceAndPath(MOD_ID, name.toLowerCase(Locale.ROOT));
 	}
 
 	public static RuntimeException createMixinException(String extension) {

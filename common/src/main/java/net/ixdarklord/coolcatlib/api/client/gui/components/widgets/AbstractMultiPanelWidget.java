@@ -1,372 +1,246 @@
 package net.ixdarklord.coolcatlib.api.client.gui.components.widgets;
 
 import com.google.common.collect.Lists;
-import io.netty.util.internal.UnstableApi;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
-import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
-import net.minecraft.Util;
-import net.minecraft.client.gui.GuiGraphics;
+import net.ixdarklord.coolcatlib.api.client.gui.components.widgets.panel.Panel;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.layouts.AbstractLayout;
-import net.minecraft.client.gui.layouts.FrameLayout;
-import net.minecraft.client.gui.layouts.LayoutElement;
-import net.minecraft.client.gui.layouts.LayoutSettings;
-import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
-@UnstableApi
-@Environment(EnvType.CLIENT)
-public abstract class AbstractMultiPanelWidget extends AbstractScrollableWidget {
-    private final PanelManager manager;
-    protected Color dividerColor;
+/**
+ * A (optionally draggable) window whose content area shows a stack of {@link Panel}s.
+ * <ul>
+ *     <li>Panels are drawn bottom to top in the order they were added; hidden panels are skipped.</li>
+ *     <li>Input goes to the window's own widgets (title bar buttons...) first, then to the panels from the top down.
+ *     A visible {@linkplain Panel#setModal(boolean) modal} panel stops input from reaching the panels below it,
+ *     and those panels are dimmed with {@link #setOverlayColor(int) the overlay color}.</li>
+ *     <li>The panel that accepted a mouse press receives the following drag and release events.</li>
+ *     <li>Only the topmost visible panel receives keyboard input.</li>
+ * </ul>
+ * Panels are laid out in {@link #getPanelRectangle(Panel)} (the layout rectangle by default) whenever the window
+ * moves or is resized with {@link #setBounds}.
+ */
+@ApiStatus.Experimental
+public abstract class AbstractMultiPanelWidget extends AbstractDraggableWidget {
+    private final List<Panel> panels = Lists.newArrayList();
+    private final List<Panel> panelsView = Collections.unmodifiableList(this.panels);
+    private @Nullable Panel capturedPanel;
+    private int overlayColor = 0x80000000;
+    private ScreenRectangle laidOutRect = ScreenRectangle.empty();
 
-    public AbstractMultiPanelWidget(int x, int y, int width, int height, int amountOfPanels, boolean isMovable) {
-        super(x, y, width, height, 0, isMovable);
-        this.manager = new PanelManager(this, amountOfPanels);
-        this.dividerColor = new Color(0x80000000, true);
+    public AbstractMultiPanelWidget(Component title, int x, int y, int width, int height, boolean isMovable) {
+        super(title, x, y, width, height, isMovable);
     }
 
-    protected <V extends GuiEventListener & NarratableEntry> V addWidget(V listener) {
-        this.manager.getSelectedComponent().guiEventListeners.add(listener);
-        return super.addWidget(listener);
+    // --- Panels ---
+
+    protected <P extends Panel> P addPanel(P panel) {
+        panel.attach(this);
+        this.panels.add(panel);
+        this.laidOutRect = ScreenRectangle.empty();
+        return panel;
     }
 
-    public <V extends LayoutElement> V addToHeader(V child) {
-        return addToHeader(child, this.manager.getSelectedComponent().headerFrame.defaultChildLayoutSetting());
+    protected void removePanel(Panel panel) {
+        this.panels.remove(panel);
+        if (this.capturedPanel == panel) this.capturedPanel = null;
     }
 
-    public <V extends LayoutElement> V addToHeader(V child, LayoutSettings layoutSettings) {
-        this.manager.getSelectedComponent().headerFrame.addChild(child, layoutSettings);
-        return child;
+    public List<Panel> getPanels() {
+        return this.panelsView;
     }
 
-    public <V extends LayoutElement> V addToContents(V child) {
-        return addToContents(child, this.manager.getSelectedComponent().contentsFrame.defaultChildLayoutSetting());
+    /** The topmost visible panel, if any. */
+    public @Nullable Panel getTopPanel() {
+        for (int i = this.panels.size() - 1; i >= 0; i--) {
+            if (this.panels.get(i).isVisible()) return this.panels.get(i);
+        }
+        return null;
     }
 
-    public <V extends LayoutElement> V addToContents(V child, LayoutSettings layoutSettings) {
-        this.manager.getSelectedComponent().contentsFrame.addChild(child, layoutSettings);
-        return child;
+    /** Where a panel is placed; the layout rectangle unless overridden. */
+    protected ScreenRectangle getPanelRectangle(Panel panel) {
+        return this.layoutRectangle();
     }
 
-    public <V extends LayoutElement> V addToFooter(V child) {
-        return addToFooter(child, this.manager.getSelectedComponent().footerFrame.defaultChildLayoutSetting());
+    /** Color drawn over the panels below a visible modal panel. */
+    public void setOverlayColor(int argb) {
+        this.overlayColor = argb;
     }
 
-    public <V extends LayoutElement> V addToFooter(V child, LayoutSettings layoutSettings) {
-        this.manager.getSelectedComponent().footerFrame.addChild(child, layoutSettings);
-        return child;
+    /** Moves and resizes the window. */
+    public void setBounds(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.layoutPanels(true);
     }
 
-    public void setHeaderDownPadding(int padding) {
-        setHeaderDownPadding(this.manager.selectedIndex, padding);
-    }
-
-    public void setHeaderDownPadding(int index, int padding) {
-        this.validatePanelIndex(index);
-        this.manager.components.get(index).headerDownPadding = padding;
-    }
-
-    public void setFooterTopPadding(int padding) {
-        setFooterTopPadding(this.manager.selectedIndex, padding);
-    }
-
-    public void setFooterTopPadding(int index, int padding) {
-        this.validatePanelIndex(index);
-        this.manager.components.get(index).footerTopPadding = padding;
-    }
-
-    public void selectFirstPanel() {
-        this.selectPanel(0);
-    }
-
-    public void selectLastPanel() {
-        this.selectPanel(this.manager.components.size() - 1);
-    }
-
-    public void selectPanel(int index) {
-        this.validatePanelIndex(index);
-        this.manager.selectedIndex = index;
-
-    }
-
-    public void shouldRender(boolean state) {
-        this.manager.getSelectedComponent().render = state;
-        if (state) for (int i = 0; i < this.manager.components.size(); i++) {
-            if (i > this.manager.selectedIndex) {
-                this.manager.components.get(i).render = false;
-            }
+    private void layoutPanels(boolean force) {
+        ScreenRectangle rect = this.layoutRectangle();
+        if (!force && rect.equals(this.laidOutRect)) return;
+        this.laidOutRect = rect;
+        for (Panel panel : this.panels) {
+            panel.setBounds(this.getPanelRectangle(panel));
         }
     }
 
-    public boolean isControlling() {
-        return this.manager.getSelectedComponent().control;
-    }
-
-    public void setControl(boolean state) {
-        PanelComponent panel = this.manager.getSelectedComponent();
-        panel.control = panel.render && state;
-
-        if (panel.control) {
-            this.PreservedPosPanel();
-            for (PanelComponent component : this.manager.components) {
-                if (!component.equals(panel)) component.control = false;
-            }
-        }
-    }
-
-    public void setDividerColor(Color color) {
-        this.dividerColor = color;
-    }
-
-    @Override
-    protected void postInit() {
-        this.layout.addChild(manager);
-        super.postInit();
-    }
+    // --- Rendering ---
 
     @Override
     protected void updateChildren() {
         super.updateChildren();
-        this.manager.updateSize();
-        this.manager.getSelectedComponent().cacheScrollOffsets(this.scrollOffsetX, this.scrollOffsetY);
-        for (int i = 0; i < this.manager.components.size(); i++) {
-            PanelComponent panel = this.manager.components.get(i);
-            if (!this.isDebug()) {
-                panel.control = i == this.manager.selectedIndex;
-            }
-            panel.updateWidgets(this.visible);
+        this.layoutPanels(false);
+    }
+
+    /** Whether the cursor is over one of the window's own widgets, which sit on top of the panels. */
+    protected boolean isMouseOverOwnWidget(double mouseX, double mouseY) {
+        for (GuiEventListener child : this.children()) {
+            if (child instanceof AbstractWidget widget && widget.visible && widget.isMouseOver(mouseX, mouseY)) return true;
         }
+        return false;
     }
 
     @Override
-    protected void renderScrollableContents(GuiGraphics guiGraphics, float partialTick, int relativeX, int relativeY, int mouseX, int mouseY) {
-        var components = this.manager.components;
-        for (int i = 0; i < components.size(); i++) {
-            PanelComponent component = components.get(i);
-            for (GuiEventListener listener : component.guiEventListeners) {
-                if (listener instanceof Renderable renderable) {
-                    renderable.render(guiGraphics, mouseX, mouseY, partialTick);
-                }
+    protected void renderContents(GuiGraphicsExtractor graphics, float partialTick, int mouseX, int mouseY) {
+        int topModal = this.indexOfTopModal();
+        // Nothing under the window's own widgets gets hover states.
+        boolean overWidget = this.isMouseOverOwnWidget(mouseX, mouseY);
+        boolean first = true;
+        for (int i = 0; i < this.panels.size(); i++) {
+            Panel panel = this.panels.get(i);
+            if (!panel.isVisible()) continue;
+            // Within a stratum text is drawn after all fills, so a panel stacked on another needs its own
+            // stratum to cover the text below it.
+            if (!first) graphics.nextStratum();
+            first = false;
+            if (i == topModal && i > 0) {
+                ScreenRectangle r = this.layoutRectangle();
+                graphics.fill(r.left(), r.top(), r.right(), r.bottom(), this.overlayColor);
             }
-
-            int enabledPanels = components.stream().filter(c -> c.render).toList().size();
-            if (enabledPanels > 1 && i < components.size() - 1) {
-                guiGraphics.fill(layoutRectangle().left(), layoutRectangle().top(), layoutRectangle().right(), layoutRectangle().bottom(), ColorUtils.rgbToRgba(this.dividerColor.getRGB(), this.dividerColor.getAlpha() / 255F));
-            }
+            // Panels below a modal one don't get hover states.
+            boolean blocked = i < topModal || overWidget;
+            panel.extractRenderState(graphics, blocked ? -1 : mouseX, blocked ? -1 : mouseY, partialTick);
         }
+        // Window widgets (title bar buttons) stay on top of the panels.
+        if (!first) graphics.nextStratum();
+        super.renderContents(graphics, partialTick, mouseX, mouseY);
+    }
+
+    private int indexOfTopModal() {
+        for (int i = this.panels.size() - 1; i >= 0; i--) {
+            Panel panel = this.panels.get(i);
+            if (panel.isVisible() && panel.isModal()) return i;
+        }
+        return -1;
+    }
+
+    // --- Input ---
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (!this.visible) return false;
+        this.capturedPanel = null;
+        if (super.mouseClicked(event, doubleClick)) return true;
+        // A click on one of the window's widgets (even an inactive one) never reaches the panels below it.
+        if (this.isMouseOverOwnWidget(event.x(), event.y())) return true;
+
+        for (int i = this.panels.size() - 1; i >= 0; i--) {
+            Panel panel = this.panels.get(i);
+            if (!panel.isVisible()) continue;
+            if (panel.isMouseOver(event.x(), event.y()) && panel.mouseClicked(event, doubleClick)) {
+                this.capturedPanel = panel;
+                return true;
+            }
+            if (panel.isModal()) return this.isMouseOverLayoutRectangle(event.x(), event.y());
+        }
+        return false;
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.isDebug() && keyCode == GLFW.GLFW_KEY_F3) {
-            int i = this.manager.selectedIndex;
-            this.selectPanel((this.manager.selectedIndex + 1) % this.manager.components.size());
-            this.shouldRender(true);
-            this.setControl(true);
-            CoolCatLib.LOGGER.debug("Cycled index from: {} to: {}", i, this.manager.selectedIndex);
-            return true;
+    public boolean mouseReleased(MouseButtonEvent event) {
+        Panel panel = this.capturedPanel;
+        this.capturedPanel = null;
+        boolean handled = panel != null && panel.mouseReleased(event);
+        return super.mouseReleased(event) || handled;
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (!this.visible) return false;
+        if (this.capturedPanel != null) return this.capturedPanel.mouseDragged(event, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (!this.visible) return false;
+        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) return true;
+        if (this.isMouseOverOwnWidget(mouseX, mouseY)) return false;
+        for (int i = this.panels.size() - 1; i >= 0; i--) {
+            Panel panel = this.panels.get(i);
+            if (!panel.isVisible()) continue;
+            if (panel.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) return true;
+            if (panel.isModal()) return false;
         }
-        if (this.isDebug() && keyCode == GLFW.GLFW_KEY_F4) {
-            this.setControl(!this.isControlling());
-            CoolCatLib.LOGGER.debug("Selected Panel: {} | Control: {}", manager.selectedIndex, this.isControlling());
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return false;
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        if (!this.visible) return;
+        super.mouseMoved(mouseX, mouseY);
+        Panel top = this.getTopPanel();
+        if (top != null && !this.isMouseOverOwnWidget(mouseX, mouseY)) top.mouseMoved(mouseX, mouseY);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (super.keyPressed(event)) return true;
+        if (!this.visible) return false;
+        Panel top = this.getTopPanel();
+        return top != null && top.keyPressed(event);
+    }
+
+    @Override
+    public boolean keyReleased(KeyEvent event) {
+        if (!this.visible) return false;
+        if (super.keyReleased(event)) return true;
+        Panel top = this.getTopPanel();
+        return top != null && top.keyReleased(event);
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (super.charTyped(event)) return true;
+        if (!this.visible) return false;
+        Panel top = this.getTopPanel();
+        return top != null && top.charTyped(event);
+    }
+
+    /** Whether the given panel is currently receiving a mouse drag. */
+    protected boolean isCaptured(Panel panel) {
+        return this.capturedPanel == panel;
     }
 
     @Override
     protected List<Component> getDebugInfo() {
-        List<Component> components = Lists.newArrayList();
-        components.add(Component.literal("Panels Amount: " + manager.components.size()));
-        components.add(Component.literal("Rendered Panels: " + manager.components.stream().filter(c -> c.render).toList().size()));
-        components.add(Component.literal("Selected Panel: " + manager.selectedIndex));
-        components.add(Component.literal("Panel Control: " + manager.getSelectedComponent().control));
-        components.add(Component.literal("Scroll Offset X: " + this.scrollOffsetX));
-        components.add(Component.literal("Scroll Offset Y: " + this.scrollOffsetY));
-        return components;
-    }
-
-    private void PreservedPosPanel() {
-        this.scrollOffsetX = this.manager.getSelectedComponent().scrollOffsets[0];
-        this.scrollOffsetY = this.manager.getSelectedComponent().scrollOffsets[1];
-        this.layout.setPosition(layoutRectangle().left(), layoutRectangle().top());
-        this.manager.setPosition(layoutRectangle().left(), layoutRectangle().top());
-        this.manager.arrangeElements();
-        this.layout.arrangeElements();
-    }
-
-    private void validatePanelIndex(int index) {
-        if (index < 0 || index >= manager.components.size()) {
-            throw new IndexOutOfBoundsException("Panel index is out of range: " + index);
-        }
-    }
-
-    private static class PanelManager extends AbstractLayout {
-        private boolean arranged;
-        private int selectedIndex;
-        protected List<PanelComponent> components;
-
-        PanelManager(AbstractMultiPanelWidget widget, int amountOfPanels) {
-            super(widget.layoutRectangle().left(), widget.layoutRectangle().top(), 0, 0);
-
-            if (amountOfPanels < 1)
-                throw new IllegalArgumentException("Panels amount must be greater than 1!");
-
-            this.components = this.createPanels(widget, amountOfPanels);
-        }
-
-        @Override
-        public void visitChildren(Consumer<LayoutElement> visitor) {
-            this.getSelectedComponent().visitChildren(visitor);
-        }
-
-        @Override
-        public void arrangeElements() {
-            if (!arranged) {
-                for (PanelComponent component : components) {
-                    component.arrangeElements();
-                }
-                arranged = true;
-            } else this.getSelectedComponent().arrangeElements();
-            this.updateSize();
-        }
-
-        private void updateSize() {
-            this.width = this.getSelectedComponent().getWidth();
-            this.height = this.getSelectedComponent().getHeight();
-        }
-
-        private PanelComponent getSelectedComponent() {
-            return this.components.get(this.selectedIndex);
-        }
-
-        private List<PanelComponent> createPanels(AbstractMultiPanelWidget widget, int amountOfPanels) {
-            return Util.make(() -> {
-                List<PanelComponent> list = new ArrayList<>();
-                for (int i = 0; i < amountOfPanels; i++) {
-                    list.add(new PanelComponent(widget, i, i == 0));
-                }
-                list.sort(PanelComponent::compareTo);
-                return Collections.unmodifiableList(list);
-            });
-        }
-    }
-
-    private static class PanelComponent extends AbstractLayout implements Comparable<PanelComponent> {
-        private boolean render;
-        private boolean control;
-        private final int renderOrder;
-        private final List<GuiEventListener> guiEventListeners;
-        private final double[] scrollOffsets;
-        private final FrameLayout headerFrame;
-        private final FrameLayout contentsFrame;
-        private final FrameLayout footerFrame;
-        private int headerDownPadding;
-        private int footerTopPadding;
-
-        PanelComponent(AbstractMultiPanelWidget widget, int renderOrder, boolean shouldRender) {
-            super(widget.layoutRectangle().left(), widget.layoutRectangle().top(), 0, 0);
-            this.render = shouldRender;
-            this.control = render;
-            this.renderOrder = renderOrder;
-            this.guiEventListeners = Lists.newArrayList();
-            this.scrollOffsets = new double[]{0.0, 0.0};
-
-            this.headerDownPadding = 10;
-            this.footerTopPadding = 10;
-            this.headerFrame = new FrameLayout();
-            this.contentsFrame = new FrameLayout();
-            this.footerFrame = new FrameLayout();
-        }
-
-        @Override
-        public void visitChildren(Consumer<LayoutElement> visitor) {
-            this.headerFrame.visitChildren(visitor);
-            this.contentsFrame.visitChildren(visitor);
-            this.footerFrame.visitChildren(visitor);
-        }
-
-        @Override
-        public void arrangeElements() {
-            int headerDownPadding = this.headerDownPadding;
-            int footerTopPadding = this.footerTopPadding;
-
-            this.headerFrame.arrangeElements();
-            this.contentsFrame.arrangeElements();
-            this.footerFrame.arrangeElements();
-
-            if (this.headerFrame.getHeight() <= 0) {
-                headerDownPadding = 0;
-            }
-
-            if (this.footerFrame.getHeight() <= 0) {
-                footerTopPadding = 0;
-            }
-
-            int maxWidth = Math.max(this.headerFrame.getWidth(), Math.max(this.contentsFrame.getWidth(), this.footerFrame.getWidth()));
-            int maxHeight = this.headerFrame.getHeight() + headerDownPadding + this.contentsFrame.getHeight() + footerTopPadding + this.footerFrame.getHeight();
-
-            this.width = maxWidth;
-            this.height = maxHeight;
-
-            this.headerFrame.setMinWidth(maxWidth);
-            this.contentsFrame.setMinWidth(maxWidth);
-            this.footerFrame.setMinWidth(maxWidth);
-
-            this.headerFrame.arrangeElements();
-            this.contentsFrame.arrangeElements();
-            this.footerFrame.arrangeElements();
-
-            this.headerFrame.setPosition(this.getX(), this.getY());
-            this.contentsFrame.setPosition(this.getX(), this.getY() + this.headerFrame.getHeight() + headerDownPadding);
-            this.footerFrame.setPosition(this.getX(), this.getY() + maxHeight - this.footerFrame.getHeight());
-        }
-
-        private void updateWidgets(boolean visibility) {
-            for (GuiEventListener listener : this.guiEventListeners) {
-                if (listener instanceof AbstractWidget widget) {
-                    widget.visible = visibility && render;
-                    widget.active = widget.visible && control;
-                }
-            }
-        }
-
-        private void cacheScrollOffsets(double offsetX, double offsetY) {
-            if (control) {
-                this.scrollOffsets[0] = offsetX;
-                this.scrollOffsets[1] = offsetY;
-            }
-        }
-
-        @Override
-        public int compareTo(@NotNull AbstractMultiPanelWidget.PanelComponent other) {
-            return Integer.compare(this.renderOrder, other.renderOrder);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof PanelComponent that)) return false;
-            return renderOrder == that.renderOrder;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(renderOrder);
-        }
+        List<Component> info = Lists.newArrayList();
+        info.add(Component.literal("Panels: " + this.panels.size()));
+        info.add(Component.literal("Visible: " + this.panels.stream().filter(Panel::isVisible).count()));
+        Panel top = this.getTopPanel();
+        info.add(Component.literal("Top: " + (top == null ? "none" : top.getClass().getSimpleName())));
+        info.add(Component.literal("Captured: " + (this.capturedPanel == null ? "none" : this.capturedPanel.getClass().getSimpleName())));
+        return info;
     }
 }

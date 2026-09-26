@@ -1,20 +1,22 @@
 package net.ixdarklord.coolcatlib.api.item;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ComponentItem extends Item {
-    private final ResourceLocation itemID;
+    private final Identifier itemID;
     private final ComponentType componentType;
     public ComponentItem(Properties properties, ComponentType componentType) {
         super(properties);
@@ -23,13 +25,23 @@ public class ComponentItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        if (componentType.get() != null) {
-            if (appendToName()) {
-                MutableComponent name = tooltipComponents.getFirst().copy().append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY).append(componentType.get()));
-                tooltipComponents.set(0, name);
-            } else tooltipComponents.add(Component.literal("| ").withStyle(ChatFormatting.DARK_GRAY).append(componentType.get()));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, display, tooltipComponents, tooltipFlag);
+        if (componentType.get() != null && !appendToName()) {
+            tooltipComponents.accept(Component.literal("| ").withStyle(ChatFormatting.DARK_GRAY).append(componentType.get()));
+        }
+    }
+
+    /**
+     * Appends the component type to the tooltip's name line when {@link #appendToName()} is set.
+     * The name line can no longer be edited from {@link #appendHoverText}, so each loader's client
+     * tooltip event calls this with the full tooltip line list.
+     */
+    public static void onTooltip(ItemStack stack, List<Component> tooltipComponents) {
+        if (!(stack.getItem() instanceof ComponentItem item) || tooltipComponents.isEmpty()) return;
+        if (item.componentType.get() != null && item.appendToName()) {
+            MutableComponent name = tooltipComponents.getFirst().copy().append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY).append(item.componentType.get()));
+            tooltipComponents.set(0, name);
         }
     }
 
@@ -41,10 +53,10 @@ public class ComponentItem extends Item {
         return Math.max(200, itemID.toString().length());
     }
 
-    public boolean isShiftButtonNotPressed(@Nullable List<Component> tooltipComponents) {
-        if (!Screen.hasShiftDown()) {
+    public boolean isShiftButtonNotPressed(@Nullable Consumer<Component> tooltipComponents) {
+        if (!Minecraft.getInstance().hasShiftDown()) {
             if (tooltipComponents != null)
-                tooltipComponents.add(Component.literal("➤ ").withStyle(ChatFormatting.DARK_GRAY).append(Component.translatable("tooltip.coolcatlib.press.shift").withStyle(ChatFormatting.GRAY)));
+                tooltipComponents.accept(Component.literal("➤ ").withStyle(ChatFormatting.DARK_GRAY).append(Component.translatable("tooltip.coolcatlib.press.shift").withStyle(ChatFormatting.GRAY)));
             return true;
         }
         return false;

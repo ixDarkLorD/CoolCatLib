@@ -1,10 +1,12 @@
 package net.ixdarklord.coolcatlib.api.client.gui.components.widgets;
 
+import net.ixdarklord.coolcatlib.api.client.utils.RenderUtils;
+import net.minecraft.util.ARGB;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.ixdarklord.coolcatlib.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
 import net.ixdarklord.coolcatlib.api.utils.KeysUtils;
@@ -13,7 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -35,12 +37,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public abstract class AbstractDraggableWidget extends AbstractContainerEventHandler implements Renderable, NarratableEntry, MovableElement {
     protected final Minecraft minecraft;
     protected final Font font;
@@ -107,29 +109,28 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
         this.layout.arrangeElements();
     }
 
-    protected abstract void renderBackground(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY);
+    protected abstract void renderBackground(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY);
 
-    protected void renderLabels(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY) {
         if (this.title.getMessage() != CommonComponents.EMPTY) {
-            this.title.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+            this.title.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         }
     }
 
-    protected void renderDraggingBoxHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    protected void renderDraggingBoxHighlight(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         if (this.isMouseOverDraggingRectangle(mouseX, mouseY)) {
-            guiGraphics.setColor(this.getDraggingAreaColor().red(), this.getDraggingAreaColor().green(), this.getDraggingAreaColor().blue(), this.getDraggingAreaColor().alpha());
-            guiGraphics.fill(this.getDraggingRectangle().left(), this.getDraggingRectangle().top(), this.getDraggingRectangle().right(), this.getDraggingRectangle().bottom(), ColorUtils.rgbToRgba(Color.WHITE.getRGB(), 0.25F));
-            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            int color = ARGB.multiply(ColorUtils.rgbToRgba(Color.WHITE.getRGB(), 0.25F), this.getDraggingAreaColor().rgb());
+            guiGraphics.fill(this.getDraggingRectangle().left(), this.getDraggingRectangle().top(), this.getDraggingRectangle().right(), this.getDraggingRectangle().bottom(), color);
         }
     }
 
-    protected void renderContents(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderContents(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY) {
         for (Renderable renderable : this.renderables) {
-            renderable.render(guiGraphics, mouseX, mouseY, partialTick);
+            renderable.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         }
     }
 
-    protected void renderDebugInfo(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderDebugInfo(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY) {
         if (!this.isDebug()) return;
         List<Component> components = Lists.newArrayList(Component.literal("Debug Mode: ON").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
         components.addAll(this.getDebugInfo());
@@ -143,14 +144,14 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
         for (int i = 0; i < components.size(); i++) {
             Component component = components.get(i);
             TextColor color = component.getStyle().getColor();
-            guiGraphics.drawString(this.font, component, x - textWidth - 1, minY + 1 + (9 * i), color != null ? color.getValue() : Color.WHITE.getRGB(), false);
+            guiGraphics.text(this.font, component, x - textWidth - 1, minY + 1 + (9 * i), color != null ? RenderUtils.textColor(color.getValue()) : Color.WHITE.getRGB(), false);
         }
     }
 
     public abstract @NotNull ScreenRectangle getDraggingRectangle();
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (!this.initialized) {
             this.rebuildWidgets();
             return;
@@ -159,15 +160,11 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
         if (!this.visible) return;
         this.tick(partialTick);
 
-        PoseStack stack = guiGraphics.pose();
-        stack.pushPose();
-        stack.translate(0F, 0F, this.blitOffset);
-        this.renderBackground(guiGraphics, partialTick, mouseX, mouseY);
-        this.renderLabels(guiGraphics, partialTick, mouseX, mouseY);
-        this.renderDraggingBoxHighlight(guiGraphics, mouseX, mouseY);
-        this.renderContents(guiGraphics, partialTick, mouseX, mouseY);
-        this.renderDebugInfo(guiGraphics, partialTick, mouseX, mouseY);
-        stack.popPose();
+        this.renderBackground(graphics, partialTick, mouseX, mouseY);
+        this.renderLabels(graphics, partialTick, mouseX, mouseY);
+        this.renderDraggingBoxHighlight(graphics, mouseX, mouseY);
+        this.renderContents(graphics, partialTick, mouseX, mouseY);
+        this.renderDebugInfo(graphics, partialTick, mouseX, mouseY);
     }
 
     protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
@@ -187,10 +184,12 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x(), mouseY = event.y();
+        int button = event.button();
         this.clearFocus();
         if (!this.visible) return false;
-        if (super.mouseClicked(mouseX, mouseY, button))
+        if (super.mouseClicked(event, doubleClick))
             return true;
 
         if (button == GLFW.GLFW_MOUSE_BUTTON_1 && this.movable && this.isMouseOverDraggingRectangle(mouseX, mouseY)) {
@@ -205,19 +204,21 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        int button = event.button();
         if (button == GLFW.GLFW_MOUSE_BUTTON_1 && this.isDraggingComponent) {
             this.xMO = this.yMO = 0;
             this.isDraggingComponent = false;
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseX = event.x(), mouseY = event.y();
         if (!this.visible) return false;
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY))
+        if (super.mouseDragged(event, dragX, dragY))
             return true;
 
         if (this.visible) {
@@ -235,19 +236,20 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (ModPlatform.get().isDevelopmentEnvironment() && KeysUtils.isHolden3ComboButtons() && keyCode == GLFW.GLFW_KEY_F12) {
             this.debug ^= true;
             return true;
         }
         if (!this.visible) return false;
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (!this.visible) return false;
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
 
     @Override
@@ -439,7 +441,7 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
     public void updateNarration(NarrationElementOutput narrationElementOutput) {
         Screen.NarratableSearchResult narratableSearchResult = Screen.findNarratableWidget(this.narratables, null);
         if (narratableSearchResult != null) {
-            narratableSearchResult.entry.updateNarration(narrationElementOutput.nest());
+            narratableSearchResult.entry().updateNarration(narrationElementOutput.nest());
         }
     }
 }

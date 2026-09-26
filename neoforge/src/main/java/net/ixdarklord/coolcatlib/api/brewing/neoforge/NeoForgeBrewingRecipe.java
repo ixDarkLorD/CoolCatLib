@@ -11,7 +11,7 @@ public class NeoForgeBrewingRecipe extends BrewingRecipe {
     private final IBrewingRecipe recipe;
 
     public NeoForgeBrewingRecipe(IBrewingRecipe recipe) {
-        super(recipe.getInput(), recipe.getIngredient(), recipe.getOutput());
+        super(recipe.input(), recipe.ingredient(), recipe.output());
         this.recipe = recipe;
     }
 

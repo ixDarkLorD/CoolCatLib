@@ -1,30 +1,25 @@
 package net.ixdarklord.coolcatlib.api.client.utils;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
-@Environment(EnvType.CLIENT)
 public final class RenderUtils {
 
-    private static final Minecraft MC = Minecraft.getInstance();
     public static Rect2i EMPTY_RECT2I = new Rect2i(0, 0, 0, 0);
-    public static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = RenderStateShard.TRANSLUCENT_TRANSPARENCY;
 
     // ------------------------------------------------------------------------
     // BASIC SHAPES
@@ -35,15 +30,15 @@ public final class RenderUtils {
         return new Rect2i(listener.getRectangle().left(), listener.getRectangle().top(), listener.getRectangle().width(), listener.getRectangle().height());
     }
 
-    public static void fillRect(GuiGraphics graphics, int x, int y, int width, int height, int color) {
+    public static void fillRect(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
         graphics.fill(x, y, x + width, y + height, color);
     }
 
-    public static void drawHollowRect(GuiGraphics graphics, ScreenRectangle rectangle, int thickness, int color) {
+    public static void drawHollowRect(GuiGraphicsExtractor graphics, ScreenRectangle rectangle, int thickness, int color) {
         drawHollowRect(graphics, rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height(), thickness, color);
     }
 
-    public static void drawHollowRect(GuiGraphics graphics, int x, int y, int width, int height, int thickness, int color) {
+    public static void drawHollowRect(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int thickness, int color) {
         // Top
         graphics.fill(x, y, x + width, y + thickness, color);
         // Bottom
@@ -54,12 +49,12 @@ public final class RenderUtils {
         graphics.fill(x + width - thickness, y, x + width, y + height, color);
     }
 
-    public static void drawLine(GuiGraphics graphics, int x1, int y1, int x2, int y2, int color) {
+    public static void drawLine(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2, int color) {
         // horizontal or vertical shortcuts
         if (y1 == y2) {
-            graphics.hLine(Math.min(x1, x2), Math.max(x1, x2), y1, color);
+            graphics.horizontalLine(Math.min(x1, x2), Math.max(x1, x2), y1, color);
         } else if (x1 == x2) {
-            graphics.vLine(x1, Math.min(y1, y2), Math.max(y1, y2), color);
+            graphics.verticalLine(x1, Math.min(y1, y2), Math.max(y1, y2), color);
         } else {
             int dx = x2 - x1;
             int dy = y2 - y1;
@@ -72,7 +67,7 @@ public final class RenderUtils {
         }
     }
 
-    public static void drawInsideRect(GuiGraphics guiGraphics, @NotNull ScreenRectangle rectangle, boolean shouldScissor, Runnable render) {
+    public static void drawInsideRect(GuiGraphicsExtractor guiGraphics, @NotNull ScreenRectangle rectangle, boolean shouldScissor, Runnable render) {
         if (shouldScissor) {
             guiGraphics.enableScissor(rectangle.left(), rectangle.top(), rectangle.right(), rectangle.bottom());
             render.run();
@@ -84,11 +79,11 @@ public final class RenderUtils {
     // GRADIENTS
     // ------------------------------------------------------------------------
 
-    public static void fillVerticalGradient(GuiGraphics graphics, int x, int y, int width, int height, int topColor, int bottomColor) {
+    public static void fillVerticalGradient(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int topColor, int bottomColor) {
         graphics.fillGradient(x, y, x + width, y + height, topColor, bottomColor);
     }
 
-    public static void fillHorizontalGradient(GuiGraphics graphics, int x, int y, int width, int height, int leftColor, int rightColor) {
+    public static void fillHorizontalGradient(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int leftColor, int rightColor) {
         graphics.fillGradient(x, y, x + width, y + height, leftColor, rightColor);
     }
 
@@ -96,18 +91,18 @@ public final class RenderUtils {
      * Render a diagonal gradient by interpolating color for each pixel.
      * This is more expensive than a simple vertical/horizontal gradient.
      */
-    public static void drawDiagonalGradient(GuiGraphics guiGraphics, int x, int y, int width, int height, int color1, int color2) {
+    public static void drawDiagonalGradient(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height, int color1, int color2) {
         if (width <= 0 || height <= 0) return;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 float factor = Mth.clamp((i + j) / (float) (width + height), 0.0F, 1.0F);
-                int color = FastColor.ARGB32.lerp(factor, color1, color2);
+                int color = ARGB.srgbLerp(factor, color1, color2);
                 guiGraphics.fill(x + i, y + j, x + i + 1, y + j + 1, color);
             }
         }
     }
 
-    public static void drawDebugGradient(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+    public static void drawDebugGradient(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height) {
         drawDiagonalGradient(guiGraphics, x, y, width, height, Color.RED.getRGB(), Color.GREEN.getRGB());
     }
 
@@ -115,23 +110,31 @@ public final class RenderUtils {
     // TEXT
     // ------------------------------------------------------------------------
 
-    public static void drawCenteredString(GuiGraphics graphics, String text, int x, int y, int color) {
-        Font font = MC.font;
-        graphics.drawString(font, text, x - font.width(text) / 2, y, color, false);
+    /**
+     * Text colors are full ARGB now and text with zero alpha is skipped. Before 26.1 a color without
+     * alpha bits was drawn opaque; this keeps that behavior for plain RGB values.
+     */
+    public static int textColor(int color) {
+        return (color & 0xFC000000) == 0 ? color | 0xFF000000 : color;
     }
 
-    public static void drawString(GuiGraphics graphics, String text, int x, int y, int color) {
-        graphics.drawString(MC.font, text, x, y, color, false);
+    public static void drawCenteredString(GuiGraphicsExtractor graphics, String text, int x, int y, int color) {
+        Font font = Minecraft.getInstance().font;
+        graphics.text(font, text, x - font.width(text) / 2, y, textColor(color), false);
     }
 
-    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, Component component,
+    public static void drawString(GuiGraphicsExtractor graphics, String text, int x, int y, int color) {
+        graphics.text(Minecraft.getInstance().font, text, x, y, textColor(color), false);
+    }
+
+    public static void drawScrollingString(GuiGraphicsExtractor guiGraphics, int currentTick, Font font, Component component,
                                            boolean center, ScreenRectangle bounds, int padding,
                                            int color, boolean shadow) {
         drawScrollingString(guiGraphics, currentTick, font, component.getVisualOrderText(),
                 center, bounds, padding, color, shadow);
     }
 
-    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font,
+    public static void drawScrollingString(GuiGraphicsExtractor guiGraphics, int currentTick, Font font,
                                            FormattedCharSequence sequence, boolean center,
                                            ScreenRectangle bounds, int padding,
                                            int color, boolean shadow) {
@@ -143,14 +146,14 @@ public final class RenderUtils {
                 minX, minY, maxX, maxY, null, color, shadow);
     }
 
-    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font, Component component,
+    public static void drawScrollingString(GuiGraphicsExtractor guiGraphics, int currentTick, Font font, Component component,
                                            boolean center, ScreenRectangle bounds, ScreenRectangle scissor,
                                            int color, boolean shadow) {
         drawScrollingString(guiGraphics, currentTick, font, component.getVisualOrderText(),
                 center, bounds, scissor, color, shadow);
     }
 
-    public static void drawScrollingString(GuiGraphics guiGraphics, int currentTick, Font font,
+    public static void drawScrollingString(GuiGraphicsExtractor guiGraphics, int currentTick, Font font,
                                            FormattedCharSequence sequence, boolean center,
                                            ScreenRectangle bounds, ScreenRectangle scissor,
                                            int color, boolean shadow) {
@@ -159,7 +162,7 @@ public final class RenderUtils {
                 scissor, color, shadow);
     }
 
-    private static void drawScrollingStringInternal(GuiGraphics guiGraphics, int currentTick, Font font,
+    private static void drawScrollingStringInternal(GuiGraphicsExtractor guiGraphics, int currentTick, Font font,
                                                     FormattedCharSequence sequence, boolean center,
                                                     int minX, int minY, int maxX, int maxY,
                                                     ScreenRectangle scissor, int color, boolean shadow) {
@@ -180,11 +183,11 @@ public final class RenderUtils {
             int bottom = scissor != null ? scissor.bottom() : maxY;
 
             guiGraphics.enableScissor(left, top, right, bottom);
-            guiGraphics.drawString(font, sequence, minX - (int) d3, yPos, color, shadow);
+            guiGraphics.text(font, sequence, minX - (int) d3, yPos, textColor(color), shadow);
             guiGraphics.disableScissor();
         } else {
             int drawX = center ? (minX + maxX - textWidth) / 2 : minX;
-            guiGraphics.drawString(font, sequence, drawX, yPos, color, shadow);
+            guiGraphics.text(font, sequence, drawX, yPos, textColor(color), shadow);
         }
     }
 
@@ -192,7 +195,7 @@ public final class RenderUtils {
     // TEXTURE: NINE-SLICE RENDERING
     // ------------------------------------------------------------------------
 
-    public static void blitNineSliced(GuiGraphics gfx, ResourceLocation texture,
+    public static void blitNineSliced(GuiGraphicsExtractor gfx, Identifier texture,
                                       int x, int y, int width, int height,
                                       int sliceSize,
                                       int textureWidth, int textureHeight) {
@@ -203,7 +206,7 @@ public final class RenderUtils {
                 NineSliceInfo.TextureRegion.region(textureWidth, textureHeight));
     }
 
-    public static void blitNineSliced(GuiGraphics gfx, ResourceLocation texture,
+    public static void blitNineSliced(GuiGraphicsExtractor gfx, Identifier texture,
                                       int x, int y, int width, int height,
                                       int sliceWidth, int sliceHeight,
                                       int textureWidth, int textureHeight) {
@@ -214,7 +217,7 @@ public final class RenderUtils {
                 NineSliceInfo.TextureRegion.region(textureWidth, textureHeight));
     }
 
-    public static void blitNineSliced(GuiGraphics gfx, ResourceLocation texture,
+    public static void blitNineSliced(GuiGraphicsExtractor gfx, Identifier texture,
                                       int x, int y, int width, int height,
                                       int sliceLeft, int sliceTop, int sliceRight, int sliceBottom,
                                       int textureWidth, int textureHeight) {
@@ -225,7 +228,7 @@ public final class RenderUtils {
                 NineSliceInfo.TextureRegion.region(textureWidth, textureHeight));
     }
 
-    public static void blitNineSliced(GuiGraphics gfx, NineSliceInfo.TextureInfo texture,
+    public static void blitNineSliced(GuiGraphicsExtractor gfx, NineSliceInfo.TextureInfo texture,
                                       int x, int y, int width, int height,
                                       NineSliceInfo.SliceBounds slices,
                                       NineSliceInfo.TextureRegion region) {
@@ -244,38 +247,38 @@ public final class RenderUtils {
         int sliceDown = Math.min(slices.bottom(), height / 2);
 
         if (width == uWidth && height == vHeight) {
-            gfx.blit(texture.texture(), x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
+            gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
             return;
         }
 
         if (height == vHeight) {
-            gfx.blit(texture.texture(), x, y, uOffset, vOffset, sliceLeft, height, textureWidth, textureHeight);
+            gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x, y, uOffset, vOffset, sliceLeft, height, textureWidth, textureHeight);
             blitRepeating(gfx, texture.texture(),
                     x + sliceLeft, y, width - sliceLeft - sliceRight, height,
                     uOffset + sliceLeft, vOffset, uWidth - sliceLeft - sliceRight, vHeight,
                     textureWidth, textureHeight);
-            gfx.blit(texture.texture(), x + width - sliceRight, y,
+            gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x + width - sliceRight, y,
                     uOffset + uWidth - sliceRight, vOffset, sliceRight, height, textureWidth, textureHeight);
             return;
         }
 
         if (width == uWidth) {
-            gfx.blit(texture.texture(), x, y, uOffset, vOffset, width, sliceTop, textureWidth, textureHeight);
+            gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x, y, uOffset, vOffset, width, sliceTop, textureWidth, textureHeight);
             blitRepeating(gfx, texture.texture(),
                     x, y + sliceTop, width, height - sliceTop - sliceDown,
                     uOffset, vOffset + sliceTop, uWidth, vHeight - sliceTop - sliceDown,
                     textureWidth, textureHeight);
-            gfx.blit(texture.texture(), x, y + height - sliceDown,
+            gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x, y + height - sliceDown,
                     uOffset, vOffset + vHeight - sliceDown, width, sliceDown, textureWidth, textureHeight);
             return;
         }
 
-        gfx.blit(texture.texture(), x, y, uOffset, vOffset, sliceLeft, sliceTop, textureWidth, textureHeight);
+        gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x, y, uOffset, vOffset, sliceLeft, sliceTop, textureWidth, textureHeight);
         blitRepeating(gfx, texture.texture(),
                 x + sliceLeft, y, width - sliceLeft - sliceRight, sliceTop,
                 uOffset + sliceLeft, vOffset, uWidth - sliceLeft - sliceRight, sliceTop,
                 textureWidth, textureHeight);
-        gfx.blit(texture.texture(), x + width - sliceRight, y,
+        gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x + width - sliceRight, y,
                 uOffset + uWidth - sliceRight, vOffset, sliceRight, sliceTop, textureWidth, textureHeight);
 
         blitRepeating(gfx, texture.texture(),
@@ -291,20 +294,20 @@ public final class RenderUtils {
                 uOffset + uWidth - sliceRight, vOffset + sliceTop, sliceRight, vHeight - sliceTop - sliceDown,
                 textureWidth, textureHeight);
 
-        gfx.blit(texture.texture(), x, y + height - sliceDown,
+        gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x, y + height - sliceDown,
                 uOffset, vOffset + vHeight - sliceDown, sliceLeft, sliceDown, textureWidth, textureHeight);
         blitRepeating(gfx, texture.texture(),
                 x + sliceLeft, y + height - sliceDown, width - sliceLeft - sliceRight, sliceDown,
                 uOffset + sliceLeft, vOffset + vHeight - sliceDown, uWidth - sliceLeft - sliceRight, sliceDown,
                 textureWidth, textureHeight);
-        gfx.blit(texture.texture(), x + width - sliceRight, y + height - sliceDown,
+        gfx.blit(RenderPipelines.GUI_TEXTURED, texture.texture(), x + width - sliceRight, y + height - sliceDown,
                 uOffset + uWidth - sliceRight, vOffset + vHeight - sliceDown, sliceRight, sliceDown, textureWidth, textureHeight);
     }
 
     /**
      * Draws a texture section repeatedly to fill a rectangular area.
      */
-    public static void blitRepeating(GuiGraphics graphics, ResourceLocation atlas, int x, int y, int width, int height,
+    public static void blitRepeating(GuiGraphicsExtractor graphics, Identifier atlas, int x, int y, int width, int height,
                                      int u, int v, int texW, int texH, int fullTexW, int fullTexH) {
         int i = x;
         int j;
@@ -318,7 +321,7 @@ public final class RenderUtils {
             for (IntIterator itH = slices(height, texH); itH.hasNext(); l += i1) {
                 i1 = itH.nextInt();
                 int j1 = (texH - i1) / 2;
-                graphics.blit(atlas, i, l, (float) (u + k), (float) (v + j1), j, i1, fullTexW, fullTexH);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, atlas, i, l, (float) (u + k), (float) (v + j1), j, i1, fullTexW, fullTexH);
             }
         }
     }
@@ -349,8 +352,8 @@ public final class RenderUtils {
     // ------------------------------------------------------------------------
 
     public static void blitWithBorder(
-            GuiGraphics graphics,
-            ResourceLocation texture,
+            GuiGraphicsExtractor graphics,
+            Identifier texture,
             int x, int y, int u, int v,
             int width, int height,
             int textureWidth, int textureHeight,
@@ -361,8 +364,8 @@ public final class RenderUtils {
     }
 
     public static void blitWithBorder(
-            GuiGraphics graphics,
-            ResourceLocation texture,
+            GuiGraphicsExtractor graphics,
+            Identifier texture,
             int x, int y, int u, int v,
             int width, int height,
             int textureWidth, int textureHeight,
@@ -378,27 +381,27 @@ public final class RenderUtils {
         int remainderHeight = canvasHeight % fillerHeight;
 
         // Corners
-        graphics.blit(texture, x, y, u, v, leftBorder, topBorder);
-        graphics.blit(texture, x + leftBorder + canvasWidth, y, u + leftBorder + fillerWidth, v, rightBorder, topBorder);
-        graphics.blit(texture, x, y + topBorder + canvasHeight, u, v + topBorder + fillerHeight, leftBorder, bottomBorder);
-        graphics.blit(texture, x + leftBorder + canvasWidth, y + topBorder + canvasHeight, u + leftBorder + fillerWidth, v + topBorder + fillerHeight, rightBorder, bottomBorder);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, leftBorder, topBorder, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x + leftBorder + canvasWidth, y, u + leftBorder + fillerWidth, v, rightBorder, topBorder, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y + topBorder + canvasHeight, u, v + topBorder + fillerHeight, leftBorder, bottomBorder, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x + leftBorder + canvasWidth, y + topBorder + canvasHeight, u + leftBorder + fillerWidth, v + topBorder + fillerHeight, rightBorder, bottomBorder, 256, 256);
 
         // Horizontal and filler
         for (int i = 0; i < xPasses + (remainderWidth > 0 ? 1 : 0); i++) {
             int w = (i == xPasses ? remainderWidth : fillerWidth);
-            graphics.blit(texture, x + leftBorder + (i * fillerWidth), y, u + leftBorder, v, w, topBorder);
-            graphics.blit(texture, x + leftBorder + (i * fillerWidth), y + topBorder + canvasHeight, u + leftBorder, v + topBorder + fillerHeight, w, bottomBorder);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x + leftBorder + (i * fillerWidth), y, u + leftBorder, v, w, topBorder, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x + leftBorder + (i * fillerWidth), y + topBorder + canvasHeight, u + leftBorder, v + topBorder + fillerHeight, w, bottomBorder, 256, 256);
             for (int j = 0; j < yPasses + (remainderHeight > 0 ? 1 : 0); j++) {
                 int h = (j == yPasses ? remainderHeight : fillerHeight);
-                graphics.blit(texture, x + leftBorder + (i * fillerWidth), y + topBorder + (j * fillerHeight), u + leftBorder, v + topBorder, w, h);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x + leftBorder + (i * fillerWidth), y + topBorder + (j * fillerHeight), u + leftBorder, v + topBorder, w, h, 256, 256);
             }
         }
 
         // Vertical borders
         for (int j = 0; j < yPasses + (remainderHeight > 0 ? 1 : 0); j++) {
             int h = (j == yPasses ? remainderHeight : fillerHeight);
-            graphics.blit(texture, x, y + topBorder + (j * fillerHeight), u, v + topBorder, leftBorder, h);
-            graphics.blit(texture, x + leftBorder + canvasWidth, y + topBorder + (j * fillerHeight), u + leftBorder + fillerWidth, v + topBorder, rightBorder, h);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y + topBorder + (j * fillerHeight), u, v + topBorder, leftBorder, h, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x + leftBorder + canvasWidth, y + topBorder + (j * fillerHeight), u + leftBorder + fillerWidth, v + topBorder, rightBorder, h, 256, 256);
         }
     }
 
@@ -407,8 +410,8 @@ public final class RenderUtils {
     // ------------------------------------------------------------------------
 
     public static void blitInscribed(
-            GuiGraphics graphics,
-            ResourceLocation texture,
+            GuiGraphicsExtractor graphics,
+            Identifier texture,
             int x, int y,
             int boundsWidth, int boundsHeight,
             int rectWidth, int rectHeight,
@@ -424,12 +427,12 @@ public final class RenderUtils {
             if (centerX) x += (w - boundsWidth) / 2;
         }
 
-        graphics.blit(texture, x, y, boundsWidth, boundsHeight, 0.0f, 0.0f, rectWidth, rectHeight, rectWidth, rectHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0.0f, 0.0f, boundsWidth, boundsHeight, rectWidth, rectHeight, rectWidth, rectHeight);
     }
 
     public static void blitInscribed(
-            GuiGraphics graphics,
-            ResourceLocation texture,
+            GuiGraphicsExtractor graphics,
+            Identifier texture,
             int x, int y,
             int boundsWidth, int boundsHeight,
             int rectWidth, int rectHeight

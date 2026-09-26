@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatlib.api.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.ixdarklord.coolcatlib.api.datagen.language.AbstractLanguageWrapper;
 import net.ixdarklord.coolcatlib.api.datagen.language.LanguageProvider;
@@ -19,7 +19,7 @@ public class FabricLanguageWrapper extends FabricLanguageProvider {
     private final AbstractLanguageWrapper wrapper;
     private final String modid;
 
-    public FabricLanguageWrapper(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup, String locale, LanguageProvider provider) {
+    public FabricLanguageWrapper(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup, String locale, LanguageProvider provider) {
         super(output, locale, registryLookup);
         this.modid = output.getModId();
         this.wrapper = new AbstractLanguageWrapper(provider);

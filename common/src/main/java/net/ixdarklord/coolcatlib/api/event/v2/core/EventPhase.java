@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatlib.api.event.v2.core;
 
 import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,11 +11,11 @@ import java.util.function.BiConsumer;
  * Event phases useful for handling <code>net.fabricmc.fabric.api.event.Event</code> on Fabric, equivalent to <code>net.minecraftforge.eventbus.api.EventPriority</code> on Forge.
  */
 @ApiStatus.NonExtendable
-public record EventPhase(ResourceLocation identifier, EventPhase parent, Ordering ordering) {
+public record EventPhase(Identifier identifier, EventPhase parent, Ordering ordering) {
     /**
      * Fabric's default event phase, equivalent to EventPriority#NORMAL on Forge.
      */
-    static EventPhase DEFAULT = new EventPhase(ResourceLocation.fromNamespaceAndPath("fabric", "default"), null, null);
+    static EventPhase DEFAULT = new EventPhase(Identifier.fromNamespaceAndPath("fabric", "default"), null, null);
     /**
      * A phase to be used directly before the default phase, equivalent to EventPriority#HIGH on Forge.
      */
@@ -36,7 +36,7 @@ public record EventPhase(ResourceLocation identifier, EventPhase parent, Orderin
     /**
      * @return the identifier used for registering this phase on Fabric
      */
-    public ResourceLocation identifier() {
+    public Identifier identifier() {
         return this.identifier;
     }
 
@@ -52,7 +52,7 @@ public record EventPhase(ResourceLocation identifier, EventPhase parent, Orderin
      *
      * @param consumer apply event phases to the Fabric event
      */
-    public void applyOrdering(BiConsumer<ResourceLocation, ResourceLocation> consumer) {
+    public void applyOrdering(BiConsumer<Identifier, Identifier> consumer) {
         this.ordering().apply(consumer, this.identifier(), this.parent().identifier());
     }
 
@@ -82,6 +82,6 @@ public record EventPhase(ResourceLocation identifier, EventPhase parent, Orderin
             consumer.accept(second, first);
         };
 
-        void apply(BiConsumer<ResourceLocation, ResourceLocation> consumer, ResourceLocation first, ResourceLocation second);
+        void apply(BiConsumer<Identifier, Identifier> consumer, Identifier first, Identifier second);
     }
 }

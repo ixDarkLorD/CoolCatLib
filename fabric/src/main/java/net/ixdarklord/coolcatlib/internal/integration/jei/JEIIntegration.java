@@ -13,19 +13,18 @@ import mezz.jei.library.util.ResourceLocationUtil;
 import net.ixdarklord.coolcatlib.api.brewing.BrewingRecipe;
 import net.ixdarklord.coolcatlib.internal.core.CoolCatLib;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 public class JEIIntegration implements IModPlugin {
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public @NotNull Identifier getPluginUid() {
         return CoolCatLib.rl("jei_integration");
     }
 
@@ -48,16 +47,16 @@ public class JEIIntegration implements IModPlugin {
                 .toList();
 
         for (BrewingRecipe recipe : brewingRecipes) {
-            List<ItemStack> ingredients = Arrays.asList(recipe.getIngredient().getItems());
-            List<ItemStack> inputs = Arrays.asList(recipe.getInput().getItems());
+            List<ItemStack> ingredients = recipe.ingredient().items().map(ItemStack::new).toList();
+            List<ItemStack> inputs = recipe.input().items().map(ItemStack::new).toList();
 
             IIngredientHelper<ItemStack> itemStackHelper = registration.getIngredientManager().getIngredientHelper(VanillaTypes.ITEM_STACK);
-            String inputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(recipe.getInput().getItems()[0]);
-            ResourceLocation outputResourceLocation = itemStackHelper.getResourceLocation(recipe.getOutput());
-            String outputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(recipe.getOutput());
+            String inputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(inputs.getFirst());
+            Identifier outputResourceLocation = itemStackHelper.getResourceLocation(recipe.output());
+            String outputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(recipe.output());
             String outputModId = outputResourceLocation.getNamespace();
-            ResourceLocation uidPath = ResourceLocation.fromNamespaceAndPath(outputModId, ResourceLocationUtil.sanitizePath(inputPathId + ".to." + outputPathId));
-            ResourceLocation potionUid = uidPath;
+            Identifier uidPath = Identifier.fromNamespaceAndPath(outputModId, ResourceLocationUtil.sanitizePath(inputPathId + ".to." + outputPathId));
+            Identifier potionUid = uidPath;
 
             long dupesCount = jeiBrewingRecipes.stream()
                     .filter(iJeiBrewingRecipe -> iJeiBrewingRecipe.getUid() != null)
@@ -68,7 +67,7 @@ public class JEIIntegration implements IModPlugin {
                 potionUid = uidPath.withSuffix("_" + (dupesCount+1));
             }
 
-            jeiBrewingRecipes.add(registration.getVanillaRecipeFactory().createBrewingRecipe(ingredients, inputs, recipe.getOutput(), potionUid));
+            jeiBrewingRecipes.add(registration.getVanillaRecipeFactory().createBrewingRecipe(ingredients, inputs, recipe.output(), potionUid));
         }
         jeiBrewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
         registration.addRecipes(RecipeTypes.BREWING, jeiBrewingRecipes);

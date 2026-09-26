@@ -42,7 +42,7 @@ public interface IBrewingRecipe {
      * @return the required input as an {@link Ingredient}
      */
     @NotNull
-    Ingredient getInput();
+    Ingredient input();
 
     /**
      * Gets the ingredient requirement for this recipe.
@@ -50,7 +50,7 @@ public interface IBrewingRecipe {
      * @return the required ingredient as an {@link Ingredient}
      */
     @NotNull
-    Ingredient getIngredient();
+    Ingredient ingredient();
 
     /**
      * Gets the result of brewing the valid input with the valid ingredient.
@@ -58,7 +58,7 @@ public interface IBrewingRecipe {
      * @return the resulting {@link ItemStack}
      */
     @NotNull
-    ItemStack getOutput();
+    ItemStack output();
 
     /**
      * Computes the resulting output when brewing the given input with the given ingredient.
@@ -71,6 +71,6 @@ public interface IBrewingRecipe {
      */
     @NotNull
     default ItemStack getOutput(ItemStack input, ItemStack ingredient) {
-        return isInput(input) && isIngredient(ingredient) ? getOutput().copy() : ItemStack.EMPTY;
+        return isInput(input) && isIngredient(ingredient) ? output().copy() : ItemStack.EMPTY;
     }
 }

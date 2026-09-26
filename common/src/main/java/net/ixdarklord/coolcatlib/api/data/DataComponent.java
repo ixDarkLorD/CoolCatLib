@@ -1,23 +1,20 @@
 package net.ixdarklord.coolcatlib.api.data;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.ixdarklord.coolcatlib.api.utils.CodecUtils;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class DataComponent<T extends DataComponent<T>> {
-    protected final ResourceLocation id;
+    protected final Identifier id;
     protected final Codec<T> codec;
 
-    protected DataComponent(ResourceLocation id, Codec<T> codec) {
+    protected DataComponent(Identifier id, Codec<T> codec) {
         this.id = id;
         this.codec = codec;
     }
 
     @SuppressWarnings("unchecked")
-    @Environment(EnvType.CLIENT)
     public T onClientUpdate() {
         return (T) this;
     }

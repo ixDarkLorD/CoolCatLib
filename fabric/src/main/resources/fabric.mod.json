@@ -35,8 +35,8 @@
 
   "custom": {
     "loom:injected_interfaces": {
-      "net/minecraft/class_1845": ["net/ixdarklord/coolcatlib/api/brewing/fabric/ext/PotionBrewingExt"],
-      "net/minecraft/class_1845\u0024class_9665": ["net/ixdarklord/coolcatlib/api/brewing/fabric/ext/PotionBrewingBuilderExt"]
+      "net/minecraft/world/item/alchemy/PotionBrewing": ["net/ixdarklord/coolcatlib/api/brewing/fabric/ext/PotionBrewingExt"],
+      "net/minecraft/world/item/alchemy/PotionBrewing\u0024Builder": ["net/ixdarklord/coolcatlib/api/brewing/fabric/ext/PotionBrewingBuilderExt"]
     }
   },
 

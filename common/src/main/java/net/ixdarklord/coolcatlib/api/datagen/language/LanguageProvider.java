@@ -2,14 +2,14 @@ package net.ixdarklord.coolcatlib.api.datagen.language;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -95,7 +95,7 @@ public abstract class LanguageProvider {
 
     /** Adds a translation for an {@link Enchantment}. */
     public void addEnchantment(ResourceKey<Enchantment> enchantment, String value) {
-        this.add(Util.makeDescriptionId("enchantment", enchantment.location()), value);
+        this.add(Util.makeDescriptionId("enchantment", enchantment.identifier()), value);
     }
 
     /** Adds a translation for an {@link Attribute}. */
@@ -113,8 +113,8 @@ public abstract class LanguageProvider {
         this.add("stat_type." + Objects.requireNonNull(BuiltInRegistries.STAT_TYPE.getKey(statType)).toString().replace(':', '.'), value);
     }
 
-    /** Adds a translation for a {@link ResourceLocation}. */
-    public void add(ResourceLocation identifier, String value) {
+    /** Adds a translation for a {@link Identifier}. */
+    public void add(Identifier identifier, String value) {
         add(identifier.toLanguageKey(), value);
     }
 
@@ -122,7 +122,7 @@ public abstract class LanguageProvider {
      * Adds a translation for a {@link CreativeModeTab}.
      */
     public void add(ResourceKey<CreativeModeTab> key, String value) {
-        CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getOrThrow(key);
+        CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.getValueOrThrow(key);
         ComponentContents contents = tab.getDisplayName().getContents();
 
         if (contents instanceof TranslatableContents translatable) {
@@ -146,7 +146,7 @@ public abstract class LanguageProvider {
 
     /** Adds translation entries for a {@link Potion} with a specific type suffix. */
     public void addPotion(Potion potion, String baseName, @Nullable String type) {
-        ResourceLocation key = BuiltInRegistries.POTION.getKey(potion);
+        Identifier key = BuiltInRegistries.POTION.getKey(potion);
         assert key != null;
 
         String id = key.getPath();

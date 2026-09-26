@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatlib.api.client.gui.components.widgets;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.ixdarklord.coolcatlib.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatlib.api.client.utils.RenderUtils;
 import net.ixdarklord.coolcatlib.api.utils.ColorUtils;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.ScreenAxis;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
-@Environment(EnvType.CLIENT)
 public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
     protected final int border;
     private boolean scrolling;
@@ -65,21 +64,21 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
     }
 
     @Override
-    protected void renderBackground(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderBackground(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY) {
         if (this.bgSprites != null)
-            guiGraphics.blitSprite(this.bgSprites.get(this.visible, this.isFocused()), this.x, this.y, this.width, this.height);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.bgSprites.get(this.visible, this.isFocused()), this.x, this.y, this.width, this.height);
         else {
-            Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.x, this.y, 0, 0, this.width, this.height);
+            Screen.extractMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.x, this.y, 0.0F, 0.0F, this.width, this.height);
             RenderUtils.drawHollowRect(guiGraphics, this.getRectangle(), this.border, this.borderColor);
         }
     }
 
-    protected void renderScrollableContents(GuiGraphics guiGraphics, float partialTick, int relativeX, int relativeY, int mouseX, int mouseY) {
+    protected void renderScrollableContents(GuiGraphicsExtractor guiGraphics, float partialTick, int relativeX, int relativeY, int mouseX, int mouseY) {
         super.renderContents(guiGraphics, partialTick, mouseX, mouseY);
     }
 
     @Override
-    protected void renderContents(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderContents(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderUtils.drawInsideRect(guiGraphics, this.layoutRectangle(), !this.isDebug(), () -> {
             int relativeX = this.layoutRectangle().left() - (int) this.scrollOffsetX;
             int relativeY = this.layoutRectangle().top() - (int) this.scrollOffsetY;
@@ -88,13 +87,13 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
         this.renderScrollbar(guiGraphics, mouseX, mouseY);
     }
 
-    protected void renderScrollbar(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    protected void renderScrollbar(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         if (this.scrollHorizontally) return;
 
         if (barSprites != null) {
             double delta = this.getScrollDistanceDelta(ScreenAxis.VERTICAL);
             int relativeY = (int) Mth.lerp(delta, this.getScrollbarPosition().y(), this.getScrollbarPosition().y() + (this.barLength - this.scrollHeight));
-            guiGraphics.blitSprite(barSprites.get(this.canScrollVertically(), false), this.getScrollbarPosition().x(), relativeY, this.scrollWidth, this.scrollHeight);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, barSprites.get(this.canScrollVertically(), false), this.getScrollbarPosition().x(), relativeY, this.scrollWidth, this.scrollHeight);
             return;
         }
 
@@ -120,8 +119,9 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button))
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x(), mouseY = event.y();
+        if (super.mouseClicked(event, doubleClick))
             return true;
 
         if (this.isMouseOverLayoutRectangle(mouseX, mouseY)) {
@@ -134,17 +134,17 @@ public abstract class AbstractScrollableWidget extends AbstractDraggableWidget {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (this.scrolling) {
             this.scrolling = this.scrollOpposite = false;
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY))
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (super.mouseDragged(event, dragX, dragY))
             return true;
 
         if (this.scrolling) {
