@@ -1,0 +1,29 @@
+{
+    "targets": [
+        "swap",
+        "history"
+    ],
+    "passes": [
+        {
+            "name": "coolcatcanvas:afterimage",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "auxtargets": [
+                {
+                    "name": "HistorySampler",
+                    "id": "history"
+                }
+            ]
+        },
+        {
+            "name": "coolcatcanvas:blit",
+            "intarget": "swap",
+            "outtarget": "history"
+        },
+        {
+            "name": "coolcatcanvas:blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

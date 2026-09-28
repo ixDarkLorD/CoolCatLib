@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "priority": 951,
+  "package": "net.ixdarklord.coolcatcore.mixin",
+  "mixins": [
+    "PotionBrewingMixin",
+    "BrewingStandBlockEntityMixin",
+    "BrewingStandPotionSlotMixin",
+    "BlockItemMixin",
+    "PlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

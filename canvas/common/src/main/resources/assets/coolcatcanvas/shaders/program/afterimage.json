@@ -1,0 +1,12 @@
+{
+    "vertex": "sobel",
+    "fragment": "coolcatcanvas:afterimage",
+    "attributes": ["Position"],
+    "samplers": [
+        {"name": "DiffuseSampler"},
+        {"name": "HistorySampler"}
+    ],
+    "uniforms": [
+        {"name": "Decay", "type": "float", "count": 1, "values": [0.8]}
+    ]
+}

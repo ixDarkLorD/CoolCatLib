@@ -1,0 +1,9 @@
+{
+    "vertex": "blit",
+    "fragment": "coolcatcanvas:blit",
+    "attributes": ["Position"],
+    "samplers": [
+        {"name": "DiffuseSampler"}
+    ],
+    "uniforms": []
+}

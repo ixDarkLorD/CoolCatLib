@@ -1,0 +1,10 @@
+{
+    "vertex": "sobel",
+    "fragment": "coolcatcanvas:strength_blend",
+    "attributes": ["Position"],
+    "samplers": [
+        {"name": "DiffuseSampler"},
+        {"name": "OriginalSampler"}
+    ],
+    "uniforms": []
+}

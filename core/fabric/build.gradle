@@ -1,0 +1,6 @@
+apply from: "${rootProject.sharedScripts}/fabric.gradle"
+
+dependencies {
+    modApi libs.jei.api.fabric
+    modImplementation libs.jei.fabric
+}
