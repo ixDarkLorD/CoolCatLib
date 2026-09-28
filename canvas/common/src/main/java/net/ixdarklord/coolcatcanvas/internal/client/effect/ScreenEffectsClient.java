@@ -6,11 +6,13 @@ import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffects;
 import net.ixdarklord.coolcatcore.api.client.registry.KeyMappingRegistry;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientCommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
+import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.SharedSuggestionProvider;
 
-// Ways to open the effects screen: a key (unbound by default) and "/coolcatcanvas_client effects".
+// Ways to open the effects screen: a key (unbound by default), and in a development environment only,
+// "/coolcatcanvas_client effects" for testing.
 public final class ScreenEffectsClient {
     private static final KeyMapping OPEN_SCREEN = new KeyMapping("key.coolcatcanvas.screen_effects", InputConstants.UNKNOWN.getValue(), "key.categories.misc");
 
@@ -23,6 +25,7 @@ public final class ScreenEffectsClient {
                 if (minecraft.screen == null) ScreenEffects.openScreen();
             }
         });
+        if (!Platform.isDevelopmentEnvironment()) return;
         // CoolCatLib: Canvas's own client command; other subcommands can merge into it.
         ClientCommandEvents.REGISTER.register((dispatcher, context) -> dispatcher.register(
                 LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatcanvas_client")
