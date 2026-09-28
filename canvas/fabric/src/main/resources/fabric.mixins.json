@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "net.ixdarklord.coolcatcanvas.internal.mixin.fabric",
+  "client": [
+    "FabricLevelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

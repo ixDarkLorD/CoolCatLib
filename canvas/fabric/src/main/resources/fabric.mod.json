@@ -27,6 +27,7 @@
     ]
   },
   "mixins": [
+    "${modid}.fabric.mixins.json",
     "${modid}.common.mixins.json"
   ],
 

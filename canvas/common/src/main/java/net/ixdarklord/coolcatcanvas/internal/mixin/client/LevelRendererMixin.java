@@ -26,9 +26,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 // Skyboxes: layers drawn inside vanilla's sky pass, around the sun, moon and stars, and vanilla's parts faded out as
-// they're hidden. The same code runs on both loaders: Forge only adds an early exit for dimensions with a sky of their
-// own (DimensionSpecialEffects#renderSky), as Fabric API does for its DimensionRenderingRegistry; skyboxes don't show
-// in those.
+// they're hidden. The same code runs on both loaders. Where the dimension has a sky renderer of its own (Forge's
+// DimensionSpecialEffects#renderSky, Fabric API's DimensionRenderingRegistry), that renderer skips vanilla's sky pass:
+// the loader modules report it, and the layers are drawn over that sky once the pass is over (see afterSky).
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
     @Unique
@@ -50,6 +50,13 @@ public abstract class LevelRendererMixin {
     @Inject(method = RENDER_SKY, at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", ordinal = 0, shift = At.Shift.AFTER))
     private void coolcatcanvas$renderLayersWithoutSky(PoseStack poseStack, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo ci) {
         SkyboxManager.renderWithoutVanillaSky(this.level);
+    }
+
+    // Once the sky is done, whoever drew it: over a dimension's own sky renderer's sky, the layers.
+    @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;" + RENDER_SKY))
+    private void coolcatcanvas$renderLayersOverCustomSky(LevelRenderer renderer, PoseStack poseStack, Matrix4f projectionMatrix, float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, Operation<Void> original) {
+        original.call(renderer, poseStack, projectionMatrix, partialTick, camera, isFoggy, skyFogSetup);
+        SkyboxManager.afterSky(skyFogSetup);
     }
 
     // ---- Overworld-style skies ----

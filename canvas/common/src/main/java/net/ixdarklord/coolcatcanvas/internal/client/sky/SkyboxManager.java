@@ -65,6 +65,8 @@ public final class SkyboxManager {
     private static boolean anyLayers;
     // Whether a shader pack draws the sky this frame: skyboxes then stand aside, drawing and hiding nothing.
     private static boolean shaderPack;
+    // Whether the dimension's own sky renderer drew the sky this frame, in place of vanilla's pass.
+    private static boolean customSky;
 
     private SkyboxManager() {}
 
@@ -119,6 +121,7 @@ public final class SkyboxManager {
         lastFrameNanos = now;
         Arrays.fill(HIDDEN, 0.0F);
         anyLayers = false;
+        customSky = false;
         if (!resourcesLoaded || SKYBOXES.isEmpty()) return;
         shaderPack = ShaderPacks.inUse();
 
@@ -175,6 +178,28 @@ public final class SkyboxManager {
      */
     public static void renderWithoutVanillaSky(@Nullable ClientLevel level) {
         if (!anyLayers || level == null || level.effects().skyType() != DimensionSpecialEffects.SkyType.NONE) return;
+        render(SkyLayerStage.BEHIND_CELESTIALS);
+        render(SkyLayerStage.ABOVE_CELESTIALS);
+    }
+
+    /**
+     * Called by the loader modules when the dimension's own sky renderer (Forge's
+     * {@code DimensionSpecialEffects#renderSky}, Fabric API's {@code DimensionRenderingRegistry}) draws the sky this
+     * frame instead of vanilla's pass, so the layers go over it once the sky is done ({@link #afterSky}).
+     */
+    public static void customSkyRendered() {
+        customSky = true;
+    }
+
+    /**
+     * Right after the sky pass: where the dimension's own renderer drew the sky, the layers of both stages go over it,
+     * in the sky's fog. What skyboxes hide only applies to vanilla's sky, so nothing of a custom sky is hidden.
+     */
+    public static void afterSky(Runnable skyFogSetup) {
+        if (!customSky) return;
+        customSky = false;
+        if (!anyLayers) return;
+        skyFogSetup.run();
         render(SkyLayerStage.BEHIND_CELESTIALS);
         render(SkyLayerStage.ABOVE_CELESTIALS);
     }

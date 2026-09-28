@@ -12,6 +12,8 @@ import java.util.function.Predicate;
 /**
  * A custom sky, made with {@link Skyboxes#register}: layers of images, gradients and shaders drawn into vanilla's sky,
  * and parts of vanilla's sky hidden. Any number can show at once, drawn by ascending {@linkplain #priority priority}.
+ * In a dimension with a sky renderer of its own (Forge's {@code DimensionSpecialEffects#renderSky}, Fabric API's
+ * {@code DimensionRenderingRegistry}), the layers are drawn over that sky instead; only vanilla's sky has parts to hide.
  * <p>
  * A skybox shows while it's enabled, fading in and out. Unless told otherwise with {@link #activeWhen}, one whose
  * definition lists {@code dimensions} enables itself in those; others wait for {@link #enable()} (or the server's
