@@ -2,6 +2,7 @@ package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
 import net.ixdarklord.coolcatcore.api.config.ConfigNode;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
@@ -15,6 +16,7 @@ import net.ixdarklord.coolcatcore.internal.config.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ModIcons;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.StyledEditBox;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.StyledScreen;
+import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ThemeEffects;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ThemeResources;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.ChatFormatting;
@@ -561,6 +563,10 @@ public final class ConfigSelectScreen extends StyledScreen {
             ConfigStyle.text(graphics, font, label, (width - textWidth) / 2 + 1, labelY + 1, textWidth, 0x90000000);
             ConfigStyle.text(graphics, font, label, (width - textWidth) / 2, labelY, textWidth, unavailable ? 0xFFB0B0B0 : 0xFFFFFFFF);
             pose.popMatrix();
+            int grownWidth = Math.round(width * scale);
+            int grownHeight = Math.round(height * scale);
+            ThemeEffects.widget(graphics, ConfigEffect.WidgetKind.CARD, this.x - (grownWidth - width) / 2, this.y - (grownHeight - height) / 2,
+                    grownWidth, grownHeight, this.grow > 0.5F, false, !unavailable);
         }
     }
 

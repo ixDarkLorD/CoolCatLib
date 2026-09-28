@@ -15,6 +15,8 @@ import net.minecraft.server.packs.resources.Resource;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +66,13 @@ public final class ThemeResources {
         if (json.has("texture_opacity")) builder.textureOpacity(json.get("texture_opacity").getAsFloat());
         if (json.has("background_in_world")) builder.backgroundInWorld(json.get("background_in_world").getAsBoolean());
         if (json.has("popup_sprite")) builder.popupSprite(identifier(json.get("popup_sprite")));
+        if (json.has("effects")) {
+            JsonElement effects = json.get("effects");
+            List<Identifier> ids = new ArrayList<>();
+            if (effects.isJsonArray()) effects.getAsJsonArray().forEach(element -> ids.add(identifier(element)));
+            else ids.add(identifier(effects));
+            builder.effects(ids);
+        }
         return builder.build();
     }
 

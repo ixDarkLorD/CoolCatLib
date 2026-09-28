@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -54,8 +55,20 @@ public class FlatButton extends Button.Plain {
         return this;
     }
 
+    // The button, then the theme's effects over it.
     @Override
-    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    protected final void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        this.extractButton(graphics, mouseX, mouseY, a);
+        ThemeEffects.widget(graphics, this.effectKind(), this);
+    }
+
+    /** What theme effects are told this widget is. */
+    protected ConfigEffect.WidgetKind effectKind() {
+        return ConfigEffect.WidgetKind.BUTTON;
+    }
+
+    /** Draws the button itself. */
+    protected void extractButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         boolean hovered = this.active && this.isHoveredOrFocused();
         int accent = ConfigStyle.accent();
         int x = this.getX();

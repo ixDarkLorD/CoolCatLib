@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.CommonComponents;
@@ -20,7 +21,12 @@ public final class ToggleSwitch extends FlatButton {
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    protected ConfigEffect.WidgetKind effectKind() {
+        return ConfigEffect.WidgetKind.TOGGLE;
+    }
+
+    @Override
+    protected void extractButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         boolean on = this.state.getAsBoolean();
         float target = on ? 1 : 0;
         this.progress = this.progress < 0 ? target : this.progress + (target - this.progress) * 0.35F;

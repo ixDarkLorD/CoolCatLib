@@ -55,8 +55,8 @@ public final class EnumEditor<E extends Enum<E>> implements ValueEditor {
         }
 
         @Override
-        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-            super.extractContents(graphics, mouseX, mouseY, a);
+        protected void extractButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+            super.extractButton(graphics, mouseX, mouseY, a);
             int color = !this.active ? ConfigStyle.colors().textMuted() : this.isHoveredOrFocused() ? ConfigStyle.accent() : ConfigStyle.colors().textDim();
             int y = this.getY() + (this.getHeight() - LEFT.height()) / 2;
             LEFT.draw(graphics, this.getX() + 5, y, color);
