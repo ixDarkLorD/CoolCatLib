@@ -1,0 +1,37 @@
+{
+    "targets": {
+        "swap": {}
+    },
+    "passes": [
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/chromatic_aberration",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "minecraft:main",
+                    "bilinear": true
+                }
+            ],
+            "output": "swap",
+            "uniforms": {
+                "ChromaticConfig": [
+                    { "name": "Amount", "type": "float", "value": 0.01 },
+                    { "name": "PulseSpeed", "type": "float", "value": 0.0 },
+                    { "name": "Radial", "type": "float", "value": 1.0 }
+                ]
+            }
+        },
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/blit",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "swap"
+                }
+            ],
+            "output": "minecraft:main"
+        }
+    ]
+}

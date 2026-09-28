@@ -1,0 +1,52 @@
+{
+    "targets": {
+        "swap": {},
+        "history": {
+            "persistent": true
+        }
+    },
+    "passes": [
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/afterimage",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "minecraft:main"
+                },
+                {
+                    "sampler_name": "History",
+                    "target": "history"
+                }
+            ],
+            "output": "swap",
+            "uniforms": {
+                "AfterimageConfig": [
+                    { "name": "Decay", "type": "float", "value": 0.8 }
+                ]
+            }
+        },
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/blit",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "swap"
+                }
+            ],
+            "output": "history"
+        },
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/blit",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "swap"
+                }
+            ],
+            "output": "minecraft:main"
+        }
+    ]
+}

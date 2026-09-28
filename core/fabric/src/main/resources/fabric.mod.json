@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "id": "${modid}",
+  "version": "${mc_version}-${mod_version}",
+
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contact": {
+    "homepage": "${mod_page_url}",
+    "issues": "${mod_issue_url}",
+    "sources": "${mod_source_url}"
+  },
+
+  "license": "${mod_license}",
+  "icon": "mod_logo.png",
+
+  "environment": "${mod_environment}",
+  "entrypoints": {
+    "main": [
+      "net.ixdarklord.coolcatcore.internal.core.fabric.FabricSetup"
+    ],
+    "client": [
+      "net.ixdarklord.coolcatcore.internal.core.fabric.FabricClientSetup"
+    ],
+    "server": [
+      "net.ixdarklord.coolcatcore.internal.core.fabric.FabricServerSetup"
+    ],
+    "jei_mod_plugin": [
+      "net.ixdarklord.coolcatcore.internal.integration.jei.JEIIntegration"
+    ],
+    "modmenu": [
+      "net.ixdarklord.coolcatcore.internal.integration.modmenu.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "${modid}.fabric.mixins.json",
+    "${modid}.common.mixins.json"
+  ],
+
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/class_1845": ["net/ixdarklord/coolcatcore/api/brewing/fabric/ext/PotionBrewingExt"],
+      "net/minecraft/class_1845\u0024class_9665": ["net/ixdarklord/coolcatcore/api/brewing/fabric/ext/PotionBrewingBuilderExt"]
+    }
+  },
+
+  "depends": {
+    "java": ">=${versions.java.get()}",
+    "minecraft": ">=${mc_version} <=${max_mc_version}",
+    "fabricloader": ">=${min_fabric_version}",
+    "fabric-api": ">=${min_fabric_api_version}"
+  }
+}

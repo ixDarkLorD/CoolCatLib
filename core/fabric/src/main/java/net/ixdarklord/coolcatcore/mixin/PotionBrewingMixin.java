@@ -1,0 +1,104 @@
+package net.ixdarklord.coolcatcore.mixin;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.ixdarklord.coolcatcore.api.brewing.BrewingRecipe;
+import net.ixdarklord.coolcatcore.api.brewing.BrewingRecipeRegistry;
+import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
+import net.ixdarklord.coolcatcore.api.brewing.fabric.ext.PotionBrewingBuilderExt;
+import net.ixdarklord.coolcatcore.api.brewing.fabric.ext.PotionBrewingExt;
+import net.ixdarklord.coolcatcore.api.event.v1.server.RegisterBrewingRecipesEvent;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.crafting.Ingredient;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Mixin(PotionBrewing.class)
+public abstract class PotionBrewingMixin implements PotionBrewingExt {
+    @Shadow
+    protected abstract boolean isContainer(ItemStack itemStack);
+
+    private BrewingRecipeRegistry coolcatcore$registry;
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void createEmptyRegistry(final CallbackInfo ci) {
+        this.coolcatcore$registry = new BrewingRecipeRegistry(List.of());
+    }
+
+    @Override
+    public boolean isInput(ItemStack stack) {
+        return this.coolcatcore$registry.isValidInput(stack) || isContainer(stack);
+    }
+
+    @Override
+    public List<IBrewingRecipe> getRecipes() {
+        return coolcatcore$registry.recipes();
+    }
+
+    @Override
+    public void setBrewingRegistry(BrewingRecipeRegistry registry) {
+        this.coolcatcore$registry = registry;
+    }
+
+    @Inject(method = "hasMix", at = @At("HEAD"), cancellable = true)
+    private void checkMixRegistry(ItemStack container, ItemStack mix, CallbackInfoReturnable<Boolean> cir) {
+        if (coolcatcore$registry.hasOutput(container, mix)) cir.setReturnValue(true);
+    }
+
+    @Inject(method = "mix", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"
+    ), cancellable = true)
+    private void doMix(ItemStack itemStack, ItemStack itemStack2, CallbackInfoReturnable<ItemStack> cir) {
+        var customMix = coolcatcore$registry.getOutput(itemStack2, itemStack);
+        if (!customMix.isEmpty()) cir.setReturnValue(customMix);
+    }
+
+    @Inject(method = "bootstrap", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/item/alchemy/PotionBrewing;addVanillaMixes(Lnet/minecraft/world/item/alchemy/PotionBrewing$Builder;)V",
+            shift = At.Shift.AFTER
+    ))
+    private static void fireRegisterEvent(FeatureFlagSet featureFlagSet, CallbackInfoReturnable<PotionBrewing> cir, @Local PotionBrewing.Builder builder) {
+        RegisterBrewingRecipesEvent event = RegisterBrewingRecipesEvent.invokeEvent(builder);
+        for (IBrewingRecipe recipe : event.getBuilder().getBrewingRecipes()) {
+            builder.addRecipe(recipe);
+        }
+    }
+
+    @Inject(method = "isIngredient", at = @At("HEAD"), cancellable = true)
+    private void checkRegistryForValidIngredient(ItemStack itemStack, CallbackInfoReturnable<Boolean> cir) {
+        if (this.coolcatcore$registry.isValidIngredient(itemStack))
+            cir.setReturnValue(true);
+    }
+
+    @Mixin(value = PotionBrewing.Builder.class, priority = 300)
+    public static class BuilderMixin implements PotionBrewingBuilderExt {
+        private final List<IBrewingRecipe> coolcatcore$recipes = new ArrayList<>();
+
+        @Override
+        public void addRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
+            addRecipe(new BrewingRecipe(input, ingredient, output));
+        }
+
+        @Override
+        public void addRecipe(IBrewingRecipe recipe) {
+            this.coolcatcore$recipes.add(recipe);
+        }
+
+        @ModifyReturnValue(method = "build", at = @At("RETURN"))
+        private PotionBrewing addCustomRecipes(PotionBrewing original) {
+            original.setBrewingRegistry(new BrewingRecipeRegistry(coolcatcore$recipes));
+            return original;
+        }
+    }
+}

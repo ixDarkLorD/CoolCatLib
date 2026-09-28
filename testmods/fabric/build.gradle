@@ -1,0 +1,10 @@
+apply from: "${rootProject.sharedScripts}/fabric.gradle"
+apply from: rootProject.file("testmods/testmod.gradle")
+
+dependencies {
+    modApi libs.jei.api.fabric
+    modImplementation libs.jei.fabric
+
+    implementation project(path: ":fabric", configuration: "namedElements")
+    implementation project(path: ":canvas-fabric", configuration: "namedElements")
+}

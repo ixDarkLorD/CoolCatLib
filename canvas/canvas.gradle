@@ -1,0 +1,79 @@
+// What CoolCatLib: Canvas adds to the shared scripts, applied after them. Its mod attributes (modid, mod_name, ...) come
+// from the canvas_* properties (see settings.gradle); the shared scripts find its common project, changelog and run
+// folder in canvas/.
+def platform = project.name - "canvas-"
+
+base {
+    archivesName = modid + (platform == "common" ? "" : "-$platform")
+}
+
+publishing.publications.mavenJava {
+    groupId = "${mod_maven_group}.${modid}"
+    artifactId = "${modid}-${platform}"
+    pom.name = "${mod_name} [${platform}]"
+}
+
+// CoolCatLib: Core, its loader module and, as Loom resolves project dependencies to their own classes, its common one.
+// With remapping, Loom's project dependencies go through their "namedElements" configuration.
+def named = { String path -> rootProject.loomRemap ? dependencies.project(path: path, configuration: "namedElements") : dependencies.project(path: path) }
+dependencies {
+    if (platform != "common") compileOnly named(":$platform")
+    compileOnly named(":common")
+}
+
+if (platform == "common") {
+    // Architectury's transformer keeps the platform it's transforming for in static state, so with parallel builds
+    // Core's and Canvas's transforms could run at once and write one loader's @ExpectPlatform targets into the other's
+    // jar (Core's NeoForge jar calling internal.core.fabric.*Impl). Canvas's run after Core's instead.
+    tasks.matching { it.name.startsWith("transform") }.configureEach {
+        mustRunAfter(rootProject.project(":common").tasks.matching { it.name.startsWith("transform") })
+    }
+
+    // A plain jar of this module's own classes, like Core's common module.
+    shadowJar {
+        configurations = []
+        archiveClassifier = null
+    }
+} else {
+    // Canvas runs through the test mods; its own run configurations would share Core's names in the IDE.
+    loom.runs.configureEach {
+        ideConfigGenerated(false)
+    }
+}
+
+// Publishing, like Core's loader projects (the shared scripts only set it up for projects named after a loader). The
+// CurseForge id and dependencies are the canvas_* properties.
+if (platform != "common") {
+    build.finalizedBy tasks.copyJarToDir
+
+    def minecraft = libs.versions.minecraft.get()
+    def dependencies = findProperty("${platform}_publish_dependencies").toString()
+    def listed = { String kind -> ((dependencies =~ /${kind}\[(.*?)]/).with { it.find() ? it.group(1) : "" }).split(",")*.trim().findAll() }
+
+    publisher {
+        setDebug(Boolean.parseBoolean(project_upload_debug))
+        apiKeys {
+            if (!project_curse_id.isEmpty()) curseforge curseforge_api_token
+            if (!project_modrinth_id.isEmpty()) modrinth modrinth_api_token
+        }
+        setCurseID(project_curse_id)
+        setModrinthID(project_modrinth_id)
+        setVersionType(project_release_type)
+        setChangelog(rootProject.file("canvas/CHANGELOG.md"))
+        setProjectVersion("${minecraft}-${project.version}")
+        setDisplayName("[${platform_name}] ${minecraft} | V${mod_version} ${project_release_type.toUpperCase()}")
+        setGameVersions(project_game_versions.split(","))
+        setLoaders(platform)
+        setJavaVersions(libs.versions.java.get().split(","))
+        setCurseEnvironment(mod_environment == "*" ? "both" : mod_environment)
+        setIsManualRelease(false)
+        setArtifact(tasks.findByName("remapJar") ?: tasks.named("shadowJar"))
+        setDisableMalwareScanner(false)
+        setDisableEmptyJarCheck(true)
+
+        [curseDepends, modrinthDepends].each { depends ->
+            listed("requirement").each { depends.required it }
+            listed("optional").each { depends.optional it }
+        }
+    }
+}

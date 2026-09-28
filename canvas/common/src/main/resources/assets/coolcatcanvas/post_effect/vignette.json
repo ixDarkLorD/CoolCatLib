@@ -1,0 +1,37 @@
+{
+    "targets": {
+        "swap": {}
+    },
+    "passes": [
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/vignette",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "minecraft:main",
+                    "bilinear": false
+                }
+            ],
+            "output": "swap",
+            "uniforms": {
+                "VignetteConfig": [
+                    { "name": "Color", "type": "vec4", "value": [ 0.0, 0.0, 0.0, 1.0 ] },
+                    { "name": "Radius", "type": "float", "value": 0.75 },
+                    { "name": "Softness", "type": "float", "value": 0.45 }
+                ]
+            }
+        },
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/blit",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "swap"
+                }
+            ],
+            "output": "minecraft:main"
+        }
+    ]
+}

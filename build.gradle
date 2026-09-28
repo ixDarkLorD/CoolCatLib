@@ -5,4 +5,7 @@ plugins {
     alias libs.plugins.modpublisher apply false
 }
 
-apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v1/main.gradle"
+// Every project's Java, jar, resource and publishing setup. Canvas (canvas/canvas.gradle) and the test mods
+// (testmods/testmod.gradle) add their own on top.
+// shared_scripts_url points the shared scripts at another copy, e.g. a local ModResources checkout.
+apply from: "${findProperty("shared_scripts_url") ?: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4"}/main.gradle"
