@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.IntConsumer;
 
 /**
@@ -24,14 +23,12 @@ public final class ConfigScreens {
     private ConfigScreens() {}
 
     /**
-     * The screen for a mod's configs: the config itself when there's one, or a choice between them.
+     * The main screen for a mod's configs: a card for each of them, even when there's only one.
      *
      * @return null when the mod registered no config
      */
     public static @Nullable Screen create(@Nullable Screen parent, String modId) {
-        List<ConfigImpl> configs = ConfigManager.forMod(modId);
-        if (configs.isEmpty()) return null;
-        if (configs.size() == 1) return create(parent, configs.getFirst());
+        if (ConfigManager.forMod(modId).isEmpty()) return null;
         return new ConfigSelectScreen(parent, modId);
     }
 

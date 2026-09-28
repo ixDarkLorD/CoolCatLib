@@ -271,8 +271,10 @@ public final class ConfigSelectScreen extends StyledScreen {
             return Component.translatableWithFallback("config.coolcatcore.select.all.count", "%s mods · %s configs",
                     ConfigManager.modIds().size(), ConfigManager.all().size());
         }
-        return Component.translatableWithFallback("config.coolcatcore.select.mod.count", "%s configs · %s",
-                this.configs().size(), this.modId);
+        int count = this.configs().size();
+        return count == 1
+                ? Component.translatableWithFallback("config.coolcatcore.select.mod.count.one", "1 config · %s", this.modId)
+                : Component.translatableWithFallback("config.coolcatcore.select.mod.count", "%s configs · %s", count, this.modId);
     }
 
     @Override

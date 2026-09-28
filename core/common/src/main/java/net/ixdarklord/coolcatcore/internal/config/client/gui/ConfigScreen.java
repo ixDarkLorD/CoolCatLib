@@ -224,7 +224,7 @@ public final class ConfigScreen extends StyledScreen {
         ConfigScope scope = this.session.config().scope();
         badges.add(new Badge(Component.literal(scope.name()), ConfigStyle.accent()));
         switch (this.session.access()) {
-            case REMOTE -> badges.add(new Badge(Component.translatableWithFallback("config.coolcatcore.badge.server", "SERVER"), ConfigStyle.colors().warning()));
+            case REMOTE -> badges.add(new Badge(Component.translatableWithFallback("config.coolcatcore.badge.remote", "REMOTE"), ConfigStyle.colors().warning()));
             case READ_ONLY -> badges.add(new Badge(Component.translatableWithFallback("config.coolcatcore.badge.read_only", "READ ONLY"), ConfigStyle.colors().textDim()));
             default -> {
             }

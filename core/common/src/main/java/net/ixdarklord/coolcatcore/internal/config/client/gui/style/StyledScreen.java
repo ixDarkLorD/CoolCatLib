@@ -16,11 +16,12 @@ public abstract class StyledScreen extends Screen {
     protected static final int GAP = 6;
     protected static final int TITLE_ICON = 16;
 
-    // Page transitions: a new page slides in from the right, going back slides in from the left, and a page opened from
-    // elsewhere rises into place; each fades in from the backdrop color.
-    private static final float TRANSITION_MILLIS = 240;
-    private static final int TRANSITION_SLIDE = 28;
-    private static final int TRANSITION_RISE = 12;
+    // Page transitions: the page's panels glide a little way into place (from the right for a new page, from the left
+    // going back, from below when opened from elsewhere) while growing from slightly smaller. The background stays still.
+    private static final float TRANSITION_MILLIS = 220;
+    private static final int TRANSITION_SLIDE = 14;
+    private static final int TRANSITION_RISE = 8;
+    private static final float TRANSITION_SCALE = 0.03F;
     private static @Nullable Screen lastRemoved;
 
     protected final ConfigTheme theme;
@@ -117,7 +118,7 @@ public abstract class StyledScreen extends Screen {
         lastRemoved = screen;
     }
 
-    // From 1 as the page opens to 0 once it's in place, eased out.
+    // From 1 as the page opens to 0 once it's in place: a smooth ease-in-out, so it neither jumps nor crawls.
     private float transitionLeft() {
         if (this.transition == Transition.NONE) return 0;
         float progress = Math.min(1, (System.nanoTime() - this.openedAt) / 1_000_000F / TRANSITION_MILLIS);
@@ -125,8 +126,8 @@ public abstract class StyledScreen extends Screen {
             this.transition = Transition.NONE;
             return 0;
         }
-        float left = 1 - progress;
-        return left * left * left;
+        float eased = progress * progress * progress * (progress * (progress * 6 - 15) + 10);
+        return 1 - eased;
     }
 
     private boolean pushTransition(GuiGraphicsExtractor graphics) {
@@ -138,8 +139,11 @@ public abstract class StyledScreen extends Screen {
             default -> 0;
         };
         float y = this.transition == Transition.RISE ? TRANSITION_RISE * left : 0;
+        float scale = 1 - TRANSITION_SCALE * left;
         graphics.pose().pushMatrix();
-        graphics.pose().translate(x, y);
+        graphics.pose().translate(this.width / 2F + x, this.height / 2F + y);
+        graphics.pose().scale(scale, scale);
+        graphics.pose().translate(-this.width / 2F, -this.height / 2F);
         return true;
     }
 
@@ -155,12 +159,9 @@ public abstract class StyledScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         ConfigStyle.use(this.theme);
-        float left = this.transitionLeft();
         boolean moved = this.pushTransition(graphics);
         super.extractRenderState(graphics, mouseX, mouseY, a);
         if (moved) graphics.pose().popMatrix();
-        // Fading in: the backdrop color over the page, clearing as it settles.
-        if (left > 0) graphics.fill(0, 0, this.width, this.height, ConfigStyle.withAlpha(ConfigStyle.colors().backdrop(), Math.round(0xC0 * left)));
     }
 
     /** Draws the bars, panels and fixed text under the widgets. */
