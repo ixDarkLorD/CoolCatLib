@@ -1,17 +1,20 @@
 package net.ixdarklord.coolcatcanvas.api.client.utils;
 
+import net.ixdarklord.coolcatcanvas.api.utils.ColorGradient;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 
 /**
- * Rainbow and outlined text for GUI drawing.
+ * Gradient (rainbow included) and outlined text for GUI drawing.
  * <p>
- * {@link #rainbow(FormattedCharSequence, Rainbow)} returns a sequence that recolors itself each time it's drawn, so
- * it can be kept and handed to anything that draws a {@link FormattedCharSequence} (tooltips, {@code graphics.text},
- * {@link RenderUtils#drawScrollingString}...). The effects combine: an outlined rainbow is
+ * For a component you build yourself, putting the {@link ColorGradient} in its style ({@link ColorGradient#apply}) is
+ * enough. {@link #gradient(FormattedCharSequence, ColorGradient)} does the same to text you already have, replacing its
+ * colors, and the result can be kept and handed to anything that draws a {@link FormattedCharSequence} (tooltips,
+ * {@code graphics.text}, {@link RenderUtils#drawScrollingString}...). The effects combine: an outlined rainbow is
  * {@code drawOutlinedText(graphics, font, rainbow(text), x, y, -1, 0xFF000000)}.
  */
 public final class TextEffects {
@@ -27,28 +30,27 @@ public final class TextEffects {
     // SEQUENCES
     // ------------------------------------------------------------------------
 
+    /** The text in {@link ColorGradient#RAINBOW}. */
     public static FormattedCharSequence rainbow(Component text) {
-        return rainbow(text.getVisualOrderText(), Rainbow.DEFAULT);
+        return gradient(text.getVisualOrderText(), ColorGradient.RAINBOW);
     }
 
-    public static FormattedCharSequence rainbow(Component text, Rainbow rainbow) {
-        return rainbow(text.getVisualOrderText(), rainbow);
-    }
-
+    /** The text in {@link ColorGradient#RAINBOW}. */
     public static FormattedCharSequence rainbow(FormattedCharSequence text) {
-        return rainbow(text, Rainbow.DEFAULT);
+        return gradient(text, ColorGradient.RAINBOW);
+    }
+
+    public static FormattedCharSequence gradient(Component text, ColorGradient gradient) {
+        return gradient(text.getVisualOrderText(), gradient);
     }
 
     /**
-     * Colors each character by its index along the text, replacing the colors of its style (bold, italic and the
-     * rest are kept). The colors are picked when the sequence is drawn, so a kept sequence stays animated.
+     * Colors the text with the gradient, replacing the colors of its style (bold, italic and the rest are kept). It
+     * animates each time it's drawn, so it can be kept.
      */
-    public static FormattedCharSequence rainbow(FormattedCharSequence text, Rainbow rainbow) {
-        return sink -> {
-            int[] index = {0};
-            return text.accept((position, style, codepoint) ->
-                    sink.accept(position, style.withColor(rainbow.color(index[0]++) & 0xFFFFFF), codepoint));
-        };
+    public static FormattedCharSequence gradient(FormattedCharSequence text, ColorGradient gradient) {
+        TextColor color = gradient.textColor();
+        return sink -> text.accept((position, style, codepoint) -> sink.accept(position, style.withColor(color), codepoint));
     }
 
     /** Draws every character in one color, whatever colors its style gives it. */
@@ -58,28 +60,24 @@ public final class TextEffects {
     }
 
     // ------------------------------------------------------------------------
-    // RAINBOW TEXT
+    // GRADIENT TEXT
     // ------------------------------------------------------------------------
 
-    public static void drawRainbowText(GuiGraphicsExtractor graphics, Font font, String text, int x, int y, boolean shadow) {
-        drawRainbowText(graphics, font, Component.literal(text), x, y, Rainbow.DEFAULT, shadow);
+    public static void drawGradientText(GuiGraphicsExtractor graphics, Font font, String text, int x, int y, ColorGradient gradient, boolean shadow) {
+        drawGradientText(graphics, font, Component.literal(text).getVisualOrderText(), x, y, gradient, shadow);
     }
 
-    public static void drawRainbowText(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, boolean shadow) {
-        drawRainbowText(graphics, font, text, x, y, Rainbow.DEFAULT, shadow);
+    public static void drawGradientText(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, ColorGradient gradient, boolean shadow) {
+        drawGradientText(graphics, font, text.getVisualOrderText(), x, y, gradient, shadow);
     }
 
-    public static void drawRainbowText(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, Rainbow rainbow, boolean shadow) {
-        drawRainbowText(graphics, font, text.getVisualOrderText(), x, y, rainbow, shadow);
+    public static void drawGradientText(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence text, int x, int y, ColorGradient gradient, boolean shadow) {
+        graphics.text(font, gradient(text, gradient), x, y, 0xFFFFFFFF, shadow);
     }
 
-    public static void drawRainbowText(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence text, int x, int y, Rainbow rainbow, boolean shadow) {
-        graphics.text(font, rainbow(text, rainbow), x, y, 0xFFFFFFFF, shadow);
-    }
-
-    public static void drawCenteredRainbowText(GuiGraphicsExtractor graphics, Font font, Component text, int centerX, int y, Rainbow rainbow, boolean shadow) {
+    public static void drawCenteredGradientText(GuiGraphicsExtractor graphics, Font font, Component text, int centerX, int y, ColorGradient gradient, boolean shadow) {
         FormattedCharSequence sequence = text.getVisualOrderText();
-        drawRainbowText(graphics, font, sequence, centerX - font.width(sequence) / 2, y, rainbow, shadow);
+        drawGradientText(graphics, font, sequence, centerX - font.width(sequence) / 2, y, gradient, shadow);
     }
 
     // ------------------------------------------------------------------------
@@ -103,13 +101,13 @@ public final class TextEffects {
         graphics.text(font, text, x, y, RenderUtils.textColor(color), false);
     }
 
-    /** Draws the text with an animated rainbow outline. */
-    public static void drawRainbowOutlinedText(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, int color, Rainbow outline) {
-        drawRainbowOutlinedText(graphics, font, text.getVisualOrderText(), x, y, color, outline);
+    /** Draws the text with an animated gradient outline. */
+    public static void drawGradientOutlinedText(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, int color, ColorGradient outline) {
+        drawGradientOutlinedText(graphics, font, text.getVisualOrderText(), x, y, color, outline);
     }
 
-    public static void drawRainbowOutlinedText(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence text, int x, int y, int color, Rainbow outline) {
-        drawOutline(graphics, font, rainbow(text, outline), x, y, ARGB.white(ARGB.alpha(RenderUtils.textColor(color))));
+    public static void drawGradientOutlinedText(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence text, int x, int y, int color, ColorGradient outline) {
+        drawOutline(graphics, font, gradient(text, outline), x, y, ARGB.white(ARGB.alpha(RenderUtils.textColor(color))));
         graphics.text(font, text, x, y, RenderUtils.textColor(color), false);
     }
 
