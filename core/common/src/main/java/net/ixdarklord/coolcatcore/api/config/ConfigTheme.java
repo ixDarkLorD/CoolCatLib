@@ -4,6 +4,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *         .mode(ConfigTheme.BackgroundMode.COVER)
  *         .textureOpacity(0.8F)       // lets the panorama or world show through the texture a little
  *         .backgroundOpacity(0.3F)    // how strongly the backdrop color covers it
+ *         .effects(new ResourceLocation("mymod", "snow"))   // animated effects, instead of the starfall
  *         .build());
  * }</pre>
  * The texture is a full path in a resource pack ({@code assets/mymod/textures/gui/config_background.png}). Without one,
@@ -40,13 +42,20 @@ import java.util.concurrent.ConcurrentHashMap;
  *   "texture_opacity": 0.8,          // the texture's own opacity, from 0 to 1
  *   "background_opacity": 0.3,       // the backdrop color over the background, from 0 to 1
  *   "background_in_world": false,
- *   "popup_sprite": "mymod:config/popup"   // a nine-slice GUI sprite (or a .png texture path) for popup panels
+ *   "popup_sprite": "mymod:config/popup",  // a nine-slice GUI sprite (or a .png texture path) for popup panels
+ *   "effects": ["mymod:snow"]        // animated effects by id; [] for none
  * }
  * }</pre>
  * Every field is optional and overrides the mod's own theme; color names match {@link ConfigColorScheme.Builder}.
  * Players can scale both opacities for every mod in CoolCatLib: Core's client config.
+ * <p>
+ * Effects are animations drawn behind the panels, over the whole screen, or over each widget, registered by id on the
+ * client ({@code ConfigEffects.register}); every theme uses {@link #STARFALL} unless it names its own.
  */
 public final class ConfigTheme {
+    // Declared before DEFAULT, which uses it.
+    /** The built-in effect: soft glows in the accent and small faint stars falling, shifting with the mouse. */
+    public static final ResourceLocation STARFALL = new ResourceLocation("coolcatcore", "starfall");
     /** CoolCatLib: Core's own look: see-through to the title panorama or the world, with the dark scheme. */
     public static final ConfigTheme DEFAULT = builder().build();
     private static final Map<String, ConfigTheme> BY_MOD = new ConcurrentHashMap<>();
@@ -61,6 +70,7 @@ public final class ConfigTheme {
     private final float textureOpacity;
     private final boolean backgroundInWorld;
     private final @Nullable ResourceLocation popupSprite;
+    private final List<ResourceLocation> effects;
 
     private ConfigTheme(Builder builder) {
         this.colors = builder.colors;
@@ -73,6 +83,7 @@ public final class ConfigTheme {
         this.textureOpacity = builder.textureOpacity;
         this.backgroundInWorld = builder.backgroundInWorld;
         this.popupSprite = builder.popupSprite;
+        this.effects = List.copyOf(builder.effects);
     }
 
     public static Builder builder() {
@@ -159,6 +170,11 @@ public final class ConfigTheme {
         return this.popupSprite;
     }
 
+    /** The effects drawn, by id, in order ({@link #STARFALL} by default; empty for none). */
+    public List<ResourceLocation> effects() {
+        return this.effects;
+    }
+
     public Builder toBuilder() {
         Builder builder = new Builder();
         builder.colors = this.colors;
@@ -171,6 +187,7 @@ public final class ConfigTheme {
         builder.textureOpacity = this.textureOpacity;
         builder.backgroundInWorld = this.backgroundInWorld;
         builder.popupSprite = this.popupSprite;
+        builder.effects = this.effects;
         return builder;
     }
 
@@ -201,6 +218,7 @@ public final class ConfigTheme {
         private float textureOpacity = 1.0F;
         private boolean backgroundInWorld;
         private @Nullable ResourceLocation popupSprite;
+        private List<ResourceLocation> effects = List.of(STARFALL);
 
         private Builder() {}
 
@@ -274,6 +292,21 @@ public final class ConfigTheme {
          */
         public Builder popupSprite(@Nullable ResourceLocation sprite) {
             this.popupSprite = sprite;
+            return this;
+        }
+
+        /**
+         * The effects the screens draw, by the ids they're registered under, instead of {@link #STARFALL}; drawn in this
+         * order. With none, the screens are still.
+         */
+        public Builder effects(ResourceLocation... effects) {
+            this.effects = List.of(effects);
+            return this;
+        }
+
+        /** The effects, as a list. */
+        public Builder effects(List<ResourceLocation> effects) {
+            this.effects = List.copyOf(effects);
             return this;
         }
 

@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -73,5 +74,6 @@ public class StyledEditBox extends EditBox {
             ConfigStyle.text(graphics, Minecraft.getInstance().font, this.placeholder, this.getX() + 4, this.getY() + (this.getHeight() - 8) / 2,
                     this.getWidth() - 8, ConfigStyle.colors().textMuted());
         }
+        if (this.bordered) ThemeEffects.widget(graphics, ConfigEffect.WidgetKind.TEXT_FIELD, this);
     }
 }

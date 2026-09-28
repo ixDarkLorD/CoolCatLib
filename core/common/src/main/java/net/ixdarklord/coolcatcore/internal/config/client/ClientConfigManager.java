@@ -22,11 +22,15 @@ import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.CategoryPopup;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.ConfigScreen;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.StartupMismatchScreen;
+import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ThemeEffects;
 import net.ixdarklord.coolcatcore.internal.config.network.ConfigNetwork;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -61,6 +65,7 @@ public final class ClientConfigManager {
     /** Called once by each loader's client setup. */
     public static void init() {
         CoolCatCoreClientSettings.init();
+        ThemeEffects.init();
         ClientTickEvents.END.register(minecraft -> {
             ConfigManager.processReloads(true);
             // A safety net for the leave event: once there's no connection, the server's values have no business here.
@@ -283,7 +288,51 @@ public final class ClientConfigManager {
         pendingScreen = screen;
     }
 
+    /**
+     * A notice in the corner: a short title (usually the config's name) over a message, which wraps so it never runs
+     * past the toast. It replaces the previous one.
+     */
     public static void toast(Component title, @Nullable Component message) {
-        SystemToast.addOrUpdate(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.PERIODIC_NOTIFICATION, title, message);
+        Minecraft minecraft = Minecraft.getInstance();
+        ToastComponent toasts = minecraft.getToasts();
+        SystemToast.SystemToastIds id = SystemToast.SystemToastIds.PERIODIC_NOTIFICATION;
+        ConfigToast previous = toasts.getToast(ConfigToast.class, id);
+        if (previous != null) previous.hide();
+        toasts.addToast(new ConfigToast(message == null ? new SystemToast(id, title, null) : SystemToast.multiline(minecraft, id, title, message)));
+    }
+
+    // 1.20.1's SystemToast can't be hidden early (newer versions' forceHide), so ours wrap one and can.
+    private static final class ConfigToast implements Toast {
+        private final SystemToast toast;
+        private boolean hidden;
+
+        private ConfigToast(SystemToast toast) {
+            this.toast = toast;
+        }
+
+        void hide() {
+            this.hidden = true;
+        }
+
+        @Override
+        public Visibility render(GuiGraphics graphics, ToastComponent toasts, long timeSinceLastVisible) {
+            Visibility visibility = this.toast.render(graphics, toasts, timeSinceLastVisible);
+            return this.hidden ? Visibility.HIDE : visibility;
+        }
+
+        @Override
+        public Object getToken() {
+            return this.toast.getToken();
+        }
+
+        @Override
+        public int width() {
+            return this.toast.width();
+        }
+
+        @Override
+        public int height() {
+            return this.toast.height();
+        }
     }
 }

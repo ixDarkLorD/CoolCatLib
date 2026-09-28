@@ -239,18 +239,16 @@ public final class ConfigEditSession {
     public void saveAndNotify() {
         ClientConfigManager.Access access = this.access;
         RestartRequirement restart = this.save();
-        Component title = this.config.title();
-        if (access == ClientConfigManager.Access.LOCAL) {
-            ClientConfigManager.toast(Component.translatableWithFallback("config.coolcatcore.toast.saved", "Config saved"), title);
-        }
-        switch (restart) {
-            case GAME -> ClientConfigManager.toast(Component.translatableWithFallback("config.coolcatcore.toast.restart_game",
-                    "Restart the game to apply every change").withStyle(ChatFormatting.GOLD), title);
-            case WORLD -> ClientConfigManager.toast(Component.translatableWithFallback("config.coolcatcore.toast.restart_world",
-                    "Rejoin the world to apply every change").withStyle(ChatFormatting.GOLD), title);
-            case NONE -> {
-            }
-        }
+        // One toast, titled with the config's name: what must restart, or that it saved.
+        Component message = switch (restart) {
+            case GAME -> Component.translatableWithFallback("config.coolcatcore.toast.restart_game",
+                    "Restart the game to apply every change").withStyle(ChatFormatting.GOLD);
+            case WORLD -> Component.translatableWithFallback("config.coolcatcore.toast.restart_world",
+                    "Rejoin the world to apply every change").withStyle(ChatFormatting.GOLD);
+            case NONE -> access == ClientConfigManager.Access.LOCAL
+                    ? Component.translatableWithFallback("config.coolcatcore.toast.saved", "Config saved") : null;
+        };
+        if (message != null) ClientConfigManager.toast(this.config.title(), message);
     }
 
     /** A slot for one of this config's values. */

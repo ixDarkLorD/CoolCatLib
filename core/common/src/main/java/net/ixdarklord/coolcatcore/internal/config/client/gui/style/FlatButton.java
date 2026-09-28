@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -54,9 +55,16 @@ public class FlatButton extends Button {
         return this;
     }
 
+    // The button, then the theme's effects over it.
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+    protected final void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float a) {
         this.renderContents(graphics, mouseX, mouseY, a);
+        ThemeEffects.widget(graphics, this.effectKind(), this);
+    }
+
+    /** What theme effects are told this widget is. */
+    protected ConfigEffect.WidgetKind effectKind() {
+        return ConfigEffect.WidgetKind.BUTTON;
     }
 
     /** Draws the button in place of vanilla's texture and label. */

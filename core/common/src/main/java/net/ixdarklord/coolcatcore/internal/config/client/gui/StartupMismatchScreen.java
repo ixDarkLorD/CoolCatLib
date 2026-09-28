@@ -66,8 +66,9 @@ public final class StartupMismatchScreen extends StyledScreen {
         x -= 128;
         FlatButton adopt = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("config.coolcatcore.startup.adopt", "Use Server's"), 92, button -> {
             this.adopt();
-            ClientConfigManager.toast(Component.translatableWithFallback("config.coolcatcore.toast.restart_game", "Restart the game to apply every change")
-                    .withStyle(ChatFormatting.GOLD), null);
+            ClientConfigManager.toast(Component.translatableWithFallback("config.coolcatcore.toast.adopted", "Server's values saved"),
+                    Component.translatableWithFallback("config.coolcatcore.toast.restart_game", "Restart the game to apply every change")
+                            .withStyle(ChatFormatting.GOLD));
             this.onClose();
         }).withIcon(ConfigIcons.CHECK).tooltip(Component.translatableWithFallback("config.coolcatcore.startup.adopt.tooltip",
                 "Saves the server's values; restart the game before joining")));

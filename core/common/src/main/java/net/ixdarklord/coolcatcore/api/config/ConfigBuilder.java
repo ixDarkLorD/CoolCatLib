@@ -148,6 +148,16 @@ public final class ConfigBuilder {
         return this;
     }
 
+    /**
+     * The animated effects of this config's screen, by the ids they're registered under on the client
+     * ({@code ConfigEffects.register}), keeping the rest of the theme; none for a still screen. The id is all this
+     * needs, so it works in common code.
+     */
+    public ConfigBuilder effects(ResourceLocation... effects) {
+        this.theme = (this.theme != null ? this.theme : ConfigTheme.forMod(this.modId)).toBuilder().effects(effects).build();
+        return this;
+    }
+
     // --- Groups ---
 
     /** Opens a nested group; values and groups go into it until {@link #pop()}. */

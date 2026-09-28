@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.CommonComponents;
@@ -17,6 +18,11 @@ public final class ToggleSwitch extends FlatButton {
     public ToggleSwitch(int width, int height, BooleanSupplier state, OnPress onPress) {
         super(width, height, CommonComponents.EMPTY, onPress);
         this.state = state;
+    }
+
+    @Override
+    protected ConfigEffect.WidgetKind effectKind() {
+        return ConfigEffect.WidgetKind.TOGGLE;
     }
 
     @Override
