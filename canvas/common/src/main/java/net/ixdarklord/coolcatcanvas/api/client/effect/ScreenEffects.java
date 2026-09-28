@@ -76,7 +76,7 @@ public final class ScreenEffects {
     /**
      * The effects screen: every {@linkplain ScreenEffect#isSelectable() selectable} effect with a switch, the active
      * ones as reorderable layers with a strength slider each, previewed live over the game. Players' choices there are
-     * remembered across sessions. Also bound to a key (unset by default) and {@code /coolcatcanvas_client effects}.
+     * remembered across sessions. Also bound to a key (unset by default), and in a development environment {@code /coolcatcanvas_client effects}.
      */
     public static Screen createScreen(@Nullable Screen parent) {
         return new ScreenEffectsScreen(parent);
