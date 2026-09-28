@@ -8,3 +8,14 @@ plugins {
 // Every project's Java, jar, resource and publishing setup. Canvas (canvas/canvas.gradle) and the test mods
 // (testmods/testmod.gradle) add their own on top.
 apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4/main.gradle"
+
+// Maven coordinates for both mods: net.ixdarklord.coolcatlib:<mod_maven_name>-<loader>, e.g. coolcatlib-core-fabric
+// and coolcatlib-canvas-common (the shared script would name them after the mod id and project).
+subprojects {
+    if (project.name.startsWith("testmod-")) return
+    def platform = project.name - "canvas-"
+    publishing.publications.mavenJava {
+        groupId = "${mod_maven_group}.coolcatlib"
+        artifactId = "${mod_maven_name}-${platform}"
+    }
+}

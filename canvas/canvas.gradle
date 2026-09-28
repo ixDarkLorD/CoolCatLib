@@ -8,8 +8,6 @@ base {
 }
 
 publishing.publications.mavenJava {
-    groupId = "${mod_maven_group}.${modid}"
-    artifactId = "${modid}-${platform}"
     pom.name = "${mod_name} [${platform}]"
 }
 
