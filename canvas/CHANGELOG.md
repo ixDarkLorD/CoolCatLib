@@ -23,3 +23,5 @@ This file is for listing all the changes to this project
   - Cheap: nothing runs while no skybox shows; a visible layer is one draw from a shared static mesh, all layers of a stage share one render pass and one uniform upload.
 - `api.utils.Easing`: easing curves.
 - GUI components and widgets (`api.client.gui.components`: panels, scroll and drag widgets, slide animations, `ColorableImageButton`), and `api.client.utils` `RenderUtils`, `NineSliceInfo` and `ScreenAnchor`.
+- Rainbow and outlined text (`api.client.utils.TextEffects`): `rainbow(text)` gives a sequence that recolors itself each time it's drawn (usable anywhere text is), plus outlined text in a solid color or an animated rainbow. `Rainbow` sets the speed, spread, saturation and brightness.
+- Outlines (`api.client.utils.Outline`): solid or rainbow, with a thickness and padding, drawn around any rectangle; `ElementOutlines.set(widget, outline[, when])` attaches one to any widget (vanilla's too), optionally only while a condition holds (hovered, focused...).

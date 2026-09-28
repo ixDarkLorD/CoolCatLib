@@ -16,6 +16,7 @@ public class TestingModClient implements ClientModConstructor {
         ConfigEffects.register(EmbersEffect.ID, new EmbersEffect());
         ScreenEffectsDemo.init();
         SkyboxDemo.init();
+        TextEffectsDemo.init();
         MenuScreenRegistry.register(TestAttachments.CRATE_MENU, CrateScreen::new);
         MenuScreenRegistry.register(TestAttachments.POUCH_MENU, StorageScreen::new);
     }

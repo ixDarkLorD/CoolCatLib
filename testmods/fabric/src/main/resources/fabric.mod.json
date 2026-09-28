@@ -15,7 +15,7 @@
     "coolcatcore:client": ["net.ixdarklord.testingmod.TestingModClient"],
     "coolcatcore:datagen": ["net.ixdarklord.testingmod.DataGeneration"],
     "fabric-datagen": ["net.ixdarklord.coolcatcore.api.core.fabric.FabricDataGenerationEntrypoint"],
-    "fabric-client-gametest": ["net.ixdarklord.testingmod.ConfigScreensGameTest", "net.ixdarklord.testingmod.ScreenEffectsGameTest", "net.ixdarklord.testingmod.SkyboxGameTest"]
+    "fabric-client-gametest": ["net.ixdarklord.testingmod.ConfigScreensGameTest", "net.ixdarklord.testingmod.ScreenEffectsGameTest", "net.ixdarklord.testingmod.SkyboxGameTest", "net.ixdarklord.testingmod.TextEffectsGameTest"]
   },
 
   "depends": {
