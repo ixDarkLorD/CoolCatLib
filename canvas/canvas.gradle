@@ -31,3 +31,40 @@ if (platform == "common") {
         ideConfigGenerated(false)
     }
 }
+
+// Publishing, like Core's loader projects (the shared scripts only set it up for projects named after a loader). The
+// CurseForge id and dependencies are the canvas_* properties.
+if (platform != "common") {
+    build.finalizedBy tasks.copyJarToDir
+
+    def minecraft = libs.versions.minecraft.get()
+    def dependencies = findProperty("${platform}_publish_dependencies").toString()
+    def listed = { String kind -> ((dependencies =~ /${kind}\[(.*?)]/).with { it.find() ? it.group(1) : "" }).split(",")*.trim().findAll() }
+
+    publisher {
+        setDebug(Boolean.parseBoolean(project_upload_debug))
+        apiKeys {
+            if (!project_curse_id.isEmpty()) curseforge curseforge_api_token
+            if (!project_modrinth_id.isEmpty()) modrinth modrinth_api_token
+        }
+        setCurseID(project_curse_id)
+        setModrinthID(project_modrinth_id)
+        setVersionType(project_release_type)
+        setChangelog(rootProject.file("canvas/CHANGELOG.md"))
+        setProjectVersion("${minecraft}-${project.version}")
+        setDisplayName("[${platform_name}] ${minecraft} | V${mod_version} ${project_release_type.toUpperCase()}")
+        setGameVersions(project_game_versions.split(","))
+        setLoaders(platform)
+        setJavaVersions(libs.versions.java.get().split(","))
+        setCurseEnvironment(mod_environment == "*" ? "both" : mod_environment)
+        setIsManualRelease(false)
+        setArtifact(tasks.named("shadowJar"))
+        setDisableMalwareScanner(false)
+        setDisableEmptyJarCheck(true)
+
+        [curseDepends, modrinthDepends].each { depends ->
+            listed("requirement").each { depends.required it }
+            listed("optional").each { depends.optional it }
+        }
+    }
+}
