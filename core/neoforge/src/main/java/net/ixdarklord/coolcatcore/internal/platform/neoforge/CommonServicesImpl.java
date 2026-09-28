@@ -89,6 +89,11 @@ public final class CommonServicesImpl implements CommonServices {
     }
 
     @Override
+    public boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return player.connection.hasChannel(type);
+    }
+
+    @Override
     public <T extends CustomPacketPayload> void registerConfigurationClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, ConfigurationReceiver<T> receiver) {
         NeoForgeRegistrations.addPayload(registrar -> registrar.configurationToClient(type, codec, (payload, context) -> receiver.receive(payload, context::disconnect)));
     }

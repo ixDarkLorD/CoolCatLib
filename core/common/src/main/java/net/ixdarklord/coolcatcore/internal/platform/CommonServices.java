@@ -54,6 +54,8 @@ public interface CommonServices {
 
     void sendToPlayer(ServerPlayer player, CustomPacketPayload payload);
 
+    boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type);
+
     /**
      * A payload the server sends while a client is still configuring (before it joins the world), received on the
      * client's main thread. The receiver only runs on clients.
