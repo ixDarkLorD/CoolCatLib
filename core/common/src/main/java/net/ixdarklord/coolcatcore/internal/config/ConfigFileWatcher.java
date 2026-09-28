@@ -29,7 +29,7 @@ final class ConfigFileWatcher implements Runnable {
     static @Nullable ConfigFileWatcher start() {
         try {
             ConfigFileWatcher watcher = new ConfigFileWatcher(FileSystems.getDefault().newWatchService());
-            Thread thread = new Thread(watcher, "CoolCatCore Config Watcher");
+            Thread thread = new Thread(watcher, "CoolCatLib: Core Config Watcher");
             thread.setDaemon(true);
             thread.start();
             return watcher;

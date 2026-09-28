@@ -42,7 +42,7 @@ final class SkyResources {
     }
 
     static DynamicUniformStorage<LayerUniform> uniforms() {
-        if (uniforms == null) uniforms = new DynamicUniformStorage<>("CoolCatCore sky layers UBO", LayerUniform.SIZE, 8);
+        if (uniforms == null) uniforms = new DynamicUniformStorage<>("CoolCatLib: Canvas sky layers UBO", LayerUniform.SIZE, 8);
         return uniforms;
     }
 
@@ -102,7 +102,7 @@ final class SkyResources {
             // A sprite: the square [-1, 1] across x and z, facing down from y = 0.
             quad(builder, new float[][]{{-1.0F, 0.0F, -1.0F}, {1.0F, 0.0F, -1.0F}, {1.0F, 0.0F, 1.0F}, {-1.0F, 0.0F, 1.0F}});
             try (MeshData data = builder.buildOrThrow()) {
-                return RenderSystem.getDevice().createBuffer(() -> "CoolCatCore sky mesh", GpuBuffer.USAGE_VERTEX, data.vertexBuffer());
+                return RenderSystem.getDevice().createBuffer(() -> "CoolCatLib: Canvas sky mesh", GpuBuffer.USAGE_VERTEX, data.vertexBuffer());
             }
         }
     }

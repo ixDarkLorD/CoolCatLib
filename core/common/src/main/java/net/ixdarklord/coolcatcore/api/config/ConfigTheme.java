@@ -42,10 +42,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * }
  * }</pre>
  * Every field is optional and overrides the mod's own theme; color names match {@link ConfigColorScheme.Builder}.
- * Players can scale both opacities for every mod in CoolCatCore's client config.
+ * Players can scale both opacities for every mod in CoolCatLib: Core's client config.
  */
 public final class ConfigTheme {
-    /** CoolCatCore's own look: see-through to the title panorama or the world, with the dark scheme. */
+    /** CoolCatLib: Core's own look: see-through to the title panorama or the world, with the dark scheme. */
     public static final ConfigTheme DEFAULT = builder().build();
     private static final Map<String, ConfigTheme> BY_MOD = new ConcurrentHashMap<>();
 

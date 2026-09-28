@@ -8,7 +8,7 @@ import net.ixdarklord.coolcatcore.api.config.ConfigValue;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import org.jetbrains.annotations.Nullable;
 
-// CoolCatCore's own client config: the player's choices for every mod's config screens.
+// CoolCatLib: Core's own client config: the player's choices for every mod's config screens.
 public final class CoolCatCoreClientSettings {
     private static @Nullable ConfigValue<ConfigTheme.Mode> themeMode;
     private static @Nullable ConfigValue<Integer> backgroundOpacity;
@@ -17,7 +17,7 @@ public final class CoolCatCoreClientSettings {
     private CoolCatCoreClientSettings() {}
 
     static void init() {
-        ConfigBuilder builder = Config.builder(CoolCatCore.MOD_ID, ConfigScope.CLIENT).comment("CoolCatCore client settings");
+        ConfigBuilder builder = Config.builder(CoolCatCore.MOD_ID, ConfigScope.CLIENT).comment("CoolCatLib: Core client settings");
         themeMode = builder.enumValue("themeMode", ConfigTheme.Mode.DARK)
                 .comment("Whether config screens use their dark or light colors (the sun/moon button in their top bar).")
                 .build();

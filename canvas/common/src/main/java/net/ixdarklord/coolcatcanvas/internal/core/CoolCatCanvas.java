@@ -8,7 +8,7 @@ import java.util.Locale;
 
 public class CoolCatCanvas {
 	public static final String MOD_ID = "coolcatcanvas";
-	public static final String MOD_NAME = "CoolCat Canvas";
+	public static final String MOD_NAME = "CoolCatLib: Canvas";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
 	public static Identifier rl(String name) {

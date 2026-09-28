@@ -22,7 +22,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 // Key mappings, menu screens and tooltip components wait for their NeoForge registration events
-// (fired on CoolCatCore's mod bus, see NeoForgeClientEventHooks).
+// (fired on CoolCatLib: Core's mod bus, see NeoForgeClientEventHooks).
 public final class ClientServicesImpl implements ClientServices {
     private static final ClientServicesImpl INSTANCE = new ClientServicesImpl();
 

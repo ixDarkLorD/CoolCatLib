@@ -20,7 +20,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-// Fires CoolCatCore's client events from NeoForge's, and drains the client registrations NeoForge takes through events.
+// Fires CoolCatLib: Core's client events from NeoForge's, and drains the client registrations NeoForge takes through events.
 public final class NeoForgeClientEventHooks {
     private NeoForgeClientEventHooks() {}
 

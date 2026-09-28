@@ -563,7 +563,7 @@ public final class ConfigSelectScreen extends StyledScreen {
     }
 
     // A config's card artwork: the mod's own for that config if it ships one
-    // (assets/<modid>/textures/gui/config/cards/<config name>.png), otherwise CoolCatCore's for its scope.
+    // (assets/<modid>/textures/gui/config/cards/<config name>.png), otherwise CoolCatLib: Core's for its scope.
     private static Identifier artworkOf(ConfigImpl config) {
         Identifier own = Identifier.fromNamespaceAndPath(config.modId(), "textures/gui/config/cards/" + config.name() + ".png");
         if (Minecraft.getInstance().getResourceManager().getResource(own).isPresent()) return own;

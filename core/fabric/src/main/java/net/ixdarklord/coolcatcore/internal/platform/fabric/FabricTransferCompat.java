@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// Exposes CoolCatCore containers to Fabric's Transfer API, so other mods' pipes and tools reach them. Block entities
+// Exposes CoolCatLib: Core containers to Fabric's Transfer API, so other mods' pipes and tools reach them. Block entities
 // that are containers (ExtendedContainerBlockEntity included) are already covered by Fabric's own container fallback;
 // this adds containers that blocks hand out through HandlerTypes.CONTAINER, and ContainerItem stacks.
 public final class FabricTransferCompat {

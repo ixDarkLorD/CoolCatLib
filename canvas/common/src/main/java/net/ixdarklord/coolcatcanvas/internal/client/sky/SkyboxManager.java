@@ -222,7 +222,7 @@ public final class SkyboxManager {
     private static RenderPass openPass() {
         RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
         return RenderSystem.getDevice().createCommandEncoder()
-                .createRenderPass(() -> "CoolCatCore skyboxes", main.getColorTextureView(), OptionalInt.empty(), main.getDepthTextureView(), OptionalDouble.empty());
+                .createRenderPass(() -> "CoolCatLib: Canvas skyboxes", main.getColorTextureView(), OptionalInt.empty(), main.getDepthTextureView(), OptionalDouble.empty());
     }
 
     // ---- Resources ----

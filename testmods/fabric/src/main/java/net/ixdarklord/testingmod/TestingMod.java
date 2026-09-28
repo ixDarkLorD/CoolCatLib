@@ -5,7 +5,7 @@ import net.ixdarklord.coolcatcore.api.event.v1.server.RegisterBrewingRecipesEven
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-// Constructed by CoolCatCore from the "coolcatcore:common" entrypoint; no Fabric initializer needed.
+// Constructed by CoolCatLib: Core from the "coolcatcore:common" entrypoint; no Fabric initializer needed.
 public class TestingMod implements ModConstructor {
     public static String MOD_ID = "testing_mod";
 

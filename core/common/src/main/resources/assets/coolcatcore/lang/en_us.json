@@ -3,7 +3,7 @@
   "tooltip.coolcatcore.component.ability": "Ability",
   "tooltip.coolcatcore.component.crafting": "Crafting Component",
   "tooltip.coolcatcore.component.tools": "Tools",
-  "config.coolcatcore.client.title": "CoolCatCore",
+  "config.coolcatcore.client.title": "CoolCatLib: Core",
   "config.coolcatcore.client.themeMode": "Theme Mode",
   "config.coolcatcore.client.background": "Background",
   "config.coolcatcore.client.background.backgroundOpacity": "Backdrop Opacity (%)",

@@ -2,7 +2,7 @@
 
 #moj_import <minecraft:fog.glsl>
 
-// Written by CoolCatCore for every sky layer. A layer's fragment shader imports it with
+// Written by CoolCatLib: Canvas for every sky layer. A layer's fragment shader imports it with
 //     #moj_import <coolcatcanvas:sky.glsl>
 // and receives from the vertex shader:
 //     in vec3 skyLocal;  // on the layer's mesh: a direction around the camera for full-sky layers (any length, so

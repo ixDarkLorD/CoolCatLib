@@ -13,7 +13,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.client.ItemTooltipEvents;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.commands.SharedSuggestionProvider;
 
-// Fires CoolCatCore's client events from Fabric's.
+// Fires CoolCatLib: Core's client events from Fabric's.
 public final class FabricClientEventHooks {
     private FabricClientEventHooks() {}
 

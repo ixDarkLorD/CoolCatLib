@@ -214,7 +214,7 @@ public final class HandlerType<T> {
     }
 
     /**
-     * Tells every cache at a position (of any handler type, CoolCatCore's and the loader's) to look again: call it
+     * Tells every cache at a position (of any handler type, CoolCatLib: Core's and the loader's) to look again: call it
      * when a block starts or stops handing out a handler, or hands out a different one.
      */
     public static void invalidate(Level level, BlockPos pos) {

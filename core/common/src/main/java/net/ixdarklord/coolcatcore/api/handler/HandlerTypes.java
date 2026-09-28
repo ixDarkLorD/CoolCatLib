@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The handler types CoolCatCore provides.
+ * The handler types CoolCatLib: Core provides.
  */
 public final class HandlerTypes {
     /**

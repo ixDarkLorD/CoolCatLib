@@ -83,7 +83,7 @@ public final class ModIcons {
                     Identifier id = CoolCatCore.rl(i == 0 ? base : base + "_" + i);
                     int width = image.getWidth();
                     int height = image.getHeight();
-                    Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> "CoolCatCore icon of " + modId, image));
+                    Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> "CoolCatLib: Core icon of " + modId, image));
                     levels.add(new Level(id, width, height));
                     if (Math.min(width, height) / 2 < SMALLEST) break;
                     image = half(image);

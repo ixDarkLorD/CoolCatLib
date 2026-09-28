@@ -4,7 +4,7 @@ import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.resources.Identifier;
 
 /**
- * Ready-made effect definitions shipped with CoolCatCore, to {@linkplain ScreenEffects#register register} as they
+ * Ready-made effect definitions shipped with CoolCatLib: Canvas, to {@linkplain ScreenEffects#register register} as they
  * are. They all scale by the effect's strength, so they fade without {@link ScreenEffect#autoBlend}, and stack: two
  * effects registered from the same definition keep their own uniforms.
  * <p>

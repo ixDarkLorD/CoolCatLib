@@ -3,7 +3,7 @@ This file is for listing all the changes to this project
 
 ## v26.1.2-1 Release | Unreleased (Minecraft 26.1.2)
 ### ✨ New Features
-- First release: the render and visuals half of what used to be CoolCatLib, split out and built on CoolCat Core. Everything below was moved from CoolCatLib into the `net.ixdarklord.coolcatcanvas` package and `coolcatcanvas` namespace.
+- First release: the render and visuals half of what used to be CoolCatLib, split out and built on CoolCatLib: Core. Everything below was moved from CoolCatLib into the `net.ixdarklord.coolcatcanvas` package and `coolcatcanvas` namespace.
 - Screen effects (`api.client.effect`): full-screen post-processing shaders whose uniforms can change every frame (vanilla's post chains bake them in at load).
   - `ScreenEffects.register(id, definition)` from a vanilla-format `post_effect` JSON (vanilla's own included) or a `ScreenEffectDefinition` built in code; any number stack, ordered by `priority`, drawn over the world (`WORLD`) or over everything including the HUD and menus (`SCREEN`).
   - Smooth fades (`fade`, `Easing`), timed pulses (`enableFor`), animated strength, conditions (`activeWhen`), strength functions of the frame (`strength`) and per-frame callbacks (`onFrame`).

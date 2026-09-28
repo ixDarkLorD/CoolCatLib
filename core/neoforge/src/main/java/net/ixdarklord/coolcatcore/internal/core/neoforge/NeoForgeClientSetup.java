@@ -26,7 +26,7 @@ public class NeoForgeClientSetup extends NeoForgeModEntrypoint {
         this.modEventBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(NeoForgeClientSetup::registerConfigScreens));
     }
 
-    // Every mod with a CoolCatCore config gets a "Config" button in the mod list, unless it set its own screen.
+    // Every mod with a CoolCatLib: Core config gets a "Config" button in the mod list, unless it set its own screen.
     private static void registerConfigScreens() {
         for (String modId : ConfigManager.modIds()) {
             ModList.get().getModContainerById(modId).ifPresent(container -> {

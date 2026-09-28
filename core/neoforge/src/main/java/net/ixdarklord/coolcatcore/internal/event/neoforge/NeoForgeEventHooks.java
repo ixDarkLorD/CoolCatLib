@@ -39,7 +39,7 @@ import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-// Fires CoolCatCore's common events from NeoForge's, and drains the registrations NeoForge takes through events.
+// Fires CoolCatLib: Core's common events from NeoForge's, and drains the registrations NeoForge takes through events.
 public final class NeoForgeEventHooks {
     private static final String NETWORK_VERSION = "1";
 

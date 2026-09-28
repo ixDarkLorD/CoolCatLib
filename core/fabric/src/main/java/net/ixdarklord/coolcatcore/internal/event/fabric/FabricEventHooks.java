@@ -14,7 +14,7 @@ import net.ixdarklord.coolcatcore.api.hooks.ServerLifecycleHooks;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-// Fires CoolCatCore's common events from Fabric's. Player ticks and block placing come from mixins (Fabric has no
+// Fires CoolCatLib: Core's common events from Fabric's. Player ticks and block placing come from mixins (Fabric has no
 // events for them): PlayerMixin, BlockItemMixin.
 public final class FabricEventHooks {
     private FabricEventHooks() {}

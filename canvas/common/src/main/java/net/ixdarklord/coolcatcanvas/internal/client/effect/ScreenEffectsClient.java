@@ -23,7 +23,7 @@ public final class ScreenEffectsClient {
                 if (minecraft.screen == null) ScreenEffects.openScreen();
             }
         });
-        // CoolCat Canvas's own client command; other subcommands can merge into it.
+        // CoolCatLib: Canvas's own client command; other subcommands can merge into it.
         ClientCommandEvents.REGISTER.register((dispatcher, context) -> dispatcher.register(
                 LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatcanvas_client")
                         .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("effects").executes(ctx -> {

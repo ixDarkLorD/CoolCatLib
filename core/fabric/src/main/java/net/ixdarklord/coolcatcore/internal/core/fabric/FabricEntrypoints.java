@@ -6,7 +6,7 @@ import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-// The custom fabric.mod.json entrypoints that construct CoolCatCore mod constructors, so a mod needs no Fabric class:
+// The custom fabric.mod.json entrypoints that construct CoolCatLib: Core mod constructors, so a mod needs no Fabric class:
 //   "coolcatcore:common": ["com.example.MyMod"], "coolcatcore:client": ["com.example.client.MyModClient"], ...
 // Each one is constructed under the id of the mod that declared it.
 public final class FabricEntrypoints {

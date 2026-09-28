@@ -27,7 +27,7 @@ import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
-// Exposes CoolCatCore containers as NeoForge item handler capabilities, so other mods' pipes and tools reach them:
+// Exposes CoolCatLib: Core containers as NeoForge item handler capabilities, so other mods' pipes and tools reach them:
 // blocks and entities through HandlerTypes.CONTAINER, ContainerItem stacks through their minecraft:container
 // component. Vanilla containers are left to NeoForge's own providers.
 public final class NeoForgeTransferCompat {

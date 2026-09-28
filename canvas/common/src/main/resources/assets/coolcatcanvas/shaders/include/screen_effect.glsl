@@ -1,6 +1,6 @@
 #version 330
 
-// Written by CoolCatCore for every pass of a screen effect. Import with:
+// Written by CoolCatLib: Canvas for every pass of a screen effect. Import with:
 //     #moj_import <coolcatcanvas:screen_effect.glsl>
 layout(std140) uniform EffectInfo {
     // The effect's strength this frame, 0 to 1: its fade, manual strength and strength function combined.

@@ -1,1 +1,2 @@
+apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4/common.gradle"
 apply from: rootProject.file("canvas/canvas.gradle")

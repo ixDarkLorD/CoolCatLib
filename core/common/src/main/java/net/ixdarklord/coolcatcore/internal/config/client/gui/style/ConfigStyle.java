@@ -136,7 +136,7 @@ public final class ConfigStyle {
      * The theme's background. By default it's see-through: the title screen's panorama, or the world while playing,
      * blurred and darkened by the backdrop color so the panels stay readable. A theme's texture is drawn over it (in a
      * world only when the theme asks), fully covering it unless the texture is translucent. The theme's opacities are
-     * scaled by the player's own choice in CoolCatCore's client config.
+     * scaled by the player's own choice in CoolCatLib: Core's client config.
      *
      * @param panorama draws the title screen's panorama
      */

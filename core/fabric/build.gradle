@@ -1,5 +1,4 @@
-apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v3/fabric.gradle"
-apply from: rootProject.file("core/core.gradle")
+apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4/fabric.gradle"
 
 dependencies {
     api libs.jei.api.fabric
