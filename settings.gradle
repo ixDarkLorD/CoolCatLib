@@ -18,7 +18,30 @@ pluginManagement {
     }
 }
 
-include("common", "testmod-fabric", "testmod-neoforge")
-include(project_loaders.split(","))
+// Folder -> project name prefix. The shared build scripts look CoolCat Core's modules up as ":common" and the loader
+// names, so Core's projects have no prefix.
+def modules = ["common"] + project_loaders.split(",").toList()
+def folders = [
+        core    : [prefix: "", modules: modules],
+        canvas  : [prefix: "canvas-", modules: modules],
+        testmods: [prefix: "testmod-", modules: modules - "common"],
+]
+folders.each { folder, layout ->
+    layout.modules.each { module ->
+        def path = ":${layout.prefix}${module}"
+        include(path)
+        project(path).projectDir = file("$folder/$module")
+    }
+}
+
+// The shared scripts read the mod's attributes (modid, mod_name, ...) from gradle.properties, where they describe
+// CoolCat Core. Canvas's projects get their own from the canvas_* properties, before any build script runs.
+def canvasAttributes = providers.gradlePropertiesPrefixedBy("canvas_").get()
+        .collectEntries { key, value -> [(key - "canvas_"): value] }
+gradle.projectsLoaded {
+    it.rootProject.subprojects.findAll { it.name.startsWith("canvas-") }.each { project ->
+        canvasAttributes.each { key, value -> project.ext.set(key, value) }
+    }
+}
 
 apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v3/settings.gradle"

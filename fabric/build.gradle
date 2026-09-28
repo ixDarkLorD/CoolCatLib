@@ -1,6 +1,0 @@
-apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v3/fabric.gradle"
-
-dependencies {
-    api libs.jei.api.fabric
-    implementation libs.jei.fabric
-}

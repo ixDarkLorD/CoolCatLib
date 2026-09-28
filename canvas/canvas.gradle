@@ -1,0 +1,124 @@
+// The build of every CoolCat Canvas project: the shared common/fabric/neoforge scripts, but built on Canvas's own common
+// module and with CoolCat Core as a dependency. Its mod attributes (modid, mod_name, ...) come from the canvas_*
+// properties (see settings.gradle).
+def platform = project.name - "canvas-"
+
+base {
+    archivesName = modid + (platform == "common" ? "" : "-$platform")
+}
+
+publishing.publications.mavenJava {
+    groupId = "${mod_maven_group}.${modid}"
+    artifactId = "${modid}-${platform}"
+    pom.name = "${mod_name} [${platform}]"
+}
+
+tasks.withType(Jar).configureEach {
+    from(rootProject.file("canvas/CHANGELOG.md"))
+}
+
+// main.gradle copies Core's common resources into every project.
+def coreCommon = project(":common").projectDir.toPath()
+processResources {
+    exclude { it.file.toPath().startsWith(coreCommon) }
+}
+
+if (platform == "common") {
+    architectury {
+        common helper.loaderNames()
+    }
+
+    dependencies {
+        compileOnly libs.fabric.loader
+        compileOnly project(":common")
+    }
+
+    // A plain jar of this module's own classes, like Core's common module.
+    shadowJar {
+        configurations = []
+        archiveClassifier = null
+    }
+    return
+}
+
+def loader = platform == "fabric" ? "Fabric" : "NeoForge"
+
+architectury {
+    platformSetupLoomIde()
+    if (platform == "fabric") fabric() else neoForge()
+}
+
+configurations {
+    common
+    shadowCommon
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+}
+configurations.named("development$loader") { extendsFrom configurations.common }
+
+repositories {
+    maven {
+        name = "NeoForged"
+        url = "https://maven.neoforged.net/releases/"
+    }
+}
+
+dependencies {
+    common(project(":canvas-common")) { transitive = false }
+    shadowCommon(project(path: ":canvas-common", configuration: "transformProduction$loader")) { transitive = false }
+
+    if (platform == "fabric") {
+        implementation libs.fabric.loader
+        api(libs.fabric.api) {
+            exclude(module: "fabric-api-deprecated")
+        }
+    } else {
+        neoForge libs.neoforge.loader
+    }
+
+    // CoolCat Core: its loader module and, as Loom resolves project dependencies to their own classes, its common one.
+    compileOnly project(":$platform")
+    compileOnly project(":common")
+}
+
+tasks.withType(Jar).configureEach {
+    exclude "architectury.common.json"
+}
+
+// The raw jar holds this module's classes; the shadow jar adds Canvas's common module and is the published artifact.
+jar {
+    archiveClassifier = "raw"
+}
+
+shadowJar {
+    dependsOn(jar)
+    mainSpec.sourcePaths.clear()
+    from(zipTree(jar.archiveFile))
+
+    if (platform != "fabric") exclude "fabric.mod.json"
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = null
+}
+
+sourcesJar {
+    def commonSources = project(":canvas-common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+configurations {
+    apiElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
+    runtimeElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}

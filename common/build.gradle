@@ -1,8 +1,0 @@
-apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v3/common.gradle"
-
-// The shared main.gradle publishes every subproject's shadowJar. For common it must be a plain jar of this
-// module's own classes (Shadow's default bundles the whole runtime classpath under an "-all" classifier).
-shadowJar {
-    configurations = []
-    archiveClassifier = null
-}

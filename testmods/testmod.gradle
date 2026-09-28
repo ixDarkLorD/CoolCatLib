@@ -1,0 +1,21 @@
+// Shared by the test mods, applied after the shared loader scripts: they run from the repository's run folder, with
+// both CoolCat mods, and their IDE run configurations are named after the project.
+def minecraft = libs.versions.minecraft.get()
+def runName = helper.uppercaseFirstChar(project.name)
+
+loom {
+    runs {
+        configureEach {
+            runDir("../../run")
+            setConfigName("$runName ${helper.uppercaseFirstChar(name)} $minecraft")
+        }
+        server {
+            runDir("../../run/server")
+        }
+    }
+}
+
+// Every mod's common classes come in through the "common" configuration (Core's from the shared loader script).
+dependencies {
+    common(project(":canvas-common")) { transitive = false }
+}
