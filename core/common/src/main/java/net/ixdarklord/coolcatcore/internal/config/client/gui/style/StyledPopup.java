@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -93,6 +94,7 @@ public abstract class StyledPopup extends Screen {
         } else {
             ConfigStyle.use(this.theme);
             ConfigStyle.background(graphics, this.width, this.height, () -> this.renderPanorama(graphics, a));
+            ThemeEffects.background(graphics, this.width, this.height, mouseX, mouseY, a);
         }
         ConfigStyle.use(this.theme);
         // A soft drop shadow, then the theme's panel sprite, or the flat panel with an accent line along its top edge.
@@ -105,6 +107,7 @@ public abstract class StyledPopup extends Screen {
             ConfigStyle.outline(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, ConfigStyle.colors().panelBorder());
             graphics.fill(this.panelX + 1, this.panelY, this.panelX + this.panelWidth - 1, this.panelY + 2, ConfigStyle.accent());
         }
+        ThemeEffects.widget(graphics, ConfigEffect.WidgetKind.POPUP, this.panelX, this.panelY, this.panelWidth, this.panelHeight, false, true, true);
         int titleX = this.contentLeft();
         ConfigIcons.Icon icon = this.titleIcon();
         if (icon != null) {
@@ -126,6 +129,7 @@ public abstract class StyledPopup extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float a) {
         ConfigStyle.use(this.theme);
         super.render(graphics, mouseX, mouseY, a);
+        ThemeEffects.foreground(graphics, this.width, this.height, mouseX, mouseY, a);
     }
 
     /** An icon before the title, if any. */

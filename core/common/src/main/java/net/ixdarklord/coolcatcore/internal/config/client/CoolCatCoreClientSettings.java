@@ -6,6 +6,8 @@ import net.ixdarklord.coolcatcore.api.config.ConfigScope;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.api.config.ConfigValue;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
+import net.minecraft.client.GraphicsStatus;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 // CoolCatLib: Core's own client config: the player's choices for every mod's config screens.
@@ -13,6 +15,8 @@ public final class CoolCatCoreClientSettings {
     private static @Nullable ConfigValue<ConfigTheme.Mode> themeMode;
     private static @Nullable ConfigValue<Integer> backgroundOpacity;
     private static @Nullable ConfigValue<Integer> textureOpacity;
+    private static @Nullable ConfigValue<Boolean> themeEffects;
+    private static @Nullable ConfigValue<Boolean> transitions;
 
     private CoolCatCoreClientSettings() {}
 
@@ -27,6 +31,14 @@ public final class CoolCatCoreClientSettings {
                 .build();
         textureOpacity = builder.intValue("textureOpacity", 100).range(0, 100).slider()
                 .comment("Scales the opacity of each mod's background texture, in percent; below 100 the panorama or world shows through it.")
+                .build();
+        builder.pop();
+        builder.push("effects", "Animations in the config screens, for every mod (always off on the Fast graphics preset)");
+        themeEffects = builder.bool("themeEffects", true)
+                .comment("Each mod's animated effects: by default soft glows and small falling stars behind the panels, shifting with the mouse.")
+                .build();
+        transitions = builder.bool("transitions", true)
+                .comment("Pages gliding into place when you open a config or go back.")
                 .build();
         builder.pop();
         builder.build();
@@ -48,6 +60,21 @@ public final class CoolCatCoreClientSettings {
 
     private static float scaled(float opacity, @Nullable ConfigValue<Integer> percent) {
         return percent == null ? opacity : Math.clamp(opacity * percent.get() / 100.0F, 0, 1);
+    }
+
+    /** Whether the config screens draw their themes' effects: the player's choice, but never on Fast graphics. */
+    public static boolean themeEffects() {
+        return (themeEffects == null || themeEffects.get()) && !fastGraphics();
+    }
+
+    /** Whether config pages animate into place: the player's choice, but never on Fast graphics. */
+    public static boolean transitions() {
+        return (transitions == null || transitions.get()) && !fastGraphics();
+    }
+
+    // The Fast graphics preset asks for the cheapest look, so it turns the screens' animations off.
+    private static boolean fastGraphics() {
+        return Minecraft.getInstance().options.graphicsMode().get() == GraphicsStatus.FAST;
     }
 
     /** Switches between dark and light, and saves the choice. */

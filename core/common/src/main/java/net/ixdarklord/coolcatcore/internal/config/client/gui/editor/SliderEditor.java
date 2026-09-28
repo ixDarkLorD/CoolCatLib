@@ -1,9 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.ixdarklord.coolcatcore.api.config.client.EditSlot;
 import net.ixdarklord.coolcatcore.api.config.client.ValueEditor;
 import net.ixdarklord.coolcatcore.api.config.type.NumberType;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ConfigStyle;
+import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ThemeEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -77,6 +79,7 @@ public final class SliderEditor<N extends Number & Comparable<N>> implements Val
             if (this.isFocused()) ConfigStyle.outline(graphics, knobX - 1, trackY - 4, 10, 12, accent);
             Font font = Minecraft.getInstance().font;
             ConfigStyle.text(graphics, font, this.getMessage(), x, y + 1, width, this.active ? ConfigStyle.colors().text() : ConfigStyle.colors().textMuted());
+            ThemeEffects.widget(graphics, ConfigEffect.WidgetKind.SLIDER, this);
         }
 
         @Override

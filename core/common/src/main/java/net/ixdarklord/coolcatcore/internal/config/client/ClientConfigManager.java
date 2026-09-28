@@ -22,11 +22,13 @@ import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.CategoryPopup;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.ConfigScreen;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.StartupMismatchScreen;
+import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ThemeEffects;
 import net.ixdarklord.coolcatcore.internal.config.network.ConfigNetwork;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -61,6 +63,7 @@ public final class ClientConfigManager {
     /** Called once by each loader's client setup. */
     public static void init() {
         CoolCatCoreClientSettings.init();
+        ThemeEffects.init();
         ClientTickEvents.END.register(minecraft -> {
             ConfigManager.processReloads(true);
             // A safety net for the leave event: once there's no connection, the server's values have no business here.
@@ -283,7 +286,16 @@ public final class ClientConfigManager {
         pendingScreen = screen;
     }
 
+    /**
+     * A notice in the corner: a short title (usually the config's name) over a message, which wraps so it never runs
+     * past the toast. It replaces the previous one.
+     */
     public static void toast(Component title, @Nullable Component message) {
-        SystemToast.addOrUpdate(Minecraft.getInstance().getToasts(), SystemToast.SystemToastId.PERIODIC_NOTIFICATION, title, message);
+        // One toast per save, its message wrapped: a new one replaces the one showing.
+        Minecraft minecraft = Minecraft.getInstance();
+        ToastComponent toasts = minecraft.getToasts();
+        SystemToast.SystemToastId id = SystemToast.SystemToastId.PERIODIC_NOTIFICATION;
+        SystemToast.forceHide(toasts, id);
+        toasts.addToast(message == null ? new SystemToast(id, title, null) : SystemToast.multiline(minecraft, id, title, message));
     }
 }

@@ -16,8 +16,9 @@ public abstract class StyledScreen extends Screen {
     protected static final int GAP = 6;
     protected static final int TITLE_ICON = 16;
 
-    // Page transitions: the page's panels glide a little way into place (from the right for a new page, from the left
-    // going back, from below when opened from elsewhere) while growing from slightly smaller. The background stays still.
+    // Page transitions: the page's panels glide a little way into place (up from below for a new page, down from above
+    // going back, and a shorter rise when opened from elsewhere) while growing from slightly smaller. The background
+    // stays still.
     private static final float TRANSITION_MILLIS = 220;
     private static final int TRANSITION_SLIDE = 14;
     private static final int TRANSITION_RISE = 8;
@@ -108,6 +109,7 @@ public abstract class StyledScreen extends Screen {
         } else {
             this.transition = Transition.RISE;
         }
+        if (!CoolCatCoreClientSettings.transitions()) this.transition = Transition.NONE;
         this.openedAt = System.nanoTime();
     }
 
@@ -136,15 +138,14 @@ public abstract class StyledScreen extends Screen {
     private boolean pushTransition(GuiGraphics graphics) {
         float left = this.transitionLeft();
         if (left <= 0) return false;
-        float x = switch (this.transition) {
+        float y = switch (this.transition) {
             case FORWARD -> TRANSITION_SLIDE * left;
             case BACK -> -TRANSITION_SLIDE * left;
-            default -> 0;
+            default -> TRANSITION_RISE * left;
         };
-        float y = this.transition == Transition.RISE ? TRANSITION_RISE * left : 0;
         float scale = 1 - TRANSITION_SCALE * left;
         graphics.pose().pushPose();
-        graphics.pose().translate(this.width / 2F + x, this.height / 2F + y, 0);
+        graphics.pose().translate(this.width / 2F, this.height / 2F + y, 0);
         graphics.pose().scale(scale, scale, 1);
         graphics.pose().translate(-this.width / 2F, -this.height / 2F, 0);
         return true;
@@ -156,6 +157,7 @@ public abstract class StyledScreen extends Screen {
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float a) {
         ConfigStyle.use(this.theme);
         ConfigStyle.background(graphics, this.width, this.height, () -> this.renderPanorama(graphics, a));
+        ThemeEffects.background(graphics, this.width, this.height, mouseX, mouseY, a);
         if (this.rendering && !this.transitionPushed) this.transitionPushed = this.pushTransition(graphics);
         this.renderPanels(graphics, mouseX, mouseY, a);
     }
@@ -172,6 +174,7 @@ public abstract class StyledScreen extends Screen {
             this.rendering = false;
             this.transitionPushed = false;
         }
+        ThemeEffects.foreground(graphics, this.width, this.height, mouseX, mouseY, a);
     }
 
     /** Draws the bars, panels and fixed text under the widgets. */
