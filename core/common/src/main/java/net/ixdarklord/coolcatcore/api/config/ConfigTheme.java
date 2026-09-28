@@ -38,7 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *   "tile_size": 32,
  *   "texture_opacity": 0.8,          // the texture's own opacity, from 0 to 1
  *   "background_opacity": 0.3,       // the backdrop color over the background, from 0 to 1
- *   "background_in_world": false
+ *   "background_in_world": false,
+ *   "popup_sprite": "mymod:config/popup"   // a nine-slice GUI sprite for popup panels
  * }
  * }</pre>
  * Every field is optional and overrides the mod's own theme; color names match {@link ConfigColorScheme.Builder}.
@@ -58,6 +59,7 @@ public final class ConfigTheme {
     private final float backgroundOpacity;
     private final float textureOpacity;
     private final boolean backgroundInWorld;
+    private final @Nullable Identifier popupSprite;
 
     private ConfigTheme(Builder builder) {
         this.colors = builder.colors;
@@ -69,6 +71,7 @@ public final class ConfigTheme {
         this.backgroundOpacity = builder.backgroundOpacity;
         this.textureOpacity = builder.textureOpacity;
         this.backgroundInWorld = builder.backgroundInWorld;
+        this.popupSprite = builder.popupSprite;
     }
 
     public static Builder builder() {
@@ -144,6 +147,15 @@ public final class ConfigTheme {
         return this.backgroundInWorld;
     }
 
+    /**
+     * The GUI sprite popups (category popups, confirmations, the color picker) draw as their panel, or null for the
+     * scheme's flat panel. It should be a nine-slice sprite; the title is drawn 12 pixels from its top-left corner and
+     * content starts 30 pixels down, so its top border can hold a title bar.
+     */
+    public @Nullable Identifier popupSprite() {
+        return this.popupSprite;
+    }
+
     public Builder toBuilder() {
         Builder builder = new Builder();
         builder.colors = this.colors;
@@ -155,6 +167,7 @@ public final class ConfigTheme {
         builder.backgroundOpacity = this.backgroundOpacity;
         builder.textureOpacity = this.textureOpacity;
         builder.backgroundInWorld = this.backgroundInWorld;
+        builder.popupSprite = this.popupSprite;
         return builder;
     }
 
@@ -184,6 +197,7 @@ public final class ConfigTheme {
         private float backgroundOpacity = 0.35F;
         private float textureOpacity = 1.0F;
         private boolean backgroundInWorld;
+        private @Nullable Identifier popupSprite;
 
         private Builder() {}
 
@@ -247,6 +261,15 @@ public final class ConfigTheme {
         /** Draws the texture in a world too, instead of the blurred world. */
         public Builder backgroundInWorld(boolean backgroundInWorld) {
             this.backgroundInWorld = backgroundInWorld;
+            return this;
+        }
+
+        /**
+         * A GUI sprite id (like {@code mymod:config/popup}, a texture in {@code textures/gui/sprites/}, usually with a
+         * nine-slice {@code .mcmeta}) drawn as the panel of popups instead of the scheme's flat panel.
+         */
+        public Builder popupSprite(@Nullable Identifier sprite) {
+            this.popupSprite = sprite;
             return this;
         }
 

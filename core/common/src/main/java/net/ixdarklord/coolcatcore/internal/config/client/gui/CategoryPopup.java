@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.api.config.Config;
 import net.ixdarklord.coolcatcore.api.config.ConfigNode;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
@@ -44,9 +45,9 @@ public final class CategoryPopup extends StyledPopup {
     private @Nullable FlatButton saveButton;
     private @Nullable FlatButton resetButton;
 
-    private CategoryPopup(@Nullable Screen parent, ConfigEditSession session, ConfigNode node) {
+    private CategoryPopup(@Nullable Screen parent, ConfigEditSession session, ConfigNode node, @Nullable ConfigTheme theme) {
         super(parent, node.parent() == null ? session.config().title() : node.displayName(),
-                ThemeResources.resolve(session.config().modId(), session.config().theme()));
+                ThemeResources.resolve(session.config().modId(), theme != null ? theme : session.config().theme()));
         this.session = session;
         this.node = node;
     }
@@ -58,6 +59,11 @@ public final class CategoryPopup extends StyledPopup {
      * @throws IllegalArgumentException when nothing is at the path
      */
     public static CategoryPopup create(@Nullable Screen parent, ConfigImpl config, String path) {
+        return create(parent, config, path, null);
+    }
+
+    /** As {@link #create(Screen, ConfigImpl, String)}, drawn with {@code theme} instead of the config's own. */
+    public static CategoryPopup create(@Nullable Screen parent, ConfigImpl config, String path, @Nullable ConfigTheme theme) {
         String dotted = path.replace('/', '.');
         ConfigNode node = config.root();
         if (!dotted.isEmpty()) {
@@ -67,7 +73,7 @@ public final class CategoryPopup extends StyledPopup {
                 node = child;
             }
         }
-        return new CategoryPopup(parent, new ConfigEditSession(config), node);
+        return new CategoryPopup(parent, new ConfigEditSession(config), node, theme);
     }
 
     /** A mod's config by name (the path's first part), then the category in it; null when either is missing. */

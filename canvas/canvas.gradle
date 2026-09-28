@@ -20,6 +20,13 @@ dependencies {
 }
 
 if (platform == "common") {
+    // Architectury's transformer keeps the platform it's transforming for in static state, so with parallel builds
+    // Core's and Canvas's transforms could run at once and write one loader's @ExpectPlatform targets into the other's
+    // jar (Core's NeoForge jar calling internal.core.fabric.*Impl). Canvas's run after Core's instead.
+    tasks.matching { it.name.startsWith("transform") }.configureEach {
+        mustRunAfter(rootProject.project(":common").tasks.matching { it.name.startsWith("transform") })
+    }
+
     // A plain jar of this module's own classes, like Core's common module.
     shadowJar {
         configurations = []

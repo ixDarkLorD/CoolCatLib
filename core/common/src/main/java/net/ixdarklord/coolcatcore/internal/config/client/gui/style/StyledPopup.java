@@ -5,6 +5,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,11 +97,16 @@ public abstract class StyledPopup extends Screen {
             ConfigStyle.background(graphics, this.width, this.height, () -> this.extractPanorama(graphics, a));
         }
         ConfigStyle.use(this.theme);
-        // A soft drop shadow, the panel, and an accent line along its top edge.
+        // A soft drop shadow, then the theme's panel sprite, or the flat panel with an accent line along its top edge.
         ConfigStyle.rect(graphics, this.panelX + 3, this.panelY + 4, this.panelWidth, this.panelHeight, 0x66000000);
-        ConfigStyle.rect(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, ConfigStyle.colors().popup());
-        ConfigStyle.outline(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, ConfigStyle.colors().panelBorder());
-        graphics.fill(this.panelX + 1, this.panelY, this.panelX + this.panelWidth - 1, this.panelY + 2, ConfigStyle.accent());
+        Identifier sprite = this.theme.popupSprite();
+        if (sprite != null) {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.panelX, this.panelY, this.panelWidth, this.panelHeight);
+        } else {
+            ConfigStyle.rect(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, ConfigStyle.colors().popup());
+            ConfigStyle.outline(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, ConfigStyle.colors().panelBorder());
+            graphics.fill(this.panelX + 1, this.panelY, this.panelX + this.panelWidth - 1, this.panelY + 2, ConfigStyle.accent());
+        }
         int titleX = this.contentLeft();
         ConfigIcons.Icon icon = this.titleIcon();
         if (icon != null) {

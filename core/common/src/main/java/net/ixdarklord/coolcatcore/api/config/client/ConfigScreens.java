@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcore.api.config.client;
 
 import net.ixdarklord.coolcatcore.api.config.Config;
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.CategoryPopup;
@@ -47,6 +48,14 @@ public final class ConfigScreens {
      */
     public static Screen categoryPopup(@Nullable Screen parent, Config config, String path) {
         return CategoryPopup.create(parent, (ConfigImpl) config, path);
+    }
+
+    /**
+     * {@link #categoryPopup(Screen, Config, String)} drawn with its own theme instead of the config's, e.g. to match the
+     * screen it's opened from (with {@link ConfigTheme.Builder#popupSprite} for the panel).
+     */
+    public static Screen categoryPopup(@Nullable Screen parent, Config config, String path, ConfigTheme theme) {
+        return CategoryPopup.create(parent, (ConfigImpl) config, path, theme);
     }
 
     /**

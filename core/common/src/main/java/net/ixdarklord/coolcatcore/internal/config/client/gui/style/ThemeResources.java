@@ -63,6 +63,7 @@ public final class ThemeResources {
         if (json.has("background_opacity")) builder.backgroundOpacity(json.get("background_opacity").getAsFloat());
         if (json.has("texture_opacity")) builder.textureOpacity(json.get("texture_opacity").getAsFloat());
         if (json.has("background_in_world")) builder.backgroundInWorld(json.get("background_in_world").getAsBoolean());
+        if (json.has("popup_sprite")) builder.popupSprite(identifier(json.get("popup_sprite")));
         return builder.build();
     }
 
