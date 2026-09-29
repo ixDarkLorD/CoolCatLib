@@ -14,10 +14,12 @@ import java.util.Optional;
  * Full-screen post-processing effects: color grading, distortion, blur, and whatever else a fragment shader can do to
  * the finished frame, with uniforms that can change every frame.
  * <p>
- * Register effects once, from client code (a {@code ClientModConstructor} is a good place), then turn them on and off
- * as the game goes:
+ * CoolCatLib: Canvas ships no effects of its own: a mod brings its own {@code post_effect} JSON and fragment shaders
+ * (or uses vanilla's, like {@code minecraft:invert}). Register effects once, from client code (a
+ * {@code ClientModConstructor} is a good place), then turn them on and off as the game goes:
  * <pre>{@code
- * ScreenEffect insanity = ScreenEffects.register(MyMod.id("insanity"), BuiltinScreenEffects.DESATURATE)
+ * // assets/mymod/post_effect/desaturate.json, drawing assets/mymod/shaders/post/desaturate.fsh
+ * ScreenEffect insanity = ScreenEffects.register(MyMod.id("insanity"), MyMod.id("desaturate"))
  *         .fade(40)
  *         .activeWhen(context -> context.inWorld() && Sanity.of(context.player()) > 0.4F)
  *         .strength(context -> Mth.inverseLerp(Sanity.of(context.player()), 0.4F, 0.8F))
@@ -25,7 +27,6 @@ import java.util.Optional;
  * }</pre>
  * The server can drive registered effects too, through {@code ScreenEffectControl}.
  *
- * @see BuiltinScreenEffects
  * @see ScreenEffectDefinition
  */
 public final class ScreenEffects {

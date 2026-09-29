@@ -9,7 +9,7 @@ This file is for listing all the changes to this project
   - Smooth fades (`fade`, `Easing`), timed pulses (`enableFor`), animated strength, conditions (`activeWhen`), strength functions of the frame (`strength`) and per-frame callbacks (`onFrame`).
   - Uniforms by name: set, animated (`animateTo`) or bound to a function of the frame; `autoBlend` fades shaders that ignore the effect's strength.
   - Shaders get `Strength`, `Time`, `Age` and `Seed` plus noise and luminance helpers from `#moj_import <coolcatcanvas:screen_effect.glsl>`; persistent targets allow feedback effects; reloaded with resource packs; a failing effect is logged and skipped.
-  - Presets in `BuiltinScreenEffects`: desaturate, chromatic aberration, vignette, wobble, film grain, tint, blur, afterimage and heartbeat.
+  - No effects of its own: mods bring their own `post_effect` JSON and shaders, or use vanilla's (`minecraft:invert`, ...).
   - `api.effect.ScreenEffectControl` drives a player's effects from the server.
   - Layers (`ScreenEffects.layers()`): the draw order of every effect, from priorities until rearranged (move up/down, to a layer, to the top or bottom, reset).
   - An effects screen (`ScreenEffects.openScreen()`, a key unbound by default, and `/coolcatcanvas_client effects` in development environments only): every selectable effect with a switch, the active ones as drag-and-drop layers grouped by stage with a strength slider each, a live unblurred preview and a Preview mode hiding the panels. Players' choices (on/off, strengths, order) are saved to `config/coolcatcanvas-screen-effects.json`. Effects have a `displayName`, `description` and `selectable` flag for it.
