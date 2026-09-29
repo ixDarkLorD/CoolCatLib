@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -57,6 +58,11 @@ public final class NeoForgeEventHooks {
         bus.addListener((ServerStoppedEvent event) -> {
             ServerLifecycleEvents.STOPPED.invoker().onServerStopped(event.getServer());
             ServerLifecycleHooks.updateServerState(null);
+        });
+        bus.addListener((OnDatapackSyncEvent event) -> {
+            // A player is set when they log in; after /reload it is null and every player is relevant.
+            boolean joined = event.getPlayer() != null;
+            event.getRelevantPlayers().forEach(player -> ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.invoker().onSyncDataPackContents(player, joined));
         });
 
         bus.addListener((ServerTickEvent.Pre event) -> ServerTickEvents.START.invoker().onStartTick(event.getServer()));

@@ -160,6 +160,11 @@ public final class CommonServicesImpl implements CommonServices {
     }
 
     @Override
+    public boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return ServerPlayNetworking.canSend(player, type);
+    }
+
+    @Override
     public <T extends CustomPacketPayload> void registerConfigurationClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, ConfigurationReceiver<T> receiver) {
         PayloadTypeRegistry.configurationS2C().register(type, codec);
         if (Platform.isClient()) FabricClientNetworking.registerConfigurationReceiver(type, receiver);

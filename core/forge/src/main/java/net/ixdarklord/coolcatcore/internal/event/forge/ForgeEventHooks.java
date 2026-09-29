@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -101,6 +102,13 @@ public final class ForgeEventHooks {
             synchronized (ForgeRegistrations.SERVER_RELOAD_LISTENERS) {
                 ForgeRegistrations.SERVER_RELOAD_LISTENERS.values().forEach(event::addListener);
             }
+        });
+
+        listen(bus, OnDatapackSyncEvent.class, event -> {
+            // A player is set when they log in; after /reload it is null and every player is relevant.
+            boolean joined = event.getPlayer() != null;
+            List<ServerPlayer> players = joined ? List.of(event.getPlayer()) : event.getPlayers();
+            players.forEach(player -> ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.invoker().onSyncDataPackContents(player, joined));
         });
 
         ForgeTransferCompat.register(bus);

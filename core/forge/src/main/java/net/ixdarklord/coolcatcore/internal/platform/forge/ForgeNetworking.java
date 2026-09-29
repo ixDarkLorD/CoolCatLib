@@ -72,7 +72,12 @@ public final class ForgeNetworking {
 
     /** Whether the other end of the connection knows the payload. */
     public static boolean canSend(CustomPacketPayload payload, Connection connection) {
-        Channel<CustomPacketPayload> channel = CHANNELS.get(payload.type().id());
+        return canSend(payload.type(), connection);
+    }
+
+    /** Whether the other end of the connection knows payloads of this type. */
+    public static boolean canSend(CustomPacketPayload.Type<?> type, Connection connection) {
+        Channel<CustomPacketPayload> channel = CHANNELS.get(type.id());
         return channel != null && channel.isRemotePresent(connection);
     }
 

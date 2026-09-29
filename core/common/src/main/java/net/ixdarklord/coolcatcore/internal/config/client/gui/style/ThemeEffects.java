@@ -75,8 +75,10 @@ public final class ThemeEffects {
     private static ConfigEffect.Context context(int width, int height, int mouseX, int mouseY, float partialTick) {
         ConfigTheme theme = ConfigStyle.theme();
         ConfigTheme.Mode mode = ConfigStyle.mode();
+        // No Minecraft instance yet when this class loads during a data run (NeoForge datagen constructs client mods).
+        Minecraft minecraft = Minecraft.getInstance();
         return new ConfigEffect.Context(width, height, mouseX, mouseY, (System.nanoTime() - START) / 1_000_000_000F, partialTick,
-                theme, theme.colors(mode), mode, Minecraft.getInstance().level != null);
+                theme, theme.colors(mode), mode, minecraft != null && minecraft.level != null);
     }
 
     // Widgets are drawn after their screen's background, so they share its size and mouse, with the current theme.

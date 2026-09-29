@@ -82,6 +82,8 @@ public final class ConfigNetwork {
     }
 
     private static void send(ServerPlayer player, ConfigImpl config) {
+        // Clients without CoolCatLib: Core and GameTest mock players have no channel for it (NeoForge throws on send).
+        if (!Network.canPlayerReceive(player, SyncPayload.TYPE)) return;
         String values = ConfigJson.compact(config.syncSnapshot());
         if (values.length() > MAX_SYNC_LENGTH) {
             CoolCatCore.LOGGER.error("Config {} is too large to sync ({} characters)", config.id(), values.length());

@@ -83,6 +83,11 @@ public final class CommonServicesImpl implements CommonServices {
     }
 
     @Override
+    public boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return ForgeNetworking.canSend(type, player.connection.getConnection());
+    }
+
+    @Override
     public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
         ForgeNetworking.send(payload, PacketDistributor.PLAYER.with(player));
     }

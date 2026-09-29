@@ -162,6 +162,8 @@ public final class AttachmentSync {
                 CoolCatCore.LOGGER.error("The synced data of {} is too large to send ({} bytes)", owner, size);
                 continue;
             }
+            // Clients without CoolCatLib: Core and GameTest mock players have no channel for it (NeoForge throws on send).
+            if (!Network.canPlayerReceive(player, AttachmentSyncPayload.TYPE)) continue;
             Network.sendToPlayer(player, owner instanceof Entity entity
                     ? AttachmentSyncPayload.entity(entity.getId(), entries)
                     : AttachmentSyncPayload.block(((BlockEntity) owner).getBlockPos(), entries));
