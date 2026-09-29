@@ -86,6 +86,11 @@ public final class CommonServicesImpl implements CommonServices {
         ForgeNetworking.sendToPlayer(player, payload);
     }
 
+    @Override
+    public boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return ForgeNetworking.canPlayerReceive(player, type);
+    }
+
     // 1.20.1 has no configuration phase: these go out as login packets (see ForgeNetworking).
     @Override
     public <T extends CustomPacketPayload> void registerConfigurationClientbound(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, ConfigurationReceiver<T> receiver) {

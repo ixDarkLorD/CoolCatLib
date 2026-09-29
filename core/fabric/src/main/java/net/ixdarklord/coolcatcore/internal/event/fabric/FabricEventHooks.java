@@ -24,6 +24,8 @@ public final class FabricEventHooks {
             ServerLifecycleHooks.updateServerState(server);
             net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents.STARTING.invoker().onServerStarting(server);
         });
+        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) ->
+                net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.invoker().onSyncDataPackContents(player, joined));
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
                 net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents.STARTED.invoker().onServerStarted(server));
         ServerLifecycleEvents.SERVER_STOPPING.register(server ->

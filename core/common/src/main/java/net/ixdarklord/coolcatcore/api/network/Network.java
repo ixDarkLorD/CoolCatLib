@@ -101,6 +101,14 @@ public final class Network {
         for (ServerPlayer player : players) sendToPlayer(player, payload);
     }
 
+    /**
+     * Whether this player's connection accepts the payload: false for clients without the mod that registered it, and
+     * for connections that never negotiated payloads (e.g. GameTest mock players). Check first when that can happen.
+     */
+    public static boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return CommonServices.get().canPlayerReceive(player, type);
+    }
+
     // The payload's static Type field: the only one, or the one named TYPE.
     @SuppressWarnings("unchecked")
     private static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> typeOf(Class<T> payloadClass) {

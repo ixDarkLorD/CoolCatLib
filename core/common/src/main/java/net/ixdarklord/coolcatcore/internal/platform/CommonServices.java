@@ -53,6 +53,8 @@ public interface CommonServices {
 
     void sendToPlayer(ServerPlayer player, CustomPacketPayload payload);
 
+    boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type);
+
     /**
      * A payload the server sends while a client is still logging in (before it joins the world), received on the
      * client's main thread; the login waits until the receiver has run. 1.20.1 has no configuration phase (1.20.2+),

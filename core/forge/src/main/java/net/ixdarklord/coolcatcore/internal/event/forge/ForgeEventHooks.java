@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -34,6 +35,11 @@ public final class ForgeEventHooks {
         bus.addListener((ServerStartingEvent event) -> {
             ServerLifecycleHooks.updateServerState(event.getServer());
             ServerLifecycleEvents.STARTING.invoker().onServerStarting(event.getServer());
+        });
+        bus.addListener((OnDatapackSyncEvent event) -> {
+            // A player is set when they log in; after /reload it's null and every player is listed.
+            boolean joined = event.getPlayer() != null;
+            event.getPlayers().forEach(player -> ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.invoker().onSyncDataPackContents(player, joined));
         });
         bus.addListener((ServerStartedEvent event) -> ServerLifecycleEvents.STARTED.invoker().onServerStarted(event.getServer()));
         bus.addListener((ServerStoppingEvent event) -> ServerLifecycleEvents.STOPPING.invoker().onServerStopping(event.getServer()));

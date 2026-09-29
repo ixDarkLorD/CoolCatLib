@@ -106,6 +106,12 @@ public final class ForgeNetworking {
     }
 
     /** Client only. */
+    // Every payload travels on CoolCatLib: Core's channel: the client has it, and knows the payload (registered on both
+    // sides alike).
+    public static boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return CLIENTBOUND.containsKey(type.id()) && CHANNEL.isRemotePresent(player.connection.connection);
+    }
+
     public static void sendToServer(CustomPacketPayload payload) {
         CHANNEL.sendToServer(new ServerboundMessage(entry(SERVERBOUND, payload), payload));
     }

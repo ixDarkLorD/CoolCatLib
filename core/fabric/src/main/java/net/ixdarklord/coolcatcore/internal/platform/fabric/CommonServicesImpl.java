@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcore.internal.platform.fabric;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -110,6 +111,11 @@ public final class CommonServicesImpl implements CommonServices {
     @Override
     public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
         FabricNetworking.sendToPlayer(player, payload);
+    }
+
+    @Override
+    public boolean canPlayerReceive(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return ServerPlayNetworking.canSend(player, type.id());
     }
 
     // 1.20.1 has no configuration phase: these go out as login queries (see FabricNetworking).
