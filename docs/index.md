@@ -24,8 +24,13 @@ hide:
 <p class="ccl-hero__badges">
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-26.1.2%20%7C%201.21.1%20%7C%201.20.1-62B47A?style=flat-square">
   <img alt="Loaders" src="https://img.shields.io/badge/Loaders-NeoForge%20%7C%20Forge%20%7C%20Fabric-E68C37?style=flat-square">
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib"><img alt="Core downloads" src="https://img.shields.io/curseforge/dt/916525?style=flat-square&logo=curseforge&label=Core&color=F16436"></a>
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas"><img alt="Canvas downloads" src="https://img.shields.io/curseforge/dt/1716397?style=flat-square&logo=curseforge&label=Canvas&color=B04BD1"></a>
+</p>
+
+<p class="ccl-hero__badges ccl-hero__badges--downloads">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib"><img alt="Core on CurseForge" src="https://img.shields.io/curseforge/dt/916525?style=flat-square&logo=curseforge&label=Core&color=F16436"></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas"><img alt="Canvas on CurseForge" src="https://img.shields.io/curseforge/dt/1716397?style=flat-square&logo=curseforge&label=Canvas&color=F16436"></a>
+  <a href="https://modrinth.com/mod/ASkaoGC8"><img alt="Core on Modrinth" src="https://img.shields.io/modrinth/dt/ASkaoGC8?style=flat-square&logo=modrinth&label=Core&color=1BD96A"></a>
+  <a href="https://modrinth.com/mod/NtytwOvv"><img alt="Canvas on Modrinth" src="https://img.shields.io/modrinth/dt/NtytwOvv?style=flat-square&logo=modrinth&label=Canvas&color=1BD96A"></a>
 </p>
 
 </div>
