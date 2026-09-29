@@ -9,6 +9,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.ixdarklord.coolcatcore.api.config.ConfigPreset;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
 import net.ixdarklord.coolcatcore.api.config.RestartRequirement;
+import net.ixdarklord.coolcatcore.api.config.type.EnumType;
 import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -126,7 +127,7 @@ public final class ConfigCommands {
                                     if (value == null) return 0;
                                     value.reset();
                                     value.config().save();
-                                    feedback.success(context.getSource(), Component.translatableWithFallback("config.coolcatcore.command.reset", "Reset %s", value.path()).append(restartNotice(value.restartRequirement())), true);
+                                    feedback.success(context.getSource(), Component.translatableWithFallback("config.coolcatcore.command.reset", "Reset %s", value.displayName()).append(restartNotice(value.restartRequirement())), true);
                                     return 1;
                                 })))
                         .then(LiteralArgumentBuilder.<S>literal("preset")
@@ -155,8 +156,17 @@ public final class ConfigCommands {
         value.set(result.value());
         value.config().save();
         feedback.success(context.getSource(), Component.translatableWithFallback("config.coolcatcore.command.set", "Set %s to %s",
-                value.path(), Component.literal(value.type().format(result.value())).withStyle(ChatFormatting.GREEN)).append(restartNotice(value.restartRequirement())), true);
+                value.displayName(), displayValue(value, result.value()).withStyle(ChatFormatting.GREEN)).append(restartNotice(value.restartRequirement())), true);
         return 1;
+    }
+
+    // A value as players read it: an enum by its display name, anything else as written in the file.
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T> MutableComponent displayValue(ConfigValueImpl<T> value, T raw) {
+        if (value.type() instanceof EnumType enumType && raw instanceof Enum<?> constant) {
+            return enumType.displayName(constant).copy();
+        }
+        return Component.literal(value.type().format(raw));
     }
 
     private static <T> MutableComponent describe(ConfigValueImpl<T> value) {
