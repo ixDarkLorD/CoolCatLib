@@ -22,3 +22,5 @@ classes/
 # Claude Code project notes (local only), in any folder
 CLAUDE.md
 CLAUDE.local.md
+
+logs/
