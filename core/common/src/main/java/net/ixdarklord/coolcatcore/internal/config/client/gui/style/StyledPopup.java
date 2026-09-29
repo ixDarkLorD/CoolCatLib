@@ -16,6 +16,11 @@ import org.jetbrains.annotations.Nullable;
 public abstract class StyledPopup extends Screen implements Overlay {
     protected static final int PADDING = 12;
     protected static final int TITLE_HEIGHT = 18;
+    /**
+     * The strip along the bottom of the content that holds a popup's buttons (and nothing else); a themed popup sprite
+     * draws its footer band behind it, so body content must stay above {@link #footerTop()}.
+     */
+    protected static final int FOOTER = 26;
 
     protected final @Nullable Screen parent;
     protected final ConfigTheme theme;
@@ -53,6 +58,16 @@ public abstract class StyledPopup extends Screen implements Overlay {
 
     protected int contentBottom() {
         return this.panelY + this.panelHeight - PADDING;
+    }
+
+    /** The top of the footer strip; the body ends here. */
+    protected int footerTop() {
+        return this.contentBottom() - FOOTER;
+    }
+
+    /** Where the footer's 20px tall buttons go. */
+    protected int footerButtonY() {
+        return this.contentBottom() - 20;
     }
 
     @Override
