@@ -50,6 +50,9 @@ theme:
     - content.tabs.link
     - content.action.edit
 
+hooks:
+  - hooks/changelog.py
+
 extra_css:
   - stylesheets/extra.css
 
@@ -112,3 +115,4 @@ nav:
       - GUI: canvas/gui.md
   - Reference:
       - API Reference: reference/api.md
+  - Changelog: changelog.md

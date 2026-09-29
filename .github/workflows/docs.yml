@@ -4,6 +4,9 @@ on:
   push:
     branches: [docs]
   workflow_dispatch:
+  # The Changelog page is read from the version branches: rebuild daily to pick up their changes.
+  schedule:
+    - cron: "0 4 * * *"
 
 permissions:
   contents: read
