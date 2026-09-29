@@ -94,10 +94,10 @@ public abstract class StyledScreen extends Screen {
         ConfigStyle.use(this.theme);
         Screen previous = lastRemoved;
         lastRemoved = null;
-        // Leaving through a popup (like "Discard changes?") counts as leaving the page under it.
-        while (previous instanceof StyledPopup popup && popup.parent != this) previous = popup.parent;
-        if (previous instanceof StyledPopup popup && popup.parent == this) {
-            // Back from a popup over this page: it never left.
+        // Leaving through a popup or dropdown (like "Discard changes?") counts as leaving the page under it.
+        while (previous instanceof Overlay overlay && overlay.overlayParent() != this) previous = overlay.overlayParent();
+        if (previous instanceof Overlay overlay && overlay.overlayParent() == this) {
+            // Back from a popup or dropdown over this page: it never left.
             this.transition = Transition.NONE;
         } else if (previous != null && previous == this.parentScreen()) {
             this.transition = Transition.FORWARD;

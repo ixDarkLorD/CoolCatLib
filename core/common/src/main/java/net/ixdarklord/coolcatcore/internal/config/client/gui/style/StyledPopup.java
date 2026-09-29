@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 // A panel floating over the screen it was opened from, which stays visible and dimmed underneath. Esc or a click
 // outside the panel closes it. Subclasses size the panel with setPanel and add widgets in initPopup.
-public abstract class StyledPopup extends Screen {
+public abstract class StyledPopup extends Screen implements Overlay {
     protected static final int PADDING = 12;
     protected static final int TITLE_HEIGHT = 18;
 
@@ -78,6 +78,11 @@ public abstract class StyledPopup extends Screen {
     @Override
     public void added() {
         ConfigStyle.use(this.theme);
+    }
+
+    @Override
+    public @Nullable Screen overlayParent() {
+        return this.parent;
     }
 
     @Override

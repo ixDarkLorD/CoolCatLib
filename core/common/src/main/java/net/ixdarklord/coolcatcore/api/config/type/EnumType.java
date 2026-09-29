@@ -3,6 +3,7 @@ package net.ixdarklord.coolcatcore.api.config.type;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +12,8 @@ import java.util.stream.Collectors;
 
 /**
  * One of an enum's constants, stored by name (read case-insensitively). Give constants a name for the screen by
- * implementing {@link Displayable}; otherwise {@code FANCY_LEAVES} shows as "Fancy Leaves".
+ * implementing {@link Displayable}, and a description too (shown when choosing from the list); otherwise
+ * {@code FANCY_LEAVES} shows as "Fancy Leaves".
  */
 public final class EnumType<E extends Enum<E>> implements ConfigType<E> {
     private final Class<E> enumClass;
@@ -43,6 +45,11 @@ public final class EnumType<E extends Enum<E>> implements ConfigType<E> {
 
     public Component displayName(E constant) {
         return constant instanceof Displayable displayable ? displayable.displayName() : Component.literal(prettify(constant.name()));
+    }
+
+    /** What a constant does, shown when choosing it from the list; null when it has no description. */
+    public @Nullable Component description(E constant) {
+        return constant instanceof Displayable displayable ? displayable.description() : null;
     }
 
     @Override
@@ -95,8 +102,29 @@ public final class EnumType<E extends Enum<E>> implements ConfigType<E> {
                 .collect(Collectors.joining(" "));
     }
 
-    /** An enum constant with its own name in the config screen. */
+    /**
+     * An enum constant with its own name in the config screen, and optionally a description of what it does, shown as
+     * a tooltip when choosing it from the list:
+     * <pre>{@code
+     * public enum Quality implements EnumType.Displayable {
+     *     LOW, HIGH;
+     *
+     *     public Component displayName() {
+     *         return Component.translatable("mymod.quality." + this.name().toLowerCase(Locale.ROOT));
+     *     }
+     *
+     *     public Component description() {
+     *         return Component.translatable("mymod.quality." + this.name().toLowerCase(Locale.ROOT) + ".desc");
+     *     }
+     * }
+     * }</pre>
+     */
     public interface Displayable {
         Component displayName();
+
+        /** What this constant does; null (the default) for none. */
+        default @Nullable Component description() {
+            return null;
+        }
     }
 }

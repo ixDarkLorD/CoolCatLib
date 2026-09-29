@@ -286,6 +286,9 @@ public final class ClientConfigManager {
         pendingScreen = screen;
     }
 
+    // The widest a toast's message line gets before it wraps.
+    private static final int TOAST_LINE_WIDTH = 170;
+
     /**
      * A notice in the corner: a short title (usually the config's name) over a message, which wraps so it never runs
      * past the toast. It replaces the previous one.
@@ -295,6 +298,8 @@ public final class ClientConfigManager {
         ToastManager toasts = minecraft.getToastManager();
         SystemToast.SystemToastId id = SystemToast.SystemToastId.PERIODIC_NOTIFICATION;
         SystemToast.forceHide(toasts, id);
-        toasts.addToast(message == null ? new SystemToast(id, title, null) : SystemToast.multiline(minecraft, id, title, message));
+        // Sized to its text, like vanilla's own; only a message too long for one line wraps (in a wider toast).
+        boolean fits = message == null || minecraft.font.width(message) <= TOAST_LINE_WIDTH;
+        toasts.addToast(fits ? new SystemToast(id, title, message) : SystemToast.multiline(minecraft, id, title, message));
     }
 }

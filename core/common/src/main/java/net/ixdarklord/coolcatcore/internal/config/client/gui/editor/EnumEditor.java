@@ -5,14 +5,17 @@ import net.ixdarklord.coolcatcore.api.config.client.ValueEditor;
 import net.ixdarklord.coolcatcore.api.config.type.EnumType;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ConfigStyle;
+import net.ixdarklord.coolcatcore.internal.config.client.gui.style.DropdownScreen;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.FlatButton;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
 
-// A selector between arrows: click (or Enter) for the next constant, right-click or shift for the previous.
+// A selector between arrows: its arrows step to the previous or next constant, and its middle opens a dropdown of them
+// all. Enter steps forward; right-click or shift steps back.
 public final class EnumEditor<E extends Enum<E>> implements ValueEditor {
     private static final ConfigIcons.Icon LEFT = ConfigIcons.CHEVRON_LEFT;
 
@@ -37,16 +40,38 @@ public final class EnumEditor<E extends Enum<E>> implements ValueEditor {
         this.button.setMessage(this.type.displayName(this.slot.get()));
     }
 
+    private void step(boolean backwards) {
+        this.slot.set(this.type.cycle(this.slot.get(), backwards));
+        this.refresh();
+    }
+
+    // Every constant in a dropdown under the box; picking one sets it.
+    private void openDropdown() {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.setScreen(new DropdownScreen<>(minecraft.screen, this.button.getX(), this.button.getY(), this.button.getWidth(), this.button.getHeight(),
+                this.type.constants(), this.slot.get(), this.type::displayName, this.type::description, value -> {
+                    this.slot.set(value);
+                    this.refresh();
+                }));
+    }
+
     private final class CycleButton extends FlatButton {
+        // How wide each arrow's clickable end is.
+        private static final int ARROW_ZONE = 16;
+
         CycleButton(int width, int height) {
             super(width, height, CommonComponents.EMPTY, button -> {});
         }
 
         @Override
         public void onPress(InputWithModifiers input) {
-            boolean backwards = input.hasShiftDown() || (input instanceof MouseButtonEvent event && event.button() == 1);
-            EnumEditor.this.slot.set(EnumEditor.this.type.cycle(EnumEditor.this.slot.get(), backwards));
-            EnumEditor.this.refresh();
+            if (input instanceof MouseButtonEvent event && event.button() == 0) {
+                if (event.x() < this.getX() + ARROW_ZONE) EnumEditor.this.step(true);
+                else if (event.x() >= this.getRight() - ARROW_ZONE) EnumEditor.this.step(false);
+                else EnumEditor.this.openDropdown();
+                return;
+            }
+            EnumEditor.this.step(input.hasShiftDown() || input instanceof MouseButtonEvent);
         }
 
         @Override
@@ -57,10 +82,17 @@ public final class EnumEditor<E extends Enum<E>> implements ValueEditor {
         @Override
         protected void extractButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             super.extractButton(graphics, mouseX, mouseY, a);
-            int color = !this.active ? ConfigStyle.colors().textMuted() : this.isHoveredOrFocused() ? ConfigStyle.accent() : ConfigStyle.colors().textDim();
+            // Each arrow lights up while the mouse is over its end, the one it would step toward.
+            boolean hovered = this.active && this.isHovered();
             int y = this.getY() + (this.getHeight() - LEFT.height()) / 2;
-            LEFT.draw(graphics, this.getX() + 5, y, color);
-            ConfigIcons.CHEVRON.draw(graphics, this.getRight() - 5 - ConfigIcons.CHEVRON.width(), y, color);
+            LEFT.draw(graphics, this.getX() + 5, y, this.arrowColor(hovered && mouseX < this.getX() + ARROW_ZONE));
+            ConfigIcons.CHEVRON.draw(graphics, this.getRight() - 5 - ConfigIcons.CHEVRON.width(), y,
+                    this.arrowColor(hovered && mouseX >= this.getRight() - ARROW_ZONE));
+        }
+
+        private int arrowColor(boolean lit) {
+            if (!this.active) return ConfigStyle.colors().textMuted();
+            return lit || this.isFocused() ? ConfigStyle.accent() : ConfigStyle.colors().textDim();
         }
     }
 }

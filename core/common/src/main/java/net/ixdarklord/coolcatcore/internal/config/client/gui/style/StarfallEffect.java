@@ -16,7 +16,9 @@ import java.util.Random;
 final class StarfallEffect implements ConfigEffect {
     static final Identifier GLOW = CoolCatCore.rl("textures/gui/config/glow.png");
     static final int GLOW_SIZE = 64;
-    private static final int STAR_COUNT = 70;
+    private static final int STAR_COUNT = 90;
+    // How much of the nearest stars shows over the panels, so they cross the whole screen without hurting the text.
+    private static final float OVER_PANELS = 0.35F;
     // How far the nearest layer shifts, in GUI pixels, as the mouse crosses the screen.
     private static final float PARALLAX = 14;
     private static final Orb[] ORBS = {
@@ -66,25 +68,52 @@ final class StarfallEffect implements ConfigEffect {
             float size = shorter * orb.size;
             float x = width * orb.x + (float) Math.sin(time * 0.07F + orb.phase) * width * 0.04F - this.parallaxX * PARALLAX * orb.depth;
             float y = height * orb.y + (float) Math.cos(time * 0.05F + orb.phase) * height * 0.04F - this.parallaxY * PARALLAX * orb.depth;
-            glow(graphics, x, y, size, ConfigStyle.withAlpha(accent, light ? 0x22 : 0x1C));
+            glow(graphics, x, y, size, ConfigStyle.withAlpha(accent, light ? 0x40 : 0x38));
         }
 
         // The stars, falling and swaying, wrapping back to the top.
-        int starColor = towardWhite(accent, light ? 0.2F : 0.75F);
+        int starColor = starColor(accent, light);
+        for (Star star : this.stars) this.extractStar(graphics, star, context, starColor, 1);
+    }
+
+    // The nearest stars again, faintly, over the panels.
+    @Override
+    public void extractForeground(GuiGraphicsExtractor graphics, Context context) {
+        int starColor = starColor(context.accent(), context.mode() == ConfigTheme.Mode.LIGHT);
         for (Star star : this.stars) {
-            float fall = (6 + 16 * star.depth) * star.speed;
-            float span = height + 8;
-            float y = ((star.y * span + time * fall) % span) - 4 - this.parallaxY * PARALLAX * star.depth;
-            float x = star.x * width + (float) Math.sin(time * 0.4F * star.speed + star.phase) * 3 * star.depth - this.parallaxX * PARALLAX * star.depth;
-            // Fainter near the top so they appear softly, and a slow flicker.
-            float fadeIn = Math.min(1, (y + 4) / (height * 0.15F));
-            float flicker = 0.65F + 0.35F * (float) Math.sin(time * star.twinkle + star.phase);
-            float alpha = (0.18F + 0.32F * star.depth) * flicker * Math.max(0, fadeIn);
-            if (alpha <= 0.01F) continue;
-            float size = star.depth >= 1 ? 2 : 1;
-            if (star.depth >= 0.6F) glow(graphics, x + size / 2, y + size / 2, 7 + 5 * star.depth, ConfigStyle.withAlpha(starColor, Math.round(90 * alpha)));
-            graphics.fill(Math.round(x), Math.round(y), Math.round(x + size), Math.round(y + size), ConfigStyle.withAlpha(starColor, Math.round(255 * alpha)));
+            if (star.depth >= 1) this.extractStar(graphics, star, context, starColor, OVER_PANELS);
         }
+    }
+
+    private void extractStar(GuiGraphicsExtractor graphics, Star star, Context context, int color, float strength) {
+        int height = context.height();
+        float time = context.time();
+        float fall = (6 + 16 * star.depth) * star.speed;
+        float span = height + 8;
+        float y = ((star.y * span + time * fall) % span) - 4 - this.parallaxY * PARALLAX * star.depth;
+        float x = star.x * context.width() + (float) Math.sin(time * 0.4F * star.speed + star.phase) * 3 * star.depth - this.parallaxX * PARALLAX * star.depth;
+        // Fainter near the top so they appear softly, and a slow flicker.
+        float fadeIn = Math.min(1, (y + 4) / (height * 0.15F));
+        float flicker = 0.6F + 0.4F * (float) Math.sin(time * star.twinkle + star.phase);
+        float alpha = (0.35F + 0.5F * star.depth) * flicker * Math.max(0, fadeIn) * strength;
+        if (alpha <= 0.01F) return;
+        float size = star.depth >= 1 ? 2 : 1;
+        float centerX = x + size / 2;
+        float centerY = y + size / 2;
+        if (star.depth >= 0.6F) glow(graphics, centerX, centerY, 10 + 8 * star.depth, ConfigStyle.withAlpha(color, Math.round(150 * alpha)));
+        graphics.fill(Math.round(x), Math.round(y), Math.round(x + size), Math.round(y + size), ConfigStyle.withAlpha(color, Math.round(255 * alpha)));
+        // The nearest ones sparkle: a faint cross, brightest as they flicker up.
+        if (star.depth >= 1 && flicker > 0.75F) {
+            int sparkle = ConfigStyle.withAlpha(color, Math.round(110 * alpha * (flicker - 0.75F) * 4));
+            int cx = Math.round(centerX);
+            int cy = Math.round(centerY);
+            graphics.fill(cx - 3, cy, cx + 3, cy + 1, sparkle);
+            graphics.fill(cx, cy - 3, cx + 1, cy + 3, sparkle);
+        }
+    }
+
+    private static int starColor(int accent, boolean light) {
+        return towardWhite(accent, light ? 0.15F : 0.7F);
     }
 
     // A popup redrawing the page under it passes no mouse; the parallax then stays where it was.
