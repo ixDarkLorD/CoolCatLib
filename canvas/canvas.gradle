@@ -55,7 +55,7 @@ if (platform != "common") {
         setCurseID(project_curse_id)
         setModrinthID(project_modrinth_id)
         setVersionType(project_release_type)
-        setChangelog(rootProject.file("canvas/CHANGELOG.md"))
+        setChangelog(helper.changelogSection(rootProject.file("canvas/CHANGELOG.md")))
         setProjectVersion("${minecraft}-${project.version}")
         setDisplayName("[${platform_name}] ${minecraft} | V${mod_version} ${project_release_type.toUpperCase()}")
         setGameVersions(project_game_versions.split(","))
