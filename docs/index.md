@@ -8,8 +8,7 @@ hide:
 <div class="ccl-hero" markdown>
 
 <div class="ccl-hero__logos">
-  <img src="assets/core.png" alt="CoolCatLib: Core">
-  <img src="assets/canvas.png" alt="CoolCatLib: Canvas">
+  <img src="assets/core.png" alt="CoolCatLib">
 </div>
 
 # CoolCatLib { .ccl-hero__title }
