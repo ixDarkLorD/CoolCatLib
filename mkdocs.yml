@@ -1,0 +1,118 @@
+site_name: CoolCatLib
+site_description: "Cross-loader foundation and visuals for Minecraft mods — CoolCatLib: Core and CoolCatLib: Canvas."
+site_author: ixDarkLorD
+site_url: https://ixdarklord.github.io/CoolCatLib/
+repo_url: https://github.com/ixDarkLorD/CoolCatLib
+repo_name: ixDarkLorD/CoolCatLib
+edit_uri: edit/docs/docs/
+copyright: "Made with 🐱 by ixDarkLorD · MPL-2.0"
+
+theme:
+  name: material
+  logo: assets/core-small.png
+  favicon: assets/favicon.png
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ixDarkLorD/CoolCatLib
+      name: Source on GitHub
+    - icon: simple/curseforge
+      link: https://www.curseforge.com/minecraft/mc-mods/coolcatlib
+      name: "CoolCatLib: Core on CurseForge"
+    - icon: material/palette
+      link: https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas
+      name: "CoolCatLib: Canvas on CurseForge"
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Core:
+      - Events: core/events.md
+      - Registration: core/registration.md
+      - Networking: core/networking.md
+      - Configs: core/configs.md
+      - Attachments: core/attachments.md
+      - Containers and Menus: core/containers-and-menus.md
+      - Platform and Utilities: core/platform-and-utilities.md
+  - Canvas:
+      - Screen Effects: canvas/screen-effects.md
+      - Skyboxes: canvas/skyboxes.md
+      - Text and Colors: canvas/text-and-colors.md
+      - GUI: canvas/gui.md
+  - Reference:
+      - API Reference: reference/api.md
