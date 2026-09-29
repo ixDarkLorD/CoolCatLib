@@ -31,9 +31,9 @@ public final class ConfirmPopup extends StyledPopup {
     @Override
     protected void initPopup() {
         this.lines = this.font.split(this.message, WIDTH - PADDING * 2);
-        this.setPanel(WIDTH, PADDING + TITLE_HEIGHT + this.lines.size() * 10 + 10 + 20 + PADDING);
+        this.setPanel(WIDTH, PADDING + TITLE_HEIGHT + this.lines.size() * 10 + 4 + FOOTER + PADDING);
         int buttonWidth = (this.contentWidth() - 4) / 2;
-        int y = this.contentBottom() - 20;
+        int y = this.footerButtonY();
         FlatButton no = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_CANCEL, buttonWidth, button -> this.answer.accept(false)));
         no.setPosition(this.contentLeft(), y);
         FlatButton confirm = this.addRenderableWidget(FlatButton.of(this.yes, buttonWidth, button -> this.answer.accept(true))
