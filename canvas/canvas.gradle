@@ -58,7 +58,7 @@ if (platform != "common") {
         setModrinthID(project_modrinth_id)
         setVersionType(project_release_type)
         setChangelog(helper.changelogSection(rootProject.file("canvas/CHANGELOG.md")))
-        setProjectVersion("${minecraft}-${project.version}")
+        setProjectVersion("${project.version}".startsWith("${minecraft}-") ? "${project.version}" : "${minecraft}-${project.version}")
         setDisplayName("[${platform_name}] ${minecraft} | V${mod_version} ${project_release_type.toUpperCase()}")
         setGameVersions(project_game_versions.split(","))
         setLoaders(platform)
