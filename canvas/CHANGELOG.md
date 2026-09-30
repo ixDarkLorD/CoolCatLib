@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2100.2.0.0 Release | Sep 30, 2026 (Minecraft 1.21 - 1.21.1)
+## v2100.2.0.0 Release | Sep 30, 2026 (Minecraft 1.21.1)
 Backport of the 26.1.2 release: the same features, on Forge, NeoForge and Fabric, with the rendering rebuilt on 1.21.1's.
 ### ✨ New Features
 - First release: the render and visuals half of what used to be CoolCatLib, split out and built on CoolCatLib: Core. Everything below was moved from CoolCatLib into the `net.ixdarklord.coolcatcanvas` package and `coolcatcanvas` namespace.
