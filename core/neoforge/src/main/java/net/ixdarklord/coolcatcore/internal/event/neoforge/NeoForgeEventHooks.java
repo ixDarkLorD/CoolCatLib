@@ -16,9 +16,13 @@ import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.level.Level;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
@@ -27,7 +31,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
@@ -87,12 +90,7 @@ public final class NeoForgeEventHooks {
             if (event.getLevel() instanceof ServerLevel level) EntityEvents.LOAD.invoker().onLoad(event.getEntity(), level);
         });
 
-        bus.addListener((BreakBlockEvent event) -> {
-            if (event.getLevel() instanceof ServerLevel level && event.getPlayer() instanceof ServerPlayer player
-                    && BlockEvents.BREAK.invoker().onBreak(level, event.getPos(), event.getState(), player).isInterrupt()) {
-                event.setCanceled(true);
-            }
-        });
+        registerBreakListener(bus);
         bus.addListener((BlockEvent.EntityPlaceEvent event) -> {
             if (event.getLevel() instanceof Level level && !level.isClientSide()) {
                 BlockEvents.PLACED.invoker().onPlaced(level, event.getPos(), event.getPlacedBlock(), event.getEntity());
@@ -115,6 +113,43 @@ public final class NeoForgeEventHooks {
         modBus.addListener((RegisterConfigurationTasksEvent event) -> {
             if (!NeoForgeRegistrations.CONFIGURATION_PAYLOADS.isEmpty()) event.register(new ConfigurationPayloadsTask());
         });
+    }
+
+    // NeoForge 26.1.2 renamed BlockEvent.BreakEvent to block.BreakBlockEvent. Neither is named here, so one jar runs on
+    // 26.1 through 26.1.2: whichever the running NeoForge has is listened to as a BlockEvent.
+    private static final String[] BREAK_EVENTS = {
+            "net.neoforged.neoforge.event.level.block.BreakBlockEvent",
+            "net.neoforged.neoforge.event.level.BlockEvent$BreakEvent"
+    };
+
+    @SuppressWarnings("unchecked")
+    private static void registerBreakListener(IEventBus bus) {
+        for (String name : BREAK_EVENTS) {
+            Class<? extends BlockEvent> type;
+            MethodHandle getPlayer;
+            try {
+                type = Class.forName(name).asSubclass(BlockEvent.class);
+                getPlayer = MethodHandles.publicLookup().unreflect(type.getMethod("getPlayer"));
+            } catch (ReflectiveOperationException e) {
+                continue;
+            }
+            bus.addListener(EventPriority.NORMAL, false, (Class<BlockEvent>) type, event -> {
+                if (event.getLevel() instanceof ServerLevel level && player(getPlayer, event) instanceof ServerPlayer player
+                        && BlockEvents.BREAK.invoker().onBreak(level, event.getPos(), event.getState(), player).isInterrupt()) {
+                    ((ICancellableEvent) event).setCanceled(true);
+                }
+            });
+            return;
+        }
+        CoolCatCore.LOGGER.error("No block break event found in this NeoForge; BlockEvents.BREAK won't fire");
+    }
+
+    private static Object player(MethodHandle getPlayer, BlockEvent event) {
+        try {
+            return getPlayer.invoke(event);
+        } catch (Throwable e) {
+            throw new IllegalStateException("Couldn't read the block break event's player", e);
+        }
     }
 
     // Sends the configuration payloads and finishes at once; nothing waits for a reply.

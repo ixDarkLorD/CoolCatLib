@@ -25,13 +25,13 @@ side = "BOTH"
 [[dependencies.${modid}]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${min_neoforge_version},)"
+versionRange = "[${project.supported_min_neoforge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${modid}]]
 modId = "minecraft"
 type = "required"
-versionRange = "[${mc_version},) , (,${max_mc_version}]"
+versionRange = "[${project.supported_min_mc_version},${max_mc_version}]"
 ordering = "NONE"
 side = "BOTH"
