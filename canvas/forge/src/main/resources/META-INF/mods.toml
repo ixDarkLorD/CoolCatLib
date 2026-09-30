@@ -17,7 +17,7 @@ displayTest = "${mod_forge_display_test}"
 [[dependencies.${modid}]]
 modId = "coolcatcore"
 mandatory = true
-versionRange = "[${mod_version},)"
+versionRange = "[${rootProject.mod_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
