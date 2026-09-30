@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
  */
 public final class CategoryPopup extends StyledPopup {
     private static final int WIDTH = 340;
-    private static final int FOOTER = 26;
     private static final int KEY_S = 83;
 
     private final ConfigEditSession session;
@@ -132,12 +131,12 @@ public final class CategoryPopup extends StyledPopup {
         this.setPanel(WIDTH, PADDING + TITLE_HEIGHT + Math.min(listHeight, Math.max(60, maxList)) + FOOTER + PADDING);
 
         int listTop = this.contentTop();
-        int listBottom = this.contentBottom() - FOOTER;
+        int listBottom = this.footerTop();
         this.list = this.addRenderableWidget(new ConfigEntryList(this.minecraft, this.contentWidth() + 8, listBottom - listTop, listTop));
         this.list.updateSizeAndPosition(this.contentWidth() + 8, listBottom - listTop, this.contentLeft() - 4, listTop);
         this.list.setEntries(entries);
 
-        int buttonY = this.contentBottom() - 20;
+        int buttonY = this.footerButtonY();
         int right = this.contentLeft() + this.contentWidth();
         this.saveButton = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, 76, button -> this.save())
                 .style(FlatButton.Style.PRIMARY).withIcon(ConfigIcons.CHECK));
@@ -208,7 +207,7 @@ public final class CategoryPopup extends StyledPopup {
     @Override
     protected void renderPopup(GuiGraphics graphics, int mouseX, int mouseY, float a) {
         // A hairline above the buttons, and what's unsaved or invalid beside them.
-        int lineY = this.contentBottom() - FOOTER + 1;
+        int lineY = this.footerTop() + 1;
         graphics.fill(this.contentLeft(), lineY, this.contentLeft() + this.contentWidth(), lineY + 1, ConfigStyle.colors().panelBorder());
         int errors = this.session.errors().size();
         int modified = this.session.modifiedCount();

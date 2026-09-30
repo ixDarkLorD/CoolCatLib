@@ -23,8 +23,8 @@ import java.util.function.IntConsumer;
 
 /**
  * An HSV color picker in a popup over the screen it was opened from: a saturation/brightness square, a hue bar, an
- * alpha bar (for colors with alpha), a hex field, the 16 dye colors, and the old and new color side by side. "Done"
- * hands the ARGB color to the callback.
+ * alpha bar (for colors with alpha), a hex field, the 16 dye colors, and the old and new color side by side, with
+ * Cancel and Done in the footer below them. "Done" hands the ARGB color to the callback.
  */
 public final class ColorPickerScreen extends StyledPopup {
     private static final int SQUARE = 116;
@@ -66,9 +66,10 @@ public final class ColorPickerScreen extends StyledPopup {
     @Override
     protected void initPopup() {
         int pickerWidth = SQUARE + GAP + BAR + (this.alpha ? GAP + BAR : 0);
-        this.setPanel(PADDING + pickerWidth + GAP * 2 + SIDE_WIDTH + PADDING, PADDING + TITLE_HEIGHT + SQUARE + PADDING);
+        this.setPanel(PADDING + pickerWidth + GAP * 2 + SIDE_WIDTH + PADDING, PADDING + TITLE_HEIGHT + GAP + SQUARE + GAP + FOOTER + PADDING);
         this.left = this.contentLeft();
-        this.top = this.contentTop();
+        // Centered in the body, between the title bar and the footer.
+        this.top = this.contentTop() + (this.footerTop() - this.contentTop() - SQUARE) / 2;
         this.sideX = this.left + pickerWidth + GAP * 2;
 
         this.addRenderableWidget(new PickerArea(this.left, this.top, pickerWidth, SQUARE));
@@ -81,19 +82,23 @@ public final class ColorPickerScreen extends StyledPopup {
 
         this.addRenderableWidget(new Palette(this.sideX + 1, this.top + 64));
 
-        int buttonWidth = (SIDE_WIDTH - 4) / 2;
-        int buttonY = this.top + SQUARE - 20;
-        FlatButton cancel = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_CANCEL, buttonWidth, button -> this.onClose()));
-        cancel.setPosition(this.sideX, buttonY);
-        FlatButton done = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, buttonWidth, button -> {
+        // In the footer, right-aligned like the config popups' buttons.
+        int buttonY = this.footerButtonY();
+        int right = this.contentLeft() + this.contentWidth();
+        FlatButton done = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, 76, button -> {
             this.onDone.accept(this.color());
             this.onClose();
         }).style(FlatButton.Style.PRIMARY).withIcon(ConfigIcons.CHECK));
-        done.setPosition(this.sideX + SIDE_WIDTH - buttonWidth, buttonY);
+        done.setPosition(right - 76, buttonY);
+        FlatButton cancel = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_CANCEL, 64, button -> this.onClose()));
+        cancel.setPosition(right - 76 - 4 - 64, buttonY);
     }
 
     @Override
     protected void renderPopup(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+        // A hairline above the footer, as in the config popups.
+        int lineY = this.footerTop() + 1;
+        graphics.fill(this.contentLeft(), lineY, this.contentLeft() + this.contentWidth(), lineY + 1, ConfigStyle.colors().panelBorder());
         // Old and new color, side by side.
         int half = SIDE_WIDTH / 2;
         checkerboard(graphics, this.sideX, this.top, SIDE_WIDTH, 22);

@@ -38,6 +38,10 @@ public final class ToggleSwitch extends FlatButton {
         int off = hovered ? ConfigStyle.mix(ConfigStyle.colors().toggleOff(), ConfigStyle.colors().text(), 0.12F) : ConfigStyle.colors().toggleOff();
         int track = this.active ? ConfigStyle.mix(off, ConfigStyle.accent(), this.progress) : ConfigStyle.colors().buttonDisabled();
         ConfigStyle.rect(graphics, x, y, TRACK_WIDTH, TRACK_HEIGHT, track);
+        // An outline on the track's edge: the panel border when off, a darker shade of the accent as it turns on.
+        int border = this.active ? ConfigStyle.mix(ConfigStyle.colors().panelBorder(), ConfigStyle.mix(ConfigStyle.accent(), 0xFF000000, 0.35F), this.progress)
+                : ConfigStyle.colors().panelBorder();
+        ConfigStyle.outline(graphics, x, y, TRACK_WIDTH, TRACK_HEIGHT, border);
         if (this.isFocused()) ConfigStyle.outline(graphics, x - 1, y - 1, TRACK_WIDTH + 2, TRACK_HEIGHT + 2, ConfigStyle.withAlpha(ConfigStyle.accent(), 0xA0));
         int knobX = x + 1 + Math.round((TRACK_WIDTH - TRACK_HEIGHT) * this.progress);
         ConfigStyle.rect(graphics, knobX, y + 1, TRACK_HEIGHT - 2, TRACK_HEIGHT - 2, this.active ? ConfigStyle.colors().knob() : ConfigStyle.colors().textMuted());
