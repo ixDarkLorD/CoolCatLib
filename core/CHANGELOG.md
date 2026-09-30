@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2001.2.0.0 Release | Unreleased (Minecraft 1.20.1 backport)
+## v2001.2.0.0 Release | Sep 30, 2026 (Minecraft 1.20.1 backport)
 ### ✨ New Features
 - CoolCatLib is split in two mods: **CoolCatLib: Core** (`coolcatcore`, package `net.ixdarklord.coolcatcore`), this one, and **CoolCatLib: Canvas** (`coolcatcanvas`), which now holds screen effects, skyboxes, GUI widgets, `RenderUtils` and `Easing`. The mod id, package, asset namespace, Fabric entrypoints (`coolcatcore:common`, ...) and commands (`/coolcatcore`, `/coolcatcore_client`) all changed from `coolcatlib`.
 - A cross-loader platform layer, so mods built on CoolCatLib: Core no longer need Architectury API:

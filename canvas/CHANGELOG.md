@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2001.2.0.0 Release | Unreleased (Minecraft 1.20.1)
+## v2001.2.0.0 Release | Sep 30, 2026 (Minecraft 1.20.1)
 ### ✨ New Features
 - First release: the render and visuals half of what used to be CoolCatLib, split out and built on CoolCatLib: Core. Everything below was moved from CoolCatLib into the `net.ixdarklord.coolcatcanvas` package and `coolcatcanvas` namespace.
 - Screen effects (`api.client.effect`): full-screen post-processing shaders whose uniforms can change every frame (vanilla's post chains bake them in at load).

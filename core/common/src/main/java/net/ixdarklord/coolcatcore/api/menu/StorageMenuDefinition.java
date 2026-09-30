@@ -7,7 +7,6 @@ import net.ixdarklord.coolcatcore.api.container.ContainerLayout;
 import net.ixdarklord.coolcatcore.api.container.ItemContainers;
 import net.ixdarklord.coolcatcore.api.container.SlotContainer;
 import net.ixdarklord.coolcatcore.api.handler.HandlerTypes;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.ixdarklord.coolcatcore.api.network.codec.ByteBufCodecs;
