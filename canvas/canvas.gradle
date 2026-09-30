@@ -41,6 +41,8 @@ if (platform == "common") {
 // CurseForge id and dependencies are the canvas_* properties.
 if (platform != "common") {
     build.finalizedBy tasks.copyJarToDir
+    // The shared scripts only refresh the update JSON after uploads of the loader projects (and every Forge one)
+    if (loom.isNeoForge()) [tasks.publishCurseforge, tasks.publishModrinth].each { it.finalizedBy tasks.refreshUpdateJson }
 
     def minecraft = libs.versions.minecraft.get()
     def dependencies = findProperty("${platform}_publish_dependencies").toString()
