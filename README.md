@@ -19,8 +19,7 @@
 
 ## About
 
-CoolCatLib is two mods. Mods built on them share one codebase across Fabric, NeoForge and Forge, without Architectury
-API.
+CoolCatLib is two mods. Mods built on them share one codebase across Fabric, NeoForge and Forge.
 
 | Mod | Mod id | What it holds |
 |---|---|---|
