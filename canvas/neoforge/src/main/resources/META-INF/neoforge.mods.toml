@@ -18,7 +18,7 @@ config = "${modid}.common.mixins.json"
 [[dependencies.${modid}]]
 modId = "coolcatcore"
 type = "required"
-versionRange = "[${mod_version},)"
+versionRange = "[${rootProject.mod_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
