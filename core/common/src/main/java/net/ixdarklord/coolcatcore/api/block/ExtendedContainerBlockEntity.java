@@ -1,7 +1,6 @@
 package net.ixdarklord.coolcatcore.api.block;
 
 import net.ixdarklord.coolcatcore.api.attachment.Attachment;
-import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
 import net.ixdarklord.coolcatcore.api.container.ContainerLayout;
 import net.ixdarklord.coolcatcore.api.container.SidedContainerView;
 import net.ixdarklord.coolcatcore.api.container.SlotContainer;
