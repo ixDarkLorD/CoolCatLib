@@ -34,6 +34,9 @@ public abstract class ViewportPanel extends Panel {
     private float vignetteStrength;
     private int edgeFade;
     private IntSupplier edgeFadeColor = () -> 0xFF000000;
+    // How far each edge fade (left, right, top, bottom) is out, eased so it slides into its side at the content's end.
+    private final float[] edgeExtent = new float[4];
+    private long lastEdgeFrame = -1L;
 
     private int pressedButton = -1;
     private double pressX, pressY;
@@ -88,7 +91,8 @@ public abstract class ViewportPanel extends Panel {
 
     /**
      * Fades the edges of the view into {@code color} (the panel's background) wherever content continues past them,
-     * hinting that there's more to pan to. {@code size} 0 disables it.
+     * hinting that there's more to pan to. Each fade shrinks into its side as the end of the content on that side
+     * comes into view, and slides back out when there's more again. {@code size} 0 disables it.
      */
     public ViewportPanel setEdgeFade(int size, IntSupplier color) {
         this.edgeFade = Math.max(0, size);
@@ -227,32 +231,47 @@ public abstract class ViewportPanel extends Panel {
         if (vignette) {
             // Batched text is drawn after fills when flushed, so draw what's pending first to cover it.
             graphics.flush();
-            drawEdges(graphics, b, Math.min(this.vignetteSize, Math.min(b.width(), b.height()) / 2), 0x000000,
-                    this.vignetteStrength, this.vignetteStrength, this.vignetteStrength, this.vignetteStrength);
+            int size = Math.min(this.vignetteSize, Math.min(b.width(), b.height()) / 2);
+            float strength = this.vignetteStrength;
+            drawEdges(graphics, b, 0x000000, size, size, size, size, strength, strength, strength, strength);
         }
         if (this.edgeFade <= 0) return;
+        int size = Math.min(this.edgeFade, Math.min(b.width(), b.height()) / 3);
+        if (size <= 0) return;
         ScreenRectangle content = this.getContentBounds();
-        // How much content is hidden past each edge, ramped over the first 8px so the fade comes in smoothly.
-        float left = hiddenRamp(b.left() - this.toScreenX(content.left()));
-        float right = hiddenRamp(this.toScreenX(content.right()) - b.right());
-        float top = hiddenRamp(b.top() - this.toScreenY(content.top()));
-        float bottom = hiddenRamp(this.toScreenY(content.bottom()) - b.bottom());
-        if (left + right + top + bottom <= 0.0F) return;
+        // How much content is hidden past each edge, as a share of the fade's size: the fade is as wide as that, so
+        // it draws back into its side while the last of the content comes into view.
+        this.easeEdge(0, hiddenShare(b.left() - this.toScreenX(content.left()), size));
+        this.easeEdge(1, hiddenShare(this.toScreenX(content.right()) - b.right(), size));
+        this.easeEdge(2, hiddenShare(b.top() - this.toScreenY(content.top()), size));
+        this.easeEdge(3, hiddenShare(this.toScreenY(content.bottom()) - b.bottom(), size));
+        this.lastEdgeFrame = Util.getNanos();
+        float[] e = this.edgeExtent;
+        if (e[0] + e[1] + e[2] + e[3] <= 0.0F) return;
 
         if (!vignette) graphics.flush();
-        drawEdges(graphics, b, Math.min(this.edgeFade, Math.min(b.width(), b.height()) / 3),
-                this.edgeFadeColor.getAsInt() & 0xFFFFFF, left, right, top, bottom);
+        // The fade shrinks towards its edge; its alpha only drops at the very end so it doesn't leave a hard line.
+        drawEdges(graphics, b, this.edgeFadeColor.getAsInt() & 0xFFFFFF,
+                Math.round(size * e[0]), Math.round(size * e[1]), Math.round(size * e[2]), Math.round(size * e[3]),
+                Math.min(1.0F, e[0] * 3.0F), Math.min(1.0F, e[1] * 3.0F), Math.min(1.0F, e[2] * 3.0F), Math.min(1.0F, e[3] * 3.0F));
     }
 
-    /** Gradients from each edge inwards, starting at the given alpha and fading to nothing over {@code size}. */
-    private static void drawEdges(GuiGraphics graphics, ScreenRectangle b, int size, int rgb, float left, float right, float top, float bottom) {
-        if (size <= 0) return;
-        if (top > 0) graphics.fillGradient(b.left(), b.top(), b.right(), b.top() + size, argb(top, rgb), argb(0.0F, rgb));
-        if (bottom > 0) graphics.fillGradient(b.left(), b.bottom() - size, b.right(), b.bottom(), argb(0.0F, rgb), argb(bottom, rgb));
-        for (int i = 0; i < size; i++) {
-            float falloff = 1.0F - (i + 0.5F) / size;
-            if (left > 0) graphics.fill(b.left() + i, b.top(), b.left() + i + 1, b.bottom(), argb(left * falloff, rgb));
-            if (right > 0) graphics.fill(b.right() - i - 1, b.top(), b.right() - i, b.bottom(), argb(right * falloff, rgb));
+    private void easeEdge(int side, float target) {
+        double dt = this.lastEdgeFrame < 0 ? 1.0 : Math.min((Util.getNanos() - this.lastEdgeFrame) / 1.0E9, 0.1);
+        float value = this.edgeExtent[side] + (target - this.edgeExtent[side]) * (float) (1.0 - Math.exp(-14.0 * dt));
+        this.edgeExtent[side] = Math.abs(target - value) < 0.01F ? target : value;
+    }
+
+    /** Gradients from each edge inwards, starting at the given alpha and fading to nothing over that side's size. */
+    private static void drawEdges(GuiGraphics graphics, ScreenRectangle b, int rgb, int left, int right, int top, int bottom,
+                                  float leftAlpha, float rightAlpha, float topAlpha, float bottomAlpha) {
+        if (top > 0) graphics.fillGradient(b.left(), b.top(), b.right(), b.top() + top, argb(topAlpha, rgb), argb(0.0F, rgb));
+        if (bottom > 0) graphics.fillGradient(b.left(), b.bottom() - bottom, b.right(), b.bottom(), argb(0.0F, rgb), argb(bottomAlpha, rgb));
+        for (int i = 0; i < left; i++) {
+            graphics.fill(b.left() + i, b.top(), b.left() + i + 1, b.bottom(), argb(leftAlpha * (1.0F - (i + 0.5F) / left), rgb));
+        }
+        for (int i = 0; i < right; i++) {
+            graphics.fill(b.right() - i - 1, b.top(), b.right() - i, b.bottom(), argb(rightAlpha * (1.0F - (i + 0.5F) / right), rgb));
         }
     }
 
@@ -260,8 +279,8 @@ public abstract class ViewportPanel extends Panel {
         return FastColor.ARGB32.color(FastColor.as8BitChannel(alpha), rgb);
     }
 
-    private static float hiddenRamp(double hiddenPixels) {
-        return (float) Mth.clamp(hiddenPixels / 8.0, 0.0, 1.0);
+    private static float hiddenShare(double hiddenPixels, int size) {
+        return (float) Mth.clamp(hiddenPixels / size, 0.0, 1.0);
     }
 
     private void fitNow() {
