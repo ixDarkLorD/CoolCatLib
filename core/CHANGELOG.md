@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v1.21.1-1 Release | Unreleased (Minecraft 1.21 - 1.21.1)
+## v2100.2.0.0 Release | Unreleased (Minecraft 1.21 - 1.21.1)
 Backport of the 26.1.2 release: the same features, on Forge, NeoForge and Fabric.
 ### ✨ New Features
 - CoolCatLib is split in two mods: **CoolCatLib: Core** (`coolcatcore`, package `net.ixdarklord.coolcatcore`), this one, and **CoolCatLib: Canvas** (`coolcatcanvas`), which now holds screen effects, skyboxes, GUI widgets, `RenderUtils` and `Easing`. The mod id, package, asset namespace, Fabric entrypoints (`coolcatcore:common`, ...) and commands (`/coolcatcore`, `/coolcatcore_client`) all changed from `coolcatlib`.
