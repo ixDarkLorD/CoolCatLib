@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 /**
  * A full-screen post-processing effect, made with {@link ScreenEffects#register}. Effects start disabled; any number
- * can be active at once, drawn within their stage in {@linkplain ScreenEffects#layers() layer order}.
+ * can be active at once, drawn within their scope in {@linkplain ScreenEffects#layers() layer order}.
  * <p>
  * An effect's drawn strength, from 0 to 1, is the product of:
  * <ul>
@@ -54,10 +54,10 @@ public interface ScreenEffect {
 
     // ---- Configuration (chainable) ----
 
-    ScreenEffectStage stage();
+    ScreenEffectScope scope();
 
-    /** Where in the frame it's drawn. Defaults to {@link ScreenEffectStage#WORLD}. */
-    ScreenEffect stage(ScreenEffectStage stage);
+    /** Where in the frame it's drawn. Defaults to {@link ScreenEffectScope#WORLD}. */
+    ScreenEffect scope(ScreenEffectScope scope);
 
     int priority();
 

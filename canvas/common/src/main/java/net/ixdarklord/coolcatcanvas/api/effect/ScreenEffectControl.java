@@ -51,6 +51,21 @@ public final class ScreenEffectControl {
         send(player, effect, Action.RESET_UNIFORMS, 0, "");
     }
 
+    /**
+     * Tints the player's screen until {@link #disable}: the client makes the tint under {@code tint} if it has none
+     * yet (see {@code ScreenEffects.tint}), so nothing needs registering on either side.
+     *
+     * @param argb the color; its alpha is how strong the tint is
+     */
+    public static void tint(ServerPlayer player, ResourceLocation tint, int argb) {
+        tint(player, tint, argb, 0);
+    }
+
+    /** Tints the player's screen for {@code ticks}, fading in and out: a flash. 0 keeps it until {@link #disable}. */
+    public static void tint(ServerPlayer player, ResourceLocation tint, int argb, int ticks) {
+        send(player, tint, Action.TINT, ticks, "", (argb >> 16 & 0xFF) / 255.0F, (argb >> 8 & 0xFF) / 255.0F, (argb & 0xFF) / 255.0F, (argb >>> 24) / 255.0F);
+    }
+
     private static void send(ServerPlayer player, ResourceLocation effect, Action action, int ticks, String uniform, float... values) {
         Network.sendToPlayer(player, new ScreenEffectPayload(effect, action, Math.max(0, ticks), uniform, values));
     }

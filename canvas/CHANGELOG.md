@@ -1,6 +1,13 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.1.1.0 Release | Oct 4, 2026
+### ✨ New Features
+- A built-in tint screen effect, with nothing to set up: `ScreenEffects.tint(id, argb)` makes a color wash under a mod's own id the first time and recolors it after, so `ScreenEffects.tint(id, 0x59FF0000).enableFor(5)` is a red flash wherever it's called. It's a screen effect like any other (fades, strength, conditions), over the world or, on the `SCREEN` scope, over the HUD and menus too. From the server, `ScreenEffectControl.tint(player, id, argb[, ticks])` does the same for a player, with nothing registered on the client. The definition is `coolcatcanvas:tint` (`ScreenEffects.TINT`, color uniform `TINT_COLOR`).
+
+### 🔧 Changes
+- Renamed `ScreenEffectStage` to `ScreenEffectScope`, and `ScreenEffect.stage()` / `stage(...)` to `scope()` / `scope(...)`: `.scope(ScreenEffectScope.SCREEN)` puts an effect over the HUD and menus. Mods calling the old names need updating. The effects screen's `screen_effect.coolcatcanvas.screen.stage.*` translation keys are now `...screen.scope.*`.
+
 ## v2001.1.0.0 Release | Sep 30, 2026 (Minecraft 1.20.1)
 ### ✨ New Features
 - First release: the render and visuals half of what used to be CoolCatLib, split out and built on CoolCatLib: Core. Everything below was moved from CoolCatLib into the `net.ixdarklord.coolcatcanvas` package and `coolcatcanvas` namespace.

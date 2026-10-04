@@ -2,7 +2,7 @@ package net.ixdarklord.coolcatcanvas.internal.client.effect;
 
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffect;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectLayers;
-import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectStage;
+import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.api.event.v2.client.ScreenEffectEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -57,10 +57,10 @@ final class ScreenEffectLayersImpl implements ScreenEffectLayers {
     }
 
     @Override
-    public List<ScreenEffect> visible(ScreenEffectStage stage) {
+    public List<ScreenEffect> visible(ScreenEffectScope scope) {
         List<ScreenEffect> visible = new ArrayList<>();
         for (ScreenEffectImpl effect : this.snapshot) {
-            if (effect.stage() == stage && effect.isVisible()) visible.add(effect);
+            if (effect.scope() == scope && effect.isVisible()) visible.add(effect);
         }
         return visible;
     }
@@ -85,7 +85,7 @@ final class ScreenEffectLayersImpl implements ScreenEffectLayers {
     public synchronized void moveUp(ScreenEffect effect) {
         int from = this.order.indexOf(effect);
         for (int i = from + 1; i < this.order.size() && from >= 0; i++) {
-            if (this.order.get(i).stage() == effect.stage()) {
+            if (this.order.get(i).scope() == effect.scope()) {
                 this.moveTo(effect, i);
                 return;
             }
@@ -96,7 +96,7 @@ final class ScreenEffectLayersImpl implements ScreenEffectLayers {
     public synchronized void moveDown(ScreenEffect effect) {
         int from = this.order.indexOf(effect);
         for (int i = from - 1; i >= 0; i--) {
-            if (this.order.get(i).stage() == effect.stage()) {
+            if (this.order.get(i).scope() == effect.scope()) {
                 this.moveTo(effect, i);
                 return;
             }
