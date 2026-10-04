@@ -69,6 +69,12 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `MenuScreenRegistry` | Binds screens to menu types. |
 | `TooltipComponentRegistry` | Binds client tooltip components to tooltip data. |
 
+### `item` and `client.gui` ([Item Decorators](../core/item-decorators.md))
+| Class | Functionality |
+|---|---|
+| `item.DecoratedItem` | Implement on an item's class to draw over it in GUIs; Core registers its decorators by itself. |
+| `client.gui.ItemDecorator` | Draws over an item in a slot, after vanilla's bar, cooldown and count. |
+
 ### `network` ([Networking](../core/networking.md))
 | Class | Functionality |
 |---|---|
@@ -92,16 +98,14 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `ConfigMigration` | Upgrades an old file's JSON. |
 | `ConfigDependency` | "Enabled when" rules between values. |
 | `ConfigEvents` | `LOADED`, `RELOADED`, `UNLOADING`, `VALUE_CHANGED`, `SAVED`, `CHANGED`, `SYNCED`. |
-| `ConfigTheme` | Per-mod screen styling: colors, background, icon, popup sprite, effects. |
+| `ConfigTheme` | The look of the mod's screens in Glazed Menu: colors, background, icon, popup sprite, effects. |
 | `ConfigColorScheme` | Screen color palettes: `DARK`, `LIGHT`, `tinted(accent)`. |
 | `annotation.ConfigObject`, `annotation.ConfigEntry` | Annotation-based configs. |
 | `type.ConfigType`, `type.ConfigTypes` | Value types: numbers, strings, colors, identifiers, enums, lists, codecs. |
-| `type.BooleanType`, `NumberType`, `StringType`, `EnumType`, `ColorType`, `IdentifierType`, `ListType`, `CodecType` | The concrete types. `EnumType.Displayable` names enum constants in the screen. |
+| `type.BooleanType`, `NumberType`, `StringType`, `EnumType`, `ColorType`, `IdentifierType`, `ListType`, `CodecType` | The concrete types. `EnumType.Displayable` names enum constants in the editor. |
 | `type.ValidationResult` | Ok, corrected or error. |
 | `format.ConfigFormat`, `format.ConfigFormats`, `format.ConfigDocument`, `format.ConfigFormatException` | File formats: `TOML` (default), `JSON5`. |
-| `client.ConfigScreens` | Opens config screens, category popups and the color picker. |
-| `client.ConfigEffects`, `client.ConfigEffect` | Animated screen effects. |
-| `client.ConfigEditors`, `client.ValueEditor`, `client.EditSlot` | Custom editor widgets. |
+| `client.ConfigScreens` | The bridge to Glazed Menu's config screens, category popups and color picker; `isAvailable()`, `tellUnavailable(config)` without it. |
 
 ### `attachment` ([Attachments](../core/attachments.md))
 | Class | Functionality |

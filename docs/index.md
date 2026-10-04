@@ -43,7 +43,7 @@ hide:
 
     ---
 
-    `coolcatcore` · the purr-fect foundation. Entrypoints that replace per-loader setup; events, registration and networking; TOML configs with in-game screens; attachments; containers and storage menus.
+    `coolcatcore` · the purr-fect foundation. Entrypoints that replace per-loader setup; events, registration and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
 
     [:octicons-arrow-right-24: Getting started](getting-started.md)
 
@@ -71,7 +71,7 @@ hide:
 
 -   :material-tune-variant:{ .lg .middle } **Configs players love**
 
-    Searchable screens with sliders, color pickers, undo/redo, themes and presets. Server values sync live.
+    Typed values with ranges, presets and migrations. Server values sync live, and players edit them in game with Glazed Menu or Configured.
 
 -   :material-paperclip:{ .lg .middle } **Data on anything**
 
@@ -110,7 +110,7 @@ public record PingPayload(BlockPos pos) implements CustomPacketPayload {
 }
 ```
 
-1.  Registers and loads `config/mymod-server.toml`. Players can edit it in game, and its values sync to every client.
+1.  Registers and loads `config/mymod-server.toml`. Its values sync to every client, and players can edit it in game with Glazed Menu or Configured.
 2.  A record payload: CoolCatLib derives its network codec from the record's components.
 3.  An animated rainbow message, drawn by Canvas wherever the text shows up.
 

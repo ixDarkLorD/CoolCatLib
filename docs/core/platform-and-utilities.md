@@ -52,6 +52,7 @@ public class MyModData implements DataGenerationConstructor {
 | Type | Description |
 |---|---|
 | `api.item.ComponentItem` | An item with a category line (`ComponentType.CRAFTING`, `TOOLS`, `ABILITY`) and "hold Shift" tooltips (`isShiftButtonNotPressed(consumer)`). |
+| `api.item.DecoratedItem` | An item that draws over itself in GUIs. See [Item Decorators](item-decorators.md). |
 | `api.data.DataComponent<T>`, `api.data.ItemDataComponent<T>` | Base classes for data-component values: `setStack(stack)`, then `save()` writes the value back to the stack. |
 
 ## Utilities

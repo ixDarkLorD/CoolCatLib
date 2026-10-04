@@ -1,6 +1,6 @@
 # Configs
 
-Typed configs saved as TOML (or JSON5), with in-game editor screens, server sync, hot reload, presets and migrations. Packages: `net.ixdarklord.coolcatcore.api.config` (with `annotation`, `type`, `format`) and `api.config.client` for the screens.
+Typed configs saved as TOML (or JSON5), with server sync, hot reload, presets and migrations. Players edit them in game through [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu) or Configured (see [Editing in game](#editing-in-game)). Packages: `net.ixdarklord.coolcatcore.api.config` (with `annotation`, `type`, `format`) and `api.config.client` for opening the screens.
 
 ## Scopes
 
@@ -60,7 +60,7 @@ Every entry also accepts:
 - Sync: `serverOnly`, `localOnly`, `useServerValue`.
 - Old key names: `aliases`.
 - Validation: `validator`.
-- Dependencies: `enabledWhen(otherBooleanValue)` greys the entry out in the screen while the other value is off.
+- Dependencies: `enabledWhen(otherBooleanValue)` greys the entry out in the editor while the other value is off.
 - Change callbacks: `listener`.
 
 ## Annotation style
@@ -90,23 +90,43 @@ Annotations (in `ConfigEntry`):
 - Text and lists: `@MaxLength`, `@Pattern`, `@Size`.
 - Restarts: `@RequiresRestart`.
 - Sync: `@ServerOnly`, `@LocalOnly`, `@UseServerValue`.
-- Screen: `@Hidden`, `@EnabledWhen`.
+- Editor: `@Hidden`, `@EnabledWhen`.
 
-## Screens
+## Editing in game
 
-Players get searchable editor screens with sliders, a color picker, undo/redo and reset buttons. They open from the NeoForge mod list and from Mod Menu on Fabric, or from code:
+Core loads, saves, syncs and hot reloads configs, and has commands to read and change them. It has no screens of its own: since **26.1.2-2** the editor is a separate, client-side mod, so players only install it if they want it.
+
+| Installed | What players get |
+|---|---|
+| [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu) | Searchable editor screens with sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from its mod list, from `/glazedmenu [mod] [config/category]`, or from your code. |
+| Configured (MrCrayfish) | Configured's own screens, from the NeoForge mod list and from Mod Menu on Fabric. Booleans, numbers, enums and text get its widgets; colors, ids and lists are edited as text. Synced configs are edited on the server by players allowed to. |
+| Neither | No editor. The files and the `/coolcatcore config` commands (`list`, `get`, `set`, `reset`, `reload`, `preset`) still work. |
+
+With both installed, Glazed Menu's screens show the configs.
+
+!!! note "1.21.1 and 1.20.1"
+    On the backports the screens are still part of Core, and `ConfigScreens` always opens them.
+
+Open the screens from code through `ConfigScreens`. It is a bridge: with Glazed Menu installed it opens Glazed Menu's screens, and without it every method opens nothing and returns `null`, so check before you use the result:
 
 ```java
-Minecraft.getInstance().setScreen(ConfigScreens.create(parent, MyMod.MOD_ID));  // the mod's configs
-ConfigScreens.open(MyMod.MOD_ID);                                               // over the current screen
-ConfigScreens.openCategory(MyMod.MOD_ID, "client/rendering");                   // one group, as a popup
+Screen screen = ConfigScreens.create(parent, MyMod.MOD_ID);         // the mod's configs, or null
+if (screen != null) {
+    Minecraft.getInstance().setScreen(screen);
+} else {
+    ConfigScreens.tellUnavailable(MyConfig.CONFIG);                  // tells the player how to change it without screens
+}
+
+ConfigScreens.open(MyMod.MOD_ID);                                   // over the current screen; nothing without screens
+ConfigScreens.openCategory(MyMod.MOD_ID, "client/rendering");       // one group, as a popup
+boolean hasScreens = ConfigScreens.isAvailable();
 ```
 
 Names and tooltips are translated as `config.<modid>.<config>.<path>` (and `.tooltip`). Enums can implement `EnumType.Displayable` to give each constant a display name.
 
 ### Themes
 
-Give your mod's screens their own look from `ClientModConstructor#onConstructMod()`:
+Give your mod's screens in Glazed Menu their own look from `ClientModConstructor#onConstructMod()`:
 
 ```java
 ConfigTheme.setForMod(MyMod.MOD_ID, ConfigTheme.builder()
@@ -120,7 +140,7 @@ ConfigTheme.setForMod(MyMod.MOD_ID, ConfigTheme.builder()
 - Pictures: `icon`, `background`, `mode` (`COVER`, `STRETCH`, `TILE`), `tiled`.
 - Opacity: `backgroundOpacity`, `textureOpacity`, `backgroundInWorld`.
 - `popupSprite`: a nine-slice sprite for category popups.
-- `effects`: animated effects registered with `ConfigEffects.register(id, effect)`.
+- `effects`: animated effects by id. They are registered with CoolCatLib: Canvas's `ConfigEffects.register(id, effect)` (`net.ixdarklord.coolcatcanvas.api.client.gui.theme`).
 
 ## Startup configs
 
@@ -140,11 +160,11 @@ A `STARTUP` config is read before content is registered, so it can decide which 
 | `ConfigScope`, `StartupSync`, `RestartRequirement` | The enums described above. |
 | `ConfigPreset` | Named value sets: `builder.preset(name, preset -> preset.set(value, x))`. |
 | `ConfigEvents` | `LOADED`, `RELOADED`, `UNLOADING`, `VALUE_CHANGED`, `SAVED`, `CHANGED`, `SYNCED` (client). |
-| `ConfigTheme`, `ConfigColorScheme` | Screen styling: `ConfigColorScheme.DARK`, `LIGHT`, `tinted(accent)`, `tintedLight(accent)`, or a builder over every color. |
+| `ConfigTheme`, `ConfigColorScheme` | The look of the mod's screens in Glazed Menu: `ConfigColorScheme.DARK`, `LIGHT`, `tinted(accent)`, `tintedLight(accent)`, or a builder over every color. |
 | `annotation.ConfigObject`, `annotation.ConfigEntry` | The annotation style. |
 | `type.ConfigTypes` | `BOOLEAN`, `INT`, `LONG`, `FLOAT`, `DOUBLE`, `STRING`, `COLOR`, `COLOR_ALPHA`, `IDENTIFIER`; `intRange`, `doubleRange`, `string(maxLength)`, `pattern`, `enumOf`, `identifier(registry)`, `listOf`, `codec`. |
-| `type.EnumType.Displayable` | Implement on an enum to name its constants in the screen. |
+| `type.EnumType.Displayable` | Implement on an enum to name its constants in the editor. |
 | `format.ConfigFormats` | `TOML` (default), `JSON5`. |
-| `client.ConfigScreens` | `create(parent, modId)`, `create(parent, config)`, `createModList(parent)`, `categoryPopup(parent, config, path[, theme])`, `open(modId)`, `openCategory(modId, path)`, `colorPicker(...)`, `hasConfigs(modId)`. |
-| `client.ConfigEffects`, `client.ConfigEffect` | Animated screen backgrounds and widget effects. |
-| `client.ConfigEditors`, `client.ValueEditor` | Custom editor widgets for your own config types. |
+| `client.ConfigScreens` | The bridge to Glazed Menu's screens (each returns `null` or does nothing without it): `isAvailable()`, `create(parent, modId)`, `create(parent, config)`, `createModList(parent)`, `categoryPopup(parent, config, path[, theme])`, `open(modId)`, `openCategory(modId, path)`, `colorPicker(...)`, `hasConfigs(modId)`; `unavailableMessage(config)`, `tellUnavailable(config)`. |
+| Canvas: `api.client.gui.theme.ConfigEffects`, `ConfigEffect` | Animated screen backgrounds and widget effects (moved from Core's `api.config.client` in 26.1.2-2). |
+| Glazed Menu: `net.ixdarklord.glazedmenu.api.editor.ConfigEditors`, `ValueEditor`, `EditSlot` | Custom editor widgets for your own config types (moved from Core's `api.config.client` in 26.1.2-2). |

@@ -16,8 +16,8 @@ repositories {
 
     ```groovy title="common/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-core-common:26.1.2-1"
-        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-common:26.1.2-1"   // only if you use Canvas
+        api "net.ixdarklord.coolcatlib:coolcatlib-core-common:26.1.2-3"
+        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-common:26.1.2-3"   // only if you use Canvas
     }
     ```
 
@@ -25,8 +25,8 @@ repositories {
 
     ```groovy title="fabric/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-core-fabric:26.1.2-1"
-        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-fabric:26.1.2-1"
+        api "net.ixdarklord.coolcatlib:coolcatlib-core-fabric:26.1.2-3"
+        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-fabric:26.1.2-3"
     }
     ```
 
@@ -34,8 +34,8 @@ repositories {
 
     ```groovy title="neoforge/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-core-neoforge:26.1.2-1"
-        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-neoforge:26.1.2-1"
+        api "net.ixdarklord.coolcatlib:coolcatlib-core-neoforge:26.1.2-3"
+        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-neoforge:26.1.2-3"
     }
     ```
 
@@ -43,8 +43,8 @@ repositories {
 
     ```groovy title="forge/build.gradle"
     dependencies {
-        modApi "net.ixdarklord.coolcatlib:coolcatlib-core-forge:1.21.1-1"
-        modApi "net.ixdarklord.coolcatlib:coolcatlib-canvas-forge:1.21.1-1"
+        modApi "net.ixdarklord.coolcatlib:coolcatlib-core-forge:1.21.1-2100.2.0.1"
+        modApi "net.ixdarklord.coolcatlib:coolcatlib-canvas-forge:1.21.1-2100.1.0.0"
     }
     ```
 
@@ -57,8 +57,8 @@ Then declare the dependency in your mod's metadata. Versions take the form `<min
 
     ```json title="fabric.mod.json"
     "depends": {
-      "coolcatcore": ">=26.1.2-1",
-      "coolcatcanvas": ">=26.1.2-1"
+      "coolcatcore": ">=26.1.2-3",
+      "coolcatcanvas": ">=26.1.2-3"
     }
     ```
 
@@ -68,7 +68,7 @@ Then declare the dependency in your mod's metadata. Versions take the form `<min
     [[dependencies.mymod]]
     modId = "coolcatcore"
     type = "required"
-    versionRange = "[26.1.2-1,)"
+    versionRange = "[26.1.2-3,)"
     ordering = "AFTER"
     side = "BOTH"
     ```

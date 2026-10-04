@@ -107,6 +107,7 @@ nav:
       - Configs: core/configs.md
       - Attachments: core/attachments.md
       - Containers and Menus: core/containers-and-menus.md
+      - Item Decorators: core/item-decorators.md
       - Platform and Utilities: core/platform-and-utilities.md
   - Canvas:
       - Screen Effects: canvas/screen-effects.md
