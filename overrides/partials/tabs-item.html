@@ -24,7 +24,7 @@
       <div class="ccl-menu__panel">
         <ul class="ccl-menu__list">
           {% for child in nav_item.children %}
-            {% if child.is_page %}
+            {% if child.is_page and not child.is_index %}
               <li>
                 <a href="{{ child.url | url }}" class="ccl-menu__entry{% if child.active %} ccl-menu__entry--active{% endif %}">
                   {{ icon(child.meta.icon or "material/file-document-outline") }}

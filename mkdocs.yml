@@ -112,6 +112,7 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Core:
+      - core/index.md
       - Events: core/events.md
       - Registration: core/registration.md
       - Networking: core/networking.md
@@ -121,6 +122,7 @@ nav:
       - Item Decorators: core/item-decorators.md
       - Platform and Utilities: core/platform-and-utilities.md
   - Canvas:
+      - canvas/index.md
       - Screen Effects: canvas/screen-effects.md
       - Skyboxes: canvas/skyboxes.md
       - Text and Colors: canvas/text-and-colors.md

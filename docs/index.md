@@ -1,5 +1,6 @@
 ---
 title: Home
+icon: material/home-outline
 hide:
   - navigation
   - toc

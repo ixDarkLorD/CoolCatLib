@@ -480,3 +480,99 @@
     border-left-color: var(--md-accent-fg-color);
   }
 }
+
+/* ---- Side menu ---- */
+.md-nav--primary .md-nav__link svg {
+  color: var(--md-accent-fg-color);
+}
+
+/* As a drawer (narrow screens): the bar's gradient on top, then rows with a filled current page. */
+@media screen and (max-width: 76.234375em) {
+  .md-nav--primary,
+  .md-nav--primary .md-nav {
+    background: var(--md-default-bg-color);
+  }
+
+  .md-nav--primary .md-nav__title {
+    color: #fff;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2b1a14, #2a1f33 55%, #3a2456);
+  }
+
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple)) 1;
+  }
+
+  .md-nav--primary .md-nav__title .md-nav__button.md-logo img {
+    border-radius: 0.6rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  /* A section's own title, shown once it's opened: one compact row, the way back beside the name (the theme
+     leaves room above it for a logo it only has at the top level). */
+  .md-nav--primary .md-nav__item .md-nav__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: auto;
+    padding: 0.7rem 0.8rem;
+    line-height: 1.3;
+    white-space: normal;
+    color: var(--md-default-fg-color);
+    background: color-mix(in srgb, var(--md-accent-fg-color) 10%, var(--md-default-bg-color));
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  }
+
+  .md-nav--primary .md-nav__item .md-nav__title .md-nav__icon {
+    position: static;
+    flex: none;
+    margin: 0;
+  }
+
+  .md-nav__source {
+    color: var(--md-default-fg-color);
+    background: transparent;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  }
+
+  .md-nav--primary .md-nav__list {
+    padding: 0.4rem 0.4rem 0.8rem;
+  }
+
+  .md-nav--primary .md-nav--secondary .md-nav__list,
+  .md-nav--primary .md-nav__list .md-nav__list .md-nav__list {
+    padding: 0;
+  }
+
+  .md-nav--primary .md-nav__item,
+  .md-nav--primary .md-nav__item:last-child {
+    border: 0;
+  }
+
+  .md-nav--primary .md-nav__link {
+    margin: 0.1rem 0;
+    padding: 0.5rem 0.7rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  .md-nav--primary .md-nav__link:hover,
+  .md-nav--primary .md-nav__link:focus-visible {
+    background: color-mix(in srgb, var(--md-default-fg-color) 7%, transparent);
+  }
+
+  .md-nav--primary .md-nav__link--active,
+  .md-nav--primary .md-nav__item--active > .md-nav__link:not(.md-nav__container),
+  .md-nav--primary .md-nav__item--active > .md-nav__container {
+    color: var(--md-accent-fg-color);
+    background: color-mix(in srgb, var(--md-accent-fg-color) 13%, transparent);
+  }
+
+  /* The current page's sections, listed under it. */
+  .md-nav--primary .md-nav--secondary .md-nav__link {
+    padding: 0.3rem 0.7rem;
+    font-weight: 400;
+  }
+}
