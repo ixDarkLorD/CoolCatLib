@@ -1,5 +1,10 @@
 <h1 align="center">CoolCatLib: Core & CoolCatLib: Canvas</h1>
-<p align="center"><b>Minecraft library mods. Downloads can be found on <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib">Curseforge!</a></b></p>
+<p align="center"><b>Minecraft library mods.</b></p>
+<p align="center">
+  Core: <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib">CurseForge</a> / <a href="https://modrinth.com/mod/ASkaoGC8">Modrinth</a> ·
+  Canvas: <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas">CurseForge</a> / <a href="https://modrinth.com/mod/NtytwOvv">Modrinth</a> ·
+  <a href="https://ixdarklord.github.io/CoolCatLib/">Documentation</a>
+</p>
 <hr>
 
 | Mod | Folder | Mod id | What it holds |
