@@ -212,7 +212,7 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `ScreenEffectDefinition` | Post-effect definitions in code or JSON. |
 | `EffectContext` | The frame an effect draws in. |
 | `EffectUniform` | One uniform: set, animate, bind. |
-| `ScreenEffectStage` | `WORLD`, `SCREEN`. |
+| `ScreenEffectScope` | `WORLD`, `SCREEN`. |
 | `ScreenEffectLayers` | The draw order. |
 
 ### `effect` and `event.v2.client` ([Canvas Screen Effects](../canvas/screen-effects.md))

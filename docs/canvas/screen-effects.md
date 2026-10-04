@@ -28,6 +28,12 @@ ScreenEffects.tint(MyMod.id("frost"), 0x593366FF).enable();
 ScreenEffects.get(MyMod.id("frost")).ifPresent(ScreenEffect::disable);
 ```
 
+<div class="ccl-shots">
+  <figure><img src="../../assets/screen-effects/none.webp" alt="The game with no effect" loading="lazy"><figcaption>No effect</figcaption></figure>
+  <figure><img src="../../assets/screen-effects/tint-hurt.webp" alt="A red tint over the world" loading="lazy"><figcaption><code>0x59FF0000</code>: the hurt flash</figcaption></figure>
+  <figure><img src="../../assets/screen-effects/tint-frost.webp" alt="A blue tint over the world" loading="lazy"><figcaption><code>0x593366FF</code>: the frost wash</figcaption></figure>
+</div>
+
 The color is ARGB, and its alpha is how strong the tint is: `0x59` is about 35%, `0xFF` replaces the frame with the color.
 
 The first call for an id makes the tint; later calls recolor it and return the same effect. Each id is its own tint, so two mods (or two tints of one mod) never share a color or state. What comes back is a normal `ScreenEffect`, so everything on this page applies to it:
@@ -35,7 +41,7 @@ The first call for an id makes the tint; later calls recolor it and return the s
 ```java
 // Over the HUD and menus too, with a slow fade.
 ScreenEffects.tint(MyMod.id("blackout"), 0xE6000000)
-        .stage(ScreenEffectStage.SCREEN)
+        .scope(ScreenEffectScope.SCREEN)
         .fade(40)
         .enable();
 
@@ -48,6 +54,11 @@ ScreenEffects.tint(MyMod.id("low_health"), 0x66FF0000)
 ScreenEffects.get(MyMod.id("frost")).ifPresent(frost ->
         frost.uniform(ScreenEffects.TINT_COLOR).animateTo(20, 1.0F, 1.0F, 1.0F, 0.5F));
 ```
+
+<div class="ccl-shots ccl-shots--wide">
+  <figure><img src="../../assets/screen-effects/tint-blackout.webp" alt="A near-black tint covering the HUD too" loading="lazy"><figcaption>The blackout: drawn over the HUD too</figcaption></figure>
+  <figure><img src="../../assets/screen-effects/tint-low-health.webp" alt="A red tint growing as health drops" loading="lazy"><figcaption>Low health: the tint grows as the hearts drain</figcaption></figure>
+</div>
 
 From the server, with nothing registered on the client:
 
@@ -120,6 +131,10 @@ void main() {
 }
 ```
 
+<div class="ccl-shots ccl-shots--wide">
+  <figure><img src="../../assets/screen-effects/vignette.webp" alt="Dark corners closing in on the view" loading="lazy"><figcaption>The vignette above, at its default radius and softness</figcaption></figure>
+</div>
+
 `coolcatcanvas:screen_effect.glsl` provides:
 
 | Name | What it is |
@@ -174,6 +189,10 @@ ScreenEffects.register(MyMod.id("insanity"), MyMod.id("desaturate"))
         .setUniform("Contrast", 1.4F);
 ```
 
+<div class="ccl-shots ccl-shots--wide">
+  <figure><img src="../../assets/screen-effects/desaturate.webp" alt="The world drained of color with raised contrast" loading="lazy"><figcaption>A desaturation shader at full strength, with <code>Contrast</code> raised</figcaption></figure>
+</div>
+
 The strength can be moved by hand too, on top of the fade:
 
 ```java
@@ -189,6 +208,10 @@ Vanilla's post effects register by their id. They ignore `Strength`, so they'd p
 ScreenEffects.register(MyMod.id("invert"), Identifier.withDefaultNamespace("invert")).autoBlend(true).enable();
 ```
 
+<div class="ccl-shots ccl-shots--wide">
+  <figure><img src="../../assets/screen-effects/invert.webp" alt="The game with its colors inverted" loading="lazy"><figcaption>Vanilla's <code>minecraft:invert</code></figcaption></figure>
+</div>
+
 ### Definitions in code
 
 The JSON can be skipped by building the definition in code; the shaders still come from resources. `simple` is the two-pass shape shown above:
@@ -199,19 +222,22 @@ ScreenEffects.register(MyMod.id("vignette"),
                 ScreenEffectDefinition.UniformSpec.ofVec4("Color", 0F, 0F, 0F, 1F),
                 ScreenEffectDefinition.UniformSpec.ofFloat("Radius", 0.75F),
                 ScreenEffectDefinition.UniformSpec.ofFloat("Softness", 0.45F)))
-        .stage(ScreenEffectStage.SCREEN);
+        .scope(ScreenEffectScope.SCREEN);
 ```
 
-### Stages and layers
+### Scopes and layers
 
-An effect draws at one of two stages:
+An effect draws in one of two scopes, set with `scope(...)`:
 
-| Stage | Draws over | Runs |
+| Scope | Draws over | Runs |
 |---|---|---|
 | `WORLD` (default) | The world and the held item, under the HUD and screens. The world's depth is still readable. | Only while a world is rendered. |
 | `SCREEN` | Everything, HUD and menus included. | Always, with no world loaded too. |
 
-Within a stage, effects draw in layer order, each one processing the output of those before it. The order starts from `priority` (lower first) and can be rearranged through `ScreenEffects.layers()`, by code or by players on the effects screen.
+!!! info "Renamed in Canvas 26.1.2-5"
+    Before it, the scope was `ScreenEffectStage`, set with `stage(...)`.
+
+Within a scope, effects draw in layer order, each one processing the output of those before it. The order starts from `priority` (lower first) and can be rearranged through `ScreenEffects.layers()`, by code or by players on the effects screen.
 
 ### From the server
 
@@ -226,6 +252,10 @@ ScreenEffectControl.tint(serverPlayer, MyMod.id("hurt"), 0x59FF0000, 10);
 ### The effects screen
 
 `ScreenEffects.openScreen()` (also a key, unbound by default) lists every selectable effect with a switch, and the active ones as drag-and-drop layers with a strength slider each, previewed live. Players' choices (on/off, strengths, order) are saved to `config/coolcatcanvas-screen-effects.json`. Give effects a `displayName` and `description` for it, or keep one out with `selectable(false)`.
+
+<div class="ccl-shots ccl-shots--wide">
+  <figure><img src="../../assets/screen-effects/effects-screen.webp" alt="The effects screen: a list of effects and the active layers" loading="lazy"><figcaption>The effects screen, previewing the three effects that are on</figcaption></figure>
+</div>
 
 ### When an effect fails
 
@@ -251,7 +281,7 @@ The drawn strength is fade × manual strength × strength function, and a streng
 | Group | Methods |
 |---|---|
 | Presentation | `displayName(Component)`, `description(Component)`, `selectable(boolean)` |
-| Configuration | `stage(ScreenEffectStage)` (default `WORLD`), `priority(int)` (lower draws first), `fade(int ticks)` / `fade(in, out, Easing)`, `autoBlend(boolean)`, `activeWhen(Predicate<EffectContext>)`, `strength(StrengthFunction)`, `onFrame(Consumer<EffectContext>)` |
+| Configuration | `scope(ScreenEffectScope)` (default `WORLD`), `priority(int)` (lower draws first), `fade(int ticks)` / `fade(in, out, Easing)`, `autoBlend(boolean)`, `activeWhen(Predicate<EffectContext>)`, `strength(StrengthFunction)`, `onFrame(Consumer<EffectContext>)` |
 | State | `enable()`, `disable()`, `toggle()`, `setEnabled(boolean)`, `enableFor(ticks)`, `enableInstantly()`, `disableInstantly()`, `isEnabled()`, `isVisible()`, `setStrength(float)`, `animateStrength(target, ticks, Easing)`, `strength()` |
 | Uniforms | `uniform(name)`, `setUniform(name, float...)`, `setUniformInt(name, int...)`, `bindUniform(name, FloatBinding / VectorBinding)`, `resetUniforms()` |
 | Loading | `isLoaded()`, `error()` |
@@ -262,7 +292,7 @@ The drawn strength is fade × manual strength × strength function, and a streng
 | `ScreenEffectDefinition` | The post-effect definition (targets and passes). `builder()` with `target`, `persistentTarget`, `pass(fragmentShader, pass -> ...)`, `blit`; `simple(fragmentShader, uniformBlock, UniformSpec...)` for one-pass effects; `UniformSpec.ofFloat/ofInt/ofVec2/ofVec3/ofVec4`. `PassBuilder`: `vertexShader`, `input`, `depthInput`, `textureInput` (reads `textures/effect/<path>.png`), `output`, `uniforms`. |
 | `EffectContext` | The frame an effect is drawn in: `effect`, `player`, `level`, `partialTick`, `time`, `deltaTime`, `age`, `strength`, `width`, `height`, `minecraft()`, `inWorld()`. |
 | `EffectUniform` | One named uniform: `set(...)` (floats, ints, JOML vectors and matrices), `setColor(argb)`, `animateTo(Easing, ticks, target...)`, `bind(...)`, `unbind()`, `reset()`, `get()`, `getAll()`. A binding beats an animation, which beats the last set value, which beats the definition's default. |
-| `ScreenEffectStage` | `WORLD` (over the world and held item, under the HUD; depth available) or `SCREEN` (over everything, menus included). |
-| `ScreenEffectLayers` | The draw order: `order()`, `visible(stage)`, `moveTo`, `moveUp`, `moveDown`, `bringToTop`, `sendToBottom`, `isCustomized()`, `resetOrder()`. Every `WORLD` effect draws before any `SCREEN` effect. |
+| `ScreenEffectScope` | `WORLD` (over the world and held item, under the HUD; depth available) or `SCREEN` (over everything, menus included). |
+| `ScreenEffectLayers` | The draw order: `order()`, `visible(scope)`, `moveTo`, `moveUp`, `moveDown`, `bringToTop`, `sendToBottom`, `isCustomized()`, `resetOrder()`. Every `WORLD` effect draws before any `SCREEN` effect. |
 | `api.effect.ScreenEffectControl` | Server side: `enable`, `disable`, `enableFor`, `enableInstantly`, `disableInstantly`, `setStrength`, `setUniform`, `resetUniforms` and `tint(player, id, argb[, ticks])` for a `ServerPlayer`. It keeps no state, so resend after a player joins. |
 | `api.event.v2.client.ScreenEffectEvents` | `BEFORE_TOGGLE` (return `EventResult.INTERRUPT` to veto), `TOGGLED`, `STRENGTH_CHANGED`, `UNIFORM_CHANGED`, `LAYERS_CHANGED`, `LOADED`. The toggle cause is `CODE`, `CONDITION`, `TIMEOUT`, `PLAYER` or `SERVER`. |

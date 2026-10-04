@@ -576,3 +576,43 @@
     font-weight: 400;
   }
 }
+
+/* ---- Screenshots: a row of framed pictures with captions ---- */
+.md-typeset .ccl-shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.6rem;
+  margin: 1.2em 0;
+}
+
+.md-typeset .ccl-shots--wide {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.md-typeset .ccl-shots figure {
+  display: block;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+  background: var(--md-code-bg-color);
+}
+
+.md-typeset .ccl-shots img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 854 / 480;
+}
+
+.md-typeset .ccl-shots figcaption {
+  max-width: none;
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.64rem;
+  font-style: normal;
+  text-align: left;
+  color: var(--md-default-fg-color--light);
+}
