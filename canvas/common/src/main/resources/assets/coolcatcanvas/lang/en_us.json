@@ -25,5 +25,7 @@
   "screen_effect.coolcatcanvas.screen.stage.world": "WORLD",
   "screen_effect.coolcatcanvas.screen.stage.world.header": "Over the world",
   "screen_effect.coolcatcanvas.screen.strength": "Strength: drag to change",
-  "screen_effect.coolcatcanvas.screen.title": "Screen Effects"
+  "screen_effect.coolcatcanvas.screen.title": "Screen Effects",
+  "coolcatcanvas.style.mode.dark": "Dark mode",
+  "coolcatcanvas.style.mode.light": "Light mode"
 }

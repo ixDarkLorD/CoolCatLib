@@ -6,3 +6,9 @@ shadowJar {
     configurations = []
     archiveClassifier = null
 }
+
+// Configured (MrCrayfish), which lists CoolCatLib: Core's configs through internal.integration.configured. Only its API
+// is used, and only once Configured has loaded the provider.
+dependencies {
+    compileOnly "curse.maven:configured-457570:${configured_file_id}"
+}

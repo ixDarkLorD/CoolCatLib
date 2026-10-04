@@ -12,6 +12,12 @@ authors = "${mod_author}"
 logoFile = "mod_logo.png"
 updateJSONURL = "${mod_neoforge_update_url}"
 
+# Configured (MrCrayfish) lists every mod's CoolCatLib: Core configs in its screens through this provider.
+[modproperties.${modid}]
+# A library: mod lists like Glazed Menu show it under Libraries.
+library = true
+configuredProviders = ["net.ixdarklord.coolcatcore.internal.integration.configured.ConfiguredProvider"]
+
 [[mixins]]
 config = "${modid}.common.mixins.json"
 

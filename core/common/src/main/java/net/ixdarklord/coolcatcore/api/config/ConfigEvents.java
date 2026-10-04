@@ -10,7 +10,6 @@ import java.util.Set;
  * <pre>{@code
  * ConfigEvents.LOADED.register(config -> LOGGER.info("Loaded {}", config.id()));
  * ConfigEvents.RELOADED.register(config -> rebuildCaches());
- * ConfigEvents.UNLOADING.register(config -> saveWorldState(config));
  * ConfigEvents.VALUE_CHANGED.register((config, value, oldValue, newValue) -> {
  *     if (value == MyConfig.RENDER_DISTANCE) refreshRenderer();
  * });
@@ -25,9 +24,6 @@ public final class ConfigEvents {
     });
     public static final EventInvoker<Reloaded> RELOADED = EventInvoker.create(Reloaded.class, listeners -> config -> {
         for (Reloaded listener : listeners) listener.onReloaded(config);
-    });
-    public static final EventInvoker<Unloading> UNLOADING = EventInvoker.create(Unloading.class, listeners -> config -> {
-        for (Unloading listener : listeners) listener.onUnloading(config);
     });
     public static final EventInvoker<ValueChanged> VALUE_CHANGED = EventInvoker.create(ValueChanged.class, listeners -> (config, value, oldValue, newValue) -> {
         for (ValueChanged listener : listeners) listener.onValueChanged(config, value, oldValue, newValue);
@@ -45,8 +41,8 @@ public final class ConfigEvents {
     private ConfigEvents() {}
 
     /**
-     * The file was read for the first time: when the config is registered, or for a world config when a server starts
-     * (every time one starts). A missing file was written with the defaults first.
+     * The file was read for the first time, when the config is registered. A missing file was written with the
+     * defaults first.
      */
     @FunctionalInterface
     public interface Loaded {
@@ -60,15 +56,6 @@ public final class ConfigEvents {
     @FunctionalInterface
     public interface Reloaded {
         void onReloaded(Config config);
-    }
-
-    /**
-     * A world config is about to go back to its defaults because its server stopped. Its values are still the world's
-     * here; the reset that follows fires {@link #VALUE_CHANGED} and {@link #CHANGED} as usual.
-     */
-    @FunctionalInterface
-    public interface Unloading {
-        void onUnloading(Config config);
     }
 
     /**

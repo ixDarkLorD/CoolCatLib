@@ -77,7 +77,7 @@ public final class ConfigBuilder {
     }
 
     /**
-     * The file's path without extension, relative to the config folder (or the world's {@code serverconfig}):
+     * The file's path without extension, relative to the config folder:
      * {@code <modid>-<name>} by default. May contain folders: {@code "mymod/client"}.
      */
     public ConfigBuilder fileName(String fileName) {
@@ -144,9 +144,9 @@ public final class ConfigBuilder {
     }
 
     /**
-     * The animated effects of this config's screen, by the ids they're registered under on the client
-     * ({@code ConfigEffects.register}), keeping the rest of the theme; none for a still screen. The id is all this
-     * needs, so it works in common code.
+     * The animated effects of this config's screen, by the ids they're registered under on the client (CoolCatLib:
+     * Canvas's {@code ConfigEffects.register}), keeping the rest of the theme; none for a still screen. The id is all
+     * this needs, so it works in common code.
      */
     public ConfigBuilder effects(Identifier... effects) {
         this.theme = (this.theme != null ? this.theme : ConfigTheme.forMod(this.modId)).toBuilder().effects(effects).build();
@@ -267,7 +267,7 @@ public final class ConfigBuilder {
     // --- Building ---
 
     /**
-     * Registers the config and loads its file (a world config loads when a server starts).
+     * Registers the config and loads its file.
      *
      * @throws IllegalStateException    when a group is still open, or the config was already built
      * @throws IllegalArgumentException when a config with the same id exists

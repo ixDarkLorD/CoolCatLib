@@ -14,6 +14,7 @@ public class TestingMod implements ModConstructor {
         TestConfigs.init();
         TestStartupConfig.registerContent();
         TestAttachments.init();
+        ForeignConfigs.init();
         RegisterBrewingRecipesEvent.EVENT.register(event ->
                 event.getBuilder().addRecipe(Ingredient.of(Items.POTION), Ingredient.of(Items.RAW_COPPER, Items.IRON_NUGGET), Items.COPPER_INGOT.getDefaultInstance()));
     }

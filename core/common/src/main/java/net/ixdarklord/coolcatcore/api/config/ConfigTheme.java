@@ -46,10 +46,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * }
  * }</pre>
  * Every field is optional and overrides the mod's own theme; color names match {@link ConfigColorScheme.Builder}.
- * Players can scale both opacities for every mod in CoolCatLib: Core's client config.
+ * Players can scale both opacities for every mod in CoolCatLib: Canvas's client config.
  * <p>
  * Effects are animations drawn behind the panels, over the whole screen, or over each widget, registered by id on the
- * client ({@code ConfigEffects.register}); every theme uses {@link #STARFALL} unless it names its own.
+ * client (CoolCatLib: Canvas's {@code ConfigEffects.register}); every theme uses {@link #STARFALL} unless it names its own.
  */
 public final class ConfigTheme {
     // Declared before DEFAULT, which uses it.

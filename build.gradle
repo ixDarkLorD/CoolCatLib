@@ -5,11 +5,11 @@ plugins {
     alias libs.plugins.modpublisher apply false
 }
 
-// Every project's Java, jar, resource and publishing setup. Canvas (canvas/canvas.gradle) and the test mods
+// Every project's Java, jar, resource and publishing setup. The add-on mods (addon.gradle) and the test mods
 // (testmods/testmod.gradle) add their own on top.
 apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4/main.gradle"
 
-// Maven coordinates for both mods: net.ixdarklord.coolcatlib:<mod_maven_name>-<loader>, e.g. coolcatlib-core-fabric
+// Maven coordinates: net.ixdarklord.coolcatlib:<mod_maven_name>-<loader> for CoolCatLib's mods, e.g. coolcatlib-core-fabric
 // and coolcatlib-canvas-common (the shared script would name them after the mod id and project).
 subprojects {
     if (project.name.startsWith("testmod-")) return

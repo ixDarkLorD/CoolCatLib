@@ -12,6 +12,10 @@ authors = "${mod_author}"
 logoFile = "mod_logo.png"
 updateJSONURL = "${mod_neoforge_update_url}"
 
+# A library: mod lists like Glazed Menu show it under Libraries.
+[modproperties.${modid}]
+library = true
+
 [[mixins]]
 config = "${modid}.common.mixins.json"
 

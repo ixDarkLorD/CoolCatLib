@@ -35,8 +35,8 @@ import java.util.stream.Stream;
  * }
  * }</pre>
  * or from an annotated class with {@link net.ixdarklord.coolcatcore.api.config.annotation.ConfigObject}. Building
- * registers the config and loads its file; the config screen, commands, hot reloading and (for synced scopes)
- * server sync then work without more code.
+ * registers the config and loads its file; commands, hot reloading and (for synced scopes) server sync then work
+ * without more code, and so do the config screens of Glazed Menu (or Configured), when a player has it.
  */
 @ApiStatus.NonExtendable
 public interface Config {
@@ -92,10 +92,10 @@ public interface Config {
     /** Who may change a synced config from a client. */
     Permission editPermission();
 
-    /** The config file, or null while it has none (a {@link ConfigScope#WORLD} config with no server running). */
+    /** The config file, or null while it has none (a client config on a dedicated server). */
     @Nullable Path filePath();
 
-    /** Whether the values come from the file (or a server) rather than being defaults waiting for a world. */
+    /** Whether the values come from the file (or a server) rather than being defaults with no file. */
     boolean isLoaded();
 
     /**

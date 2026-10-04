@@ -1,0 +1,84 @@
+// What the add-on mod (CoolCatLib: Canvas in canvas/) adds to the shared scripts, applied after them. Its mod
+// attributes (modid, mod_name, ...) come from the canvas_* properties (see
+// settings.gradle); the shared scripts find their common project, changelog and run folder in their own folder.
+def addon = project.projectDir.parentFile.name
+def platform = project.name - "$addon-"
+// The mods each add-on is built on, in load order: CoolCatLib: Core's projects have no prefix.
+def requires = [canvas: [""]][addon]
+
+base {
+    archivesName = modid + (platform == "common" ? "" : "-$platform")
+}
+
+publishing.publications.mavenJava {
+    pom.name = "${mod_name} [${platform}]"
+}
+
+// The required mods' loader module and, as Loom resolves project dependencies to their own classes, their common one.
+dependencies {
+    requires.each { prefix ->
+        if (platform != "common") compileOnly project(":$prefix$platform")
+        compileOnly project(":${prefix}common")
+    }
+}
+
+if (platform == "common") {
+    // Architectury's transformer keeps the platform it's transforming for in static state, so with parallel builds two
+    // mods' transforms could run at once and write one loader's @ExpectPlatform targets into the other's jar (Core's
+    // NeoForge jar calling internal.core.fabric.*Impl). Each add-on's run after those of the mods it's built on.
+    tasks.matching { it.name.startsWith("transform") }.configureEach {
+        requires.each { prefix ->
+            mustRunAfter(rootProject.project(":${prefix}common").tasks.matching { it.name.startsWith("transform") })
+        }
+    }
+
+    // A plain jar of this module's own classes, like Core's common module.
+    shadowJar {
+        configurations = []
+        archiveClassifier = null
+    }
+} else {
+    // The add-ons run through the test mods; their own run configurations would share Core's names in the IDE.
+    loom.runs.configureEach {
+        ideConfigGenerated(false)
+    }
+}
+
+// Publishing, like Core's loader projects (the shared scripts only set it up for projects named after a loader). The
+// CurseForge id and dependencies are the add-on's own properties; nothing is uploaded while they're empty.
+if (platform != "common") {
+    build.finalizedBy tasks.copyJarToDir
+    // The shared scripts only refresh the update JSON after uploads of the loader projects (and every Forge one)
+    if (loom.isNeoForge()) [tasks.publishCurseforge, tasks.publishModrinth].each { it.finalizedBy tasks.refreshUpdateJson }
+
+    def minecraft = libs.versions.minecraft.get()
+    def dependencies = findProperty("${platform}_publish_dependencies").toString()
+    def listed = { String kind -> ((dependencies =~ /${kind}\[(.*?)]/).with { it.find() ? it.group(1) : "" }).split(",")*.trim().findAll() }
+
+    publisher {
+        setDebug(Boolean.parseBoolean(project_upload_debug))
+        apiKeys {
+            if (!project_curse_id.isEmpty()) curseforge curseforge_api_token
+            if (!project_modrinth_id.isEmpty()) modrinth modrinth_api_token
+        }
+        setCurseID(project_curse_id)
+        setModrinthID(project_modrinth_id)
+        setVersionType(project_release_type)
+        setChangelog(helper.changelogSection(rootProject.file("$addon/CHANGELOG.md")))
+        setProjectVersion("${project.version}".startsWith("${minecraft}-") ? "${project.version}" : "${minecraft}-${project.version}")
+        setDisplayName("[${platform_name}] ${minecraft} | V${mod_version} ${project_release_type.toUpperCase()}")
+        setGameVersions(project_game_versions.split(","))
+        setLoaders(platform)
+        setJavaVersions(libs.versions.java.get().split(","))
+        setCurseEnvironment(mod_environment == "*" ? "both" : mod_environment)
+        setIsManualRelease(false)
+        setArtifact(tasks.named("shadowJar"))
+        setDisableMalwareScanner(false)
+        setDisableEmptyJarCheck(true)
+
+        [curseDepends, modrinthDepends].each { depends ->
+            listed("requirement").each { depends.required it }
+            listed("optional").each { depends.optional it }
+        }
+    }
+}

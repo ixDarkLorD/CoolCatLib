@@ -30,9 +30,6 @@
     ],
     "jei_mod_plugin": [
       "net.ixdarklord.coolcatcore.internal.integration.jei.JEIIntegration"
-    ],
-    "modmenu": [
-      "net.ixdarklord.coolcatcore.internal.integration.modmenu.ModMenuIntegration"
     ]
   },
   "mixins": [
@@ -41,6 +38,18 @@
   ],
 
   "custom": {
+    "glazedmenu": {
+      "library": true,
+      "update_json": "${mod_neoforge_update_url}"
+    },
+    "modmenu": {
+      "badges": ["library"]
+    },
+    "configured": {
+      "providers": [
+        "net.ixdarklord.coolcatcore.internal.integration.configured.ConfiguredProvider"
+      ]
+    },
     "loom:injected_interfaces": {
       "net/minecraft/world/item/alchemy/PotionBrewing": ["net/ixdarklord/coolcatcore/api/brewing/fabric/ext/PotionBrewingExt"],
       "net/minecraft/world/item/alchemy/PotionBrewing\u0024Builder": ["net/ixdarklord/coolcatcore/api/brewing/fabric/ext/PotionBrewingBuilderExt"]

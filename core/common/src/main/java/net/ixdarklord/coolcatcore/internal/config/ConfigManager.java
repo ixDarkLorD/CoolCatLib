@@ -10,7 +10,6 @@ import net.ixdarklord.coolcatcore.internal.config.network.ConfigNetwork;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-// Every registered config: loading their files, world configs following the server, hot reloading, and queueing
+// Every registered config: loading their files, hot reloading, and queueing
 // synced configs for sending once per tick.
 public final class ConfigManager {
     private static final Map<Identifier, ConfigImpl> CONFIGS = new LinkedHashMap<>();
@@ -40,20 +39,7 @@ public final class ConfigManager {
     /** Called once by each loader's common setup. */
     public static void init() {
         ConfigNetwork.init();
-        ServerLifecycleEvents.STARTING.register(server -> {
-            for (ConfigImpl config : all()) {
-                if (config.scope() == ConfigScope.WORLD) loadWorldConfig(config, server);
-            }
-        });
-        ServerLifecycleEvents.STOPPED.register(server -> {
-            for (ConfigImpl config : all()) {
-                if (config.scope() != ConfigScope.WORLD) continue;
-                Path file = config.filePath();
-                if (file != null && watcher != null) watcher.unwatch(file);
-                config.unload();
-            }
-            PENDING_SYNC.clear();
-        });
+        ServerLifecycleEvents.STOPPED.register(server -> PENDING_SYNC.clear());
         ServerTickEvents.END.register(server -> {
             processReloads(false);
             flushSyncs();
@@ -70,11 +56,6 @@ public final class ConfigManager {
         }
         // A dedicated server keeps client configs at their defaults, without a file.
         if (config.scope() == ConfigScope.CLIENT && !Platform.isClient()) return;
-        if (config.scope() == ConfigScope.WORLD) {
-            MinecraftServer server = Platform.getServer();
-            if (server != null) loadWorldConfig(config, server);
-            return;
-        }
         bindAndLoad(config, Platform.getConfigFolder().resolve(config.fileName()));
         // Content is created from startup values right after this, so they're fixed from now on.
         if (config.scope() == ConfigScope.STARTUP) config.freeze();
@@ -101,14 +82,6 @@ public final class ConfigManager {
         Set<String> ids = new LinkedHashSet<>();
         all().forEach(config -> ids.add(config.modId()));
         return ids;
-    }
-
-    static Path defaultConfigFolder() {
-        return Platform.getGameFolder().resolve("defaultconfigs");
-    }
-
-    private static void loadWorldConfig(ConfigImpl config, MinecraftServer server) {
-        bindAndLoad(config, server.getWorldPath(LevelResource.ROOT).resolve("serverconfig").resolve(config.fileName()).normalize());
     }
 
     private static synchronized void bindAndLoad(ConfigImpl config, Path file) {

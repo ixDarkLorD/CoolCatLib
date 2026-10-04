@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 
-// "/coolcatcore config ..." on the server (for common, server and world configs) and "/coolcatcore_client config ..."
+// "/coolcatcore config ..." on the server (for common, server and startup configs) and "/coolcatcore_client config ..."
 // on the client (for client configs), built from the same tree for any command source.
 public final class ConfigCommands {
     private static final Feedback<CommandSourceStack> SERVER_FEEDBACK = new Feedback<>() {

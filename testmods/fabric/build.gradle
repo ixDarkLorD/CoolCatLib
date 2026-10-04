@@ -7,4 +7,18 @@ dependencies {
 
     implementation project(":fabric")
     implementation project(":canvas-fabric")
+    // Glazed Menu (its own project), from Maven Local.
+    implementation("net.ixdarklord.glazedmenu:glazedmenu-fabric:${glazedmenu_version}") { transitive = false }
+}
+
+// The other config systems Glazed Menu reads, and Configured, for the tests: compiled against here, and added to a test run
+// with -Dfabric.addMods (their jars bundle libraries that only load that way).
+dependencies {
+    compileOnly("maven.modrinth:cloth-config:${cloth_config_version}") { transitive = false }
+    compileOnly("maven.modrinth:yacl:${yacl_version}") { transitive = false }
+    compileOnly("maven.modrinth:midnightlib:${midnightlib_version}") { transitive = false }
+    compileOnly(libs.forgeconfigapiport.fabric) { transitive = false }
+    compileOnly "com.electronwill.night-config:core:3.8.3"
+    compileOnly "com.electronwill.night-config:toml:3.8.3"
+    compileOnly "curse.maven:configured-457570:${configured_file_id}"
 }

@@ -15,12 +15,16 @@ folders.each { folder, layout ->
 }
 
 // The shared scripts read the mod's attributes (modid, mod_name, ...) from gradle.properties, where they describe
-// CoolCatLib: Core. Canvas's projects get their own from the canvas_* properties, before any build script runs.
-def canvasAttributes = providers.gradlePropertiesPrefixedBy("canvas_").get()
-        .collectEntries { key, value -> [(key - "canvas_"): value] }
+// CoolCatLib: Core. The add-on mod's projects (canvas-*) get their own from the canvas_* properties, before any build
+// script runs.
+def addons = ["canvas"]
+def addonAttributes = addons.collectEntries { addon ->
+    [(addon): providers.gradlePropertiesPrefixedBy("${addon}_").get().collectEntries { key, value -> [(key - "${addon}_"): value] }]
+}
 gradle.projectsLoaded {
-    it.rootProject.subprojects.findAll { it.name.startsWith("canvas-") }.each { project ->
-        canvasAttributes.each { key, value -> project.ext.set(key, value) }
+    it.rootProject.subprojects.each { project ->
+        def addon = addons.find { project.name.startsWith("$it-") }
+        if (addon != null) addonAttributes[addon].each { key, value -> project.ext.set(key, value) }
     }
 }
 

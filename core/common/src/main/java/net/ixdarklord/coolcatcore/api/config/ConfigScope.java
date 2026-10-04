@@ -14,11 +14,6 @@ public enum ConfigScope {
      */
     SERVER("server", true),
     /**
-     * Stored per world, in {@code <world>/serverconfig}; loaded while a server runs (defaults otherwise) and synced
-     * like {@link #SERVER}. A copy in {@code defaultconfigs} seeds new worlds.
-     */
-    WORLD("world", true),
-    /**
      * Loaded on both sides from the {@code config} folder as soon as it's built, before content is registered, so
      * its values can shape what a mod creates: which items exist, their durability, stack sizes... The values are
      * then fixed for the session: changes are saved but take effect after a restart.

@@ -26,13 +26,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-// What the player chose in the effects screen: which selectable effects are on, their strengths, and the layer order
-// (only once rearranged). Effects missing now are kept, for when their mod comes back.
+// What the player chose in the effects screen: which selectable effects are on, their strengths, the layer order (only
+// once rearranged), and dark or light mode. Effects missing now are kept, for when their mod comes back.
 public final class ScreenEffectPreferences {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Set<Identifier> ENABLED = new LinkedHashSet<>();
     private static final Map<Identifier, Float> STRENGTHS = new LinkedHashMap<>();
     private static @Nullable List<Identifier> order;
+    private static boolean lightMode;
     private static boolean loaded;
     private static boolean dirty;
 
@@ -56,6 +57,7 @@ public final class ScreenEffectPreferences {
                     if (id != null) STRENGTHS.put(id, entry.getValue().getAsFloat());
                 });
             }
+            lightMode = json.has("lightMode") && json.get("lightMode").getAsBoolean();
             if (json.has("order")) {
                 List<Identifier> saved = new ArrayList<>();
                 json.getAsJsonArray("order").forEach(id -> parse(id).ifPresent(saved::add));
@@ -68,6 +70,19 @@ public final class ScreenEffectPreferences {
 
     private static Optional<Identifier> parse(JsonElement element) {
         return Optional.ofNullable(element.isJsonPrimitive() ? Identifier.tryParse(element.getAsString()) : null);
+    }
+
+    /** Whether the effects screen is in light mode, the player's choice with the sun/moon button. */
+    public static synchronized boolean lightMode() {
+        load();
+        return lightMode;
+    }
+
+    public static synchronized void setLightMode(boolean light) {
+        load();
+        dirty |= lightMode != light;
+        lightMode = light;
+        save();
     }
 
     static synchronized @Nullable List<Identifier> savedOrder() {
@@ -118,6 +133,7 @@ public final class ScreenEffectPreferences {
         JsonObject strengths = new JsonObject();
         STRENGTHS.forEach((id, strength) -> strengths.addProperty(id.toString(), strength));
         json.add("strength", strengths);
+        if (lightMode) json.addProperty("lightMode", true);
         if (order != null) {
             JsonArray layers = new JsonArray();
             order.forEach(id -> layers.add(id.toString()));

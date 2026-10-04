@@ -287,13 +287,11 @@ public final class ConfigImpl implements Config {
         try {
             if (Files.notExists(file)) {
                 if (this.convertFromOtherFormat(file, initial)) return;
-                if (!this.copyDefaultConfig(file)) {
-                    if (!initial) this.resetAll();
-                    this.loaded = true;
-                    this.save();
-                    this.fireLoaded(initial);
-                    return;
-                }
+                if (!initial) this.resetAll();
+                this.loaded = true;
+                this.save();
+                this.fireLoaded(initial);
+                return;
             }
             text = Files.readString(file, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -505,24 +503,6 @@ public final class ConfigImpl implements Config {
         }
     }
 
-    // A world config missing from the world starts from the modpack's copy in defaultconfigs, if there is one.
-    private boolean copyDefaultConfig(Path file) throws IOException {
-        if (this.scope != ConfigScope.WORLD) return false;
-        Path defaults = ConfigManager.defaultConfigFolder().resolve(this.fileName());
-        if (Files.notExists(defaults)) return false;
-        Files.createDirectories(file.getParent());
-        Files.copy(defaults, file);
-        CoolCatCore.LOGGER.info("Copied config {} from {}", this.id, defaults);
-        return true;
-    }
-
-    /** Sets defaults without a file, as a world config does between worlds. */
-    void unload() {
-        ConfigEvents.UNLOADING.invoker().onUnloading(this);
-        this.bindFile(null);
-        this.resetAll();
-    }
-
     // --- Documents ---
 
     public ConfigDocument.Section toDocument() {
@@ -568,7 +548,7 @@ public final class ConfigImpl implements Config {
     }
 
     /** How the value relates to the server's, when that isn't simply "synced". */
-    public static @Nullable Component syncNote(ConfigValueImpl<?> value) {
+    public static @Nullable Component syncNote(ConfigValue<?> value) {
         ConfigScope scope = value.config().scope();
         if (scope == ConfigScope.STARTUP) {
             if (!value.isSynced()) return Component.translatableWithFallback("config.coolcatcore.info.local", "Each side keeps its own value");

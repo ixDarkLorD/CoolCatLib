@@ -1,5 +1,5 @@
-// Shared by the test mods, applied after the shared loader scripts: they run with both CoolCatLib mods, and their IDE
-// run configurations are named after the project.
+// Shared by the test mods, applied after the shared loader scripts: they run with CoolCatLib's mods and Glazed Menu, and
+// their IDE run configurations are named after the project.
 def minecraft = libs.versions.minecraft.get()
 def runName = helper.uppercaseFirstChar(project.name)
 
@@ -14,4 +14,12 @@ loom {
 // Every mod's common classes come in through the "common" configuration (Core's from the shared loader script).
 dependencies {
     common(project(":canvas-common")) { transitive = false }
+}
+
+// MCP Bridge (../MCPBridge-26.1.2) in dev runs only, when it's been published to Maven Local: lets Claude Code drive the
+// running game. Not transitive, so its own CoolCatLib: Core doesn't come in beside this build's.
+if (new File("${System.getProperty('user.home')}/.m2/repository/net/ixdarklord/mcp_bridge").exists()) {
+    dependencies {
+        localRuntime("net.ixdarklord.mcp_bridge:mcp_bridge-${project.name - 'testmod-'}:${minecraft}-1") { transitive = false }
+    }
 }
