@@ -4,7 +4,7 @@ import net.ixdarklord.coolcatcanvas.api.client.effect.EffectContext;
 import net.ixdarklord.coolcatcanvas.api.client.effect.EffectUniform;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffect;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectDefinition;
-import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectStage;
+import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.api.event.v2.client.ScreenEffectEvents;
 import net.ixdarklord.coolcatcanvas.api.utils.Easing;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
@@ -32,7 +32,7 @@ public final class ScreenEffectImpl implements ScreenEffect {
     private @Nullable Component description;
     private boolean selectable = true;
 
-    private volatile ScreenEffectStage stage = ScreenEffectStage.WORLD;
+    private volatile ScreenEffectScope scope = ScreenEffectScope.WORLD;
     private volatile int priority;
     private float fadeInSeconds = 0.5F;
     private float fadeOutSeconds = 0.5F;
@@ -132,13 +132,13 @@ public final class ScreenEffectImpl implements ScreenEffect {
     }
 
     @Override
-    public ScreenEffectStage stage() {
-        return this.stage;
+    public ScreenEffectScope scope() {
+        return this.scope;
     }
 
     @Override
-    public ScreenEffect stage(ScreenEffectStage stage) {
-        this.stage = Objects.requireNonNull(stage);
+    public ScreenEffect scope(ScreenEffectScope scope) {
+        this.scope = Objects.requireNonNull(scope);
         return this;
     }
 

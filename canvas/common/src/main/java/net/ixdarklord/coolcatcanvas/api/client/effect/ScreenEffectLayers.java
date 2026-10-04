@@ -9,7 +9,7 @@ import java.util.List;
  * <p>
  * Every registered effect has a layer, whether it's on or not. The order starts out sorted by
  * {@linkplain ScreenEffect#priority priority} (then registration order), and stays as rearranged once changed,
- * from here or by a player in the effects screen, which remembers it. Stages come first: all {@code WORLD} effects
+ * from here or by a player in the effects screen, which remembers it. Scopes come first: all {@code WORLD} effects
  * are drawn before any {@code SCREEN} effect, whatever their layers.
  * <p>
  * Only use it from the render thread.
@@ -18,8 +18,8 @@ public interface ScreenEffectLayers {
     /** Every effect, from the bottom layer (drawn first) to the top (drawn last). */
     List<ScreenEffect> order();
 
-    /** The effects in a stage that are drawn this frame, bottom to top. */
-    List<ScreenEffect> visible(ScreenEffectStage stage);
+    /** The effects in a scope that are drawn this frame, bottom to top. */
+    List<ScreenEffect> visible(ScreenEffectScope scope);
 
     /** The effect's layer: 0 is the bottom. */
     int indexOf(ScreenEffect effect);
@@ -27,10 +27,10 @@ public interface ScreenEffectLayers {
     /** Moves an effect to a layer, 0 being the bottom; the index is clamped. */
     void moveTo(ScreenEffect effect, int index);
 
-    /** Moves it one layer up (drawn later), past the next effect of its own stage. */
+    /** Moves it one layer up (drawn later), past the next effect of its own scope. */
     void moveUp(ScreenEffect effect);
 
-    /** Moves it one layer down (drawn earlier), past the previous effect of its own stage. */
+    /** Moves it one layer down (drawn earlier), past the previous effect of its own scope. */
     void moveDown(ScreenEffect effect);
 
     default void bringToTop(ScreenEffect effect) {

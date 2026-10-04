@@ -9,7 +9,7 @@ import net.ixdarklord.coolcatcanvas.api.client.effect.EffectContext;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffect;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectDefinition;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectLayers;
-import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectStage;
+import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.api.event.v2.client.ScreenEffectEvents;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.Util;
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Runs screen effects: GameRenderer's mixin calls {@link #beginFrame}, {@link #render} per stage and
+ * Runs screen effects: GameRenderer's mixin calls {@link #beginFrame}, {@link #render} per scope and
  * {@link #endFrame}, and {@link #reload} once shaders are (re)loaded.
  */
 public final class ScreenEffectManager {
@@ -140,15 +140,15 @@ public final class ScreenEffectManager {
         }
     }
 
-    public static void render(ScreenEffectStage stage) {
+    public static void render(ScreenEffectScope scope) {
         if (!resourcesLoaded || EFFECTS.isEmpty()) return;
-        if (previewUnderGui && stage == ScreenEffectStage.SCREEN) return;
+        if (previewUnderGui && scope == ScreenEffectScope.SCREEN) return;
         List<ScreenEffectImpl> active = new ArrayList<>();
-        // In layer order, stage by stage: while previewing, the SCREEN effects follow the WORLD ones.
-        for (ScreenEffectStage drawn : ScreenEffectStage.values()) {
-            if (drawn != stage && !(previewUnderGui && stage == ScreenEffectStage.WORLD)) continue;
+        // In layer order, scope by scope: while previewing, the SCREEN effects follow the WORLD ones.
+        for (ScreenEffectScope drawn : ScreenEffectScope.values()) {
+            if (drawn != scope && !(previewUnderGui && scope == ScreenEffectScope.WORLD)) continue;
             for (ScreenEffectImpl effect : LAYERS.view()) {
-                if (effect.stage() == drawn && effect.isVisible() && effect.program() != null) active.add(effect);
+                if (effect.scope() == drawn && effect.isVisible() && effect.program() != null) active.add(effect);
             }
         }
         if (active.isEmpty()) return;

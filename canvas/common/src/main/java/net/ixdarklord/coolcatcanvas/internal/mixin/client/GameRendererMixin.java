@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
-import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectStage;
+import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.minecraft.client.DeltaTracker;
@@ -27,12 +27,12 @@ public abstract class GameRendererMixin {
     // Inside the block that renders the level, after vanilla's post effect, as the main target is bound for the GUI.
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V", ordinal = 0))
     private void coolcatcanvas$renderWorldScreenEffects(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        ScreenEffectManager.render(ScreenEffectStage.WORLD);
+        ScreenEffectManager.render(ScreenEffectScope.WORLD);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V", shift = At.Shift.AFTER))
     private void coolcatcanvas$renderScreenScreenEffects(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        ScreenEffectManager.render(ScreenEffectStage.SCREEN);
+        ScreenEffectManager.render(ScreenEffectScope.SCREEN);
     }
 
     @Inject(method = "render", at = @At("TAIL"))

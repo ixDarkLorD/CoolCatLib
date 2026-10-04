@@ -1,0 +1,35 @@
+{
+    "targets": {
+        "swap": {}
+    },
+    "passes": [
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/tint",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "minecraft:main",
+                    "bilinear": false
+                }
+            ],
+            "output": "swap",
+            "uniforms": {
+                "TintConfig": [
+                    { "name": "Color", "type": "vec4", "value": [ 1.0, 0.0, 0.0, 0.35 ] }
+                ]
+            }
+        },
+        {
+            "vertex_shader": "coolcatcanvas:post/screenquad",
+            "fragment_shader": "coolcatcanvas:post/blit",
+            "inputs": [
+                {
+                    "sampler_name": "In",
+                    "target": "swap"
+                }
+            ],
+            "output": "minecraft:main"
+        }
+    ]
+}
