@@ -45,6 +45,6 @@
     "minecraft": ">=${project.supported_min_mc_version} <=${max_mc_version}",
     "fabricloader": ">=${min_fabric_version}",
     "fabric-api": ">=${project.supported_min_fabric_api_version}",
-    "coolcatcore": ">=${mc_version}-${mod_version}"
+    "coolcatcore": ">=${mc_version}-${required_core_version}"
   }
 }

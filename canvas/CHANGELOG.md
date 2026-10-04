@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v26.1.2-4 Release | Oct 4, 2026
+### ✨ New Features
+- A built-in tint screen effect, with nothing to set up: `ScreenEffects.tint(id, argb)` makes a color wash under a mod's own id the first time and recolors it after, so `ScreenEffects.tint(id, 0x59FF0000).enableFor(5)` is a red flash wherever it's called. It's a screen effect like any other (fades, strength, conditions), over the world or, on the `SCREEN` stage, over the HUD and menus too. From the server, `ScreenEffectControl.tint(player, id, argb[, ticks])` does the same for a player, with nothing registered on the client. The definition is `coolcatcanvas:tint` (`ScreenEffects.TINT`, color uniform `TINT_COLOR`).
+
 ## v26.1.2-3 Release | Oct 4, 2026
 ### 🔧 Changes
 - Built for CoolCatLib: Core 26.1.2-3; no changes of its own.

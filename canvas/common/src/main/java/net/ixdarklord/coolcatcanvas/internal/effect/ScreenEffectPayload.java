@@ -9,7 +9,7 @@ import net.minecraft.resources.Identifier;
 /**
  * The server telling a client what to do with one of its registered screen effects.
  *
- * @param ticks   the duration of {@link Action#ENABLE_FOR}, or of the transition of {@link Action#SET_STRENGTH} and
+ * @param ticks   the duration of {@link Action#ENABLE_FOR} and {@link Action#TINT}, or of the transition of {@link Action#SET_STRENGTH} and
  *                {@link Action#SET_UNIFORM} (0 for instant)
  * @param uniform the uniform {@link Action#SET_UNIFORM} changes, empty otherwise
  * @param values  the strength (first value) or uniform components
@@ -57,6 +57,8 @@ public record ScreenEffectPayload(Identifier effect, Action action, int ticks, S
         DISABLE_INSTANTLY,
         SET_STRENGTH,
         SET_UNIFORM,
-        RESET_UNIFORMS
+        RESET_UNIFORMS,
+        /** Shows the built-in tint under the effect id, made if missing, in the RGBA of the values; for the ticks if above 0. */
+        TINT
     }
 }
