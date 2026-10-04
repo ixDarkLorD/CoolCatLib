@@ -202,7 +202,7 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 ### `client.effect` ([Canvas Screen Effects](../canvas/screen-effects.md))
 | Class | Functionality |
 |---|---|
-| `ScreenEffects` | Registers, finds and removes screen effects, and opens the effects screen. |
+| `ScreenEffects` | Registers, finds and removes screen effects, makes tints (`tint(id, argb)`), and opens the effects screen. |
 | `ScreenEffect` | One effect: fades, conditions, strength, uniforms, layers. |
 | `ScreenEffectDefinition` | Post-effect definitions in code or JSON. |
 | `EffectContext` | The frame an effect draws in. |
@@ -213,7 +213,7 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 ### `effect` and `event.v2.client` ([Canvas Screen Effects](../canvas/screen-effects.md))
 | Class | Functionality |
 |---|---|
-| `effect.ScreenEffectControl` | Drives a player's screen effects from the server. |
+| `effect.ScreenEffectControl` | Drives a player's screen effects from the server, tints included. |
 | `event.v2.client.ScreenEffectEvents` | `BEFORE_TOGGLE`, `TOGGLED`, `STRENGTH_CHANGED`, `UNIFORM_CHANGED`, `LAYERS_CHANGED`, `LOADED`. |
 
 ### `client.sky` and `sky` ([Canvas Skyboxes](../canvas/skyboxes.md))
