@@ -30,6 +30,13 @@
     "${modid}.common.mixins.json"
   ],
 
+  "custom": {
+    "glazedmenu": {
+      "library": true,
+      "update_json": "${mod_fabric_update_url}"
+    }
+  },
+
   "depends": {
     "java": ">=${versions.java.get()}",
     "minecraft": ">=${mc_version} <=${max_mc_version}",

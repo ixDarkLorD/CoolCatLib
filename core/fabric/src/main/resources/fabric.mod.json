@@ -41,6 +41,10 @@
   ],
 
   "custom": {
+    "glazedmenu": {
+      "library": true,
+      "update_json": "${mod_fabric_update_url}"
+    },
     "loom:injected_interfaces": {
       "net/minecraft/class_1845": ["net/ixdarklord/coolcatcore/api/brewing/fabric/ext/PotionBrewingExt"],
       "net/minecraft/class_1845\u0024class_9665": ["net/ixdarklord/coolcatcore/api/brewing/fabric/ext/PotionBrewingBuilderExt"]
