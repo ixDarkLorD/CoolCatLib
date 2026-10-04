@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib">CoolCatLib: Core</a> ·
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas">CoolCatLib: Canvas</a> ·
+  Core: <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib">CurseForge</a> / <a href="https://modrinth.com/mod/ASkaoGC8">Modrinth</a> ·
+  Canvas: <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas">CurseForge</a> / <a href="https://modrinth.com/mod/NtytwOvv">Modrinth</a> ·
   <a href="https://ixdarklord.github.io/CoolCatLib/">Documentation</a> ·
   <a href="https://github.com/ixDarkLorD/CoolCatLib/issues">Issues</a>
 </p>
@@ -28,6 +28,13 @@ CoolCatLib is two mods. Mods built on them share one codebase across Fabric, Neo
 
 Players only need them when another mod requires them. For mod developers, the
 [documentation](https://ixdarklord.github.io/CoolCatLib/) covers the API.
+
+## Downloads
+
+| Mod | CurseForge | Modrinth |
+|---|---|---|
+| **CoolCatLib: Core** | [coolcatlib](https://www.curseforge.com/minecraft/mc-mods/coolcatlib) | [CoolCatLib: Core](https://modrinth.com/mod/ASkaoGC8) |
+| **CoolCatLib: Canvas** | [coolcatlib-canvas](https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas) | [CoolCatLib: Canvas](https://modrinth.com/mod/NtytwOvv) |
 
 ## Versions
 
