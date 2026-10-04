@@ -1,3 +1,8 @@
+---
+icon: material/access-point-network
+description: Payloads with their codecs derived for you
+---
+
 # Networking
 
 Sending data between client and server with custom payloads. Package: `net.ixdarklord.coolcatcore.api.network`.

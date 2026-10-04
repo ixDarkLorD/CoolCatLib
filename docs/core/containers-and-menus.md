@@ -1,3 +1,8 @@
+---
+icon: material/package-variant-closed
+description: Slot containers, item transfer and storage menus
+---
+
 # Containers and Menus
 
 Inventories that work the same on every loader: slot containers with rules, moving items like automation does, finding a block's or entity's inventory, block entities that tick and hold items, and menus that need no screen code. Packages: `net.ixdarklord.coolcatcore.api.container`, `api.handler`, `api.block`, `api.menu`, `api.client.gui.screens`.

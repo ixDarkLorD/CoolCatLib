@@ -1,3 +1,8 @@
+---
+icon: material/star-four-points-outline
+description: Custom drawing over items in GUIs
+---
+
 # Item Decorators
 
 Custom drawing over an item wherever the game draws it in a GUI: inventory slots, the hotbar, a stack held on the cursor. Charges on a flask, pips on a card, a badge on a tool: anything vanilla's durability bar and count can't say. It works the same on every loader. Packages: `net.ixdarklord.coolcatcore.api.item` and `api.client.gui`.

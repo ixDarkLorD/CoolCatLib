@@ -1,3 +1,8 @@
+---
+icon: material/dock-window
+description: Windows, panels, pan and zoom, animations
+---
+
 # GUI
 
 GUI building blocks: draggable windows, scrolling, stacked panels with pan and zoom, slide animations and drawing helpers. Packages: `net.ixdarklord.coolcatcanvas.api.client.gui.components` (and its `widgets`, `widgets.panel` and `animations` subpackages) and `api.client.utils`.

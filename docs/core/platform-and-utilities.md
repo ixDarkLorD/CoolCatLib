@@ -1,3 +1,8 @@
+---
+icon: material/wrench-outline
+description: Platform info, brewing, datagen and helpers
+---
+
 # Platform and Utilities
 
 Platform information, brewing recipes, datagen helpers and small utilities. Packages: `net.ixdarklord.coolcatcore.api.platform`, `api.hooks`, `api.brewing`, `api.core`, `api.datagen.language`, `api.item`, `api.data`, `api.utils`, `api.client.utils`.

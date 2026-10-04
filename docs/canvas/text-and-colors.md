@@ -1,3 +1,8 @@
+---
+icon: material/format-color-text
+description: Gradients, rainbows and outlines
+---
+
 # Text and Colors
 
 Animated gradients and rainbows, gradient and outlined text, and outlines around widgets. Packages: `net.ixdarklord.coolcatcanvas.api.utils` (`ColorGradient`, `Easing`) and `api.client.utils` (`TextEffects`, `Outline`), plus `api.client.gui.components.ElementOutlines`.

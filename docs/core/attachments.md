@@ -1,3 +1,8 @@
+---
+icon: material/paperclip
+description: Your data on entities, block entities and stacks
+---
+
 # Attachments
 
 Attach your own data to entities (players included), block entities and item stacks. It can be saved with them, synced to clients, and kept through death. Package: `net.ixdarklord.coolcatcore.api.attachment`.

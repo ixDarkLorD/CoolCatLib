@@ -1,3 +1,8 @@
+---
+icon: material/weather-night
+description: Layered custom skies, from JSON or code
+---
+
 # Skyboxes
 
 Custom skies drawn inside vanilla's sky pass, around the sun, moon and stars. Package: `net.ixdarklord.coolcatcanvas.api.client.sky` (client) and `api.sky` (server).

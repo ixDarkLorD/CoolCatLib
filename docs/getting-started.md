@@ -1,3 +1,8 @@
+---
+icon: material/rocket-launch-outline
+description: Set up a multi-loader mod on CoolCatLib
+---
+
 # Getting Started
 
 This guide sets up a multi-loader mod on CoolCatLib: Core, and optionally Canvas. It assumes the usual layout: a `common` module plus one module per loader, as with Architectury Loom.

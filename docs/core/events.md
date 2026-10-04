@@ -1,3 +1,8 @@
+---
+icon: material/lightning-bolt-outline
+description: Cross-loader events from common code
+---
+
 # Events
 
 Cross-loader events: register listeners in common code, and CoolCatLib bridges them to each loader's own events. Package: `net.ixdarklord.coolcatcore.api.event.v2` (`core`, `common`, `client`).

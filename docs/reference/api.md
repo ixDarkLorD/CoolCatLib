@@ -1,3 +1,8 @@
+---
+icon: material/book-open-variant-outline
+description: Every public package and class
+---
+
 # API Reference
 
 Every public API package and class of CoolCatLib: Core and CoolCatLib: Canvas (26.1.2), with what it's for. Anything under an `internal` package is not API and may change without notice. The guide pages go into detail and have examples.

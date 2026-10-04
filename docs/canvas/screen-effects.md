@@ -1,3 +1,8 @@
+---
+icon: material/blur
+description: Post-processing shaders and screen tints
+---
+
 # Screen Effects
 
 Full-screen post-processing effects (color grading, distortion, blur, anything a fragment shader can do to the finished frame) whose uniforms can change every frame. Package: `net.ixdarklord.coolcatcanvas.api.client.effect` (client) and `api.effect` (server).

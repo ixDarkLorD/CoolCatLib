@@ -9,6 +9,7 @@ copyright: "Made with 🐱 by ixDarkLorD · MPL-2.0"
 
 theme:
   name: material
+  custom_dir: overrides
   logo: assets/core-small.png
   favicon: assets/favicon.png
   icon:
@@ -38,6 +39,7 @@ theme:
     - navigation.instant
     - navigation.instant.progress
     - navigation.tracking
+    - navigation.path
     - navigation.top
     - navigation.footer
     - navigation.indexes
@@ -57,6 +59,15 @@ extra_css:
   - stylesheets/extra.css
 
 extra:
+  # The top bar's icons, by tab title (overrides/partials/tabs-item.html). The pages' own icons and the descriptions
+  # shown in the menus are in their front matter.
+  menu_icons:
+    Home: material/home-outline
+    Getting Started: material/rocket-launch-outline
+    Core: material/toolbox-outline
+    Canvas: material/palette-outline
+    Reference: material/book-open-variant-outline
+    Changelog: material/history
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/ixDarkLorD/CoolCatLib
@@ -114,6 +125,5 @@ nav:
       - Skyboxes: canvas/skyboxes.md
       - Text and Colors: canvas/text-and-colors.md
       - GUI: canvas/gui.md
-  - Reference:
-      - API Reference: reference/api.md
+  - Reference: reference/api.md
   - Changelog: changelog.md

@@ -1,3 +1,8 @@
+---
+icon: material/tune-variant
+description: Typed, synced, hot-reloading configs
+---
+
 # Configs
 
 Typed configs saved as TOML (or JSON5), with server sync, hot reload, presets and migrations. Players edit them in game through [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu) or Configured (see [Editing in game](#editing-in-game)). Packages: `net.ixdarklord.coolcatcore.api.config` (with `annotation`, `type`, `format`) and `api.config.client` for opening the screens.

@@ -1,4 +1,6 @@
 ---
+icon: material/history
+description: What changed in every release
 title: Changelog
 ---
 

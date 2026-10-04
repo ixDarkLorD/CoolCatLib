@@ -1,0 +1,52 @@
+{#-
+  The top bar's menu: each tab is a pill with its icon (extra.menu_icons, by title), and a section opens a panel
+  listing its pages with their icon and description (the pages' front matter).
+-#}
+{% macro icon(name) %}
+  {% if name %}
+    <span class="ccl-menu__icon">{% include ".icons/" ~ name ~ ".svg" %}</span>
+  {% endif %}
+{% endmacro %}
+{% macro render(nav_item, ref) %}
+  {% set icons = config.extra.menu_icons or {} %}
+  {% set class = "md-tabs__item" %}
+  {% if nav_item.active %}
+    {% set class = class ~ " md-tabs__item--active" %}
+  {% endif %}
+  {% if nav_item.children %}
+    {% set first = nav_item.children | first %}
+    <li class="{{ class }} ccl-menu">
+      <a href="{{ first.url | url }}" class="md-tabs__link" aria-haspopup="true">
+        {{ icon(icons[nav_item.title]) }}
+        {{ nav_item.title }}
+        <span class="ccl-menu__chevron">{% include ".icons/material/chevron-down.svg" %}</span>
+      </a>
+      <div class="ccl-menu__panel">
+        <ul class="ccl-menu__list">
+          {% for child in nav_item.children %}
+            {% if child.is_page %}
+              <li>
+                <a href="{{ child.url | url }}" class="ccl-menu__entry{% if child.active %} ccl-menu__entry--active{% endif %}">
+                  {{ icon(child.meta.icon or "material/file-document-outline") }}
+                  <span class="ccl-menu__text">
+                    <span class="ccl-menu__title">{{ child.title }}</span>
+                    {% if child.meta.description %}
+                      <span class="ccl-menu__description">{{ child.meta.description }}</span>
+                    {% endif %}
+                  </span>
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </li>
+  {% else %}
+    <li class="{{ class }}">
+      <a href="{{ nav_item.url | url }}" class="md-tabs__link">
+        {{ icon(icons[nav_item.title]) }}
+        {{ nav_item.title }}
+      </a>
+    </li>
+  {% endif %}
+{% endmacro %}

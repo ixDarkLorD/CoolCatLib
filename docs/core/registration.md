@@ -1,3 +1,8 @@
+---
+icon: material/shape-plus-outline
+description: Deferred registers, commands and client registries
+---
+
 # Registration
 
 Registering content from common code. Packages: `net.ixdarklord.coolcatcore.api.registry`, `api.core.commands` and `api.client.registry`.
