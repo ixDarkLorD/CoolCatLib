@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.2.0.1 Release | Oct 4, 2026
+### ✨ New Features
+- Item decorators: custom drawing over an item wherever the game draws it in a GUI (inventory slots, the hotbar, a held stack), after vanilla's durability bar, cooldown and count, the same on every loader. Implement `api.item.DecoratedItem` on the item's class and hand over its `api.client.gui.ItemDecorator` in `registerDecorators(registrar)`: that's all, Core registers it by itself, on the client, the first time the item is drawn. An item's own `isBarVisible` still decides whether vanilla's bar shows under it.
+
 ## v2001.2.0.0 Release | Sep 30, 2026 (Minecraft 1.20.1 backport)
 ### ✨ New Features
 - CoolCatLib is split in two mods: **CoolCatLib: Core** (`coolcatcore`, package `net.ixdarklord.coolcatcore`), this one, and **CoolCatLib: Canvas** (`coolcatcanvas`), which now holds screen effects, skyboxes, GUI widgets, `RenderUtils` and `Easing`. The mod id, package, asset namespace, Fabric entrypoints (`coolcatcore:common`, ...) and commands (`/coolcatcore`, `/coolcatcore_client`) all changed from `coolcatlib`.
