@@ -1,6 +1,16 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v26.1.2-3 Release | Oct 4, 2026
+### 🔧 Changes
+- Built for CoolCatLib: Core 26.1.2-3; no changes of its own.
+
+## v26.1.2-2 Release | Oct 3, 2026
+### 🔧 Changes
+- Now holds the styled widgets its screen effects screen uses (from CoolCatLib: Core; Glazed Menu has its own copy): panels, flat buttons, toggles, text boxes, popups, dropdowns, icons and their textures (`assets/coolcatcanvas/textures/gui/style/`).
+- Config screen effects moved here from Core: `ConfigEffect` and `ConfigEffects` are now in `net.ixdarklord.coolcatcanvas.api.client.gui.theme` (the built-in `ConfigTheme.STARFALL` keeps its id).
+- Its screen effects screen keeps its dark/light choice with the effects screen's other choices (`config/coolcatcanvas-screen-effects.json`); its animations are off on the Fast graphics preset. Canvas has no config file of its own (Glazed Menu's screens use Glazed Menu's settings).
+
 ## v26.1.2-1 Release | Sep 30, 2026 (Minecraft 26.1.2)
 ### ✨ New Features
 - Runs on Minecraft 26.1, 26.1.1 and 26.1.2 (NeoForge 26.1.0.19-beta or newer, Fabric API 0.145.1 or newer).

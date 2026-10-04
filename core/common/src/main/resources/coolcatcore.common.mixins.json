@@ -12,6 +12,9 @@
     "ServerPlayerMixin",
     "TrackedEntityAccessor"
   ],
+  "client": [
+    "client.GuiGraphicsExtractorMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

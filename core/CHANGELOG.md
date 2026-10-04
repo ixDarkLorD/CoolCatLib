@@ -1,6 +1,18 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v26.1.2-3 Release | Oct 4, 2026
+### ✨ New Features
+- Item decorators: custom drawing over an item wherever the game draws it in a GUI (inventory slots, the hotbar, a held stack), after vanilla's durability bar, cooldown and count, the same on every loader. Implement `api.item.DecoratedItem` on the item's class and hand over its `api.client.gui.ItemDecorator` in `registerDecorators(registrar)`: that's all, Core registers it by itself, on the client, the first time the item is drawn. An item's own `isBarVisible` still decides whether vanilla's bar shows under it.
+
+## v26.1.2-2 Release | Oct 3, 2026
+### ✨ New Features
+- Configured (MrCrayfish) shows CoolCatLib: Core's configs: every mod with one gets Configured's screens in NeoForge's mod list and Mod Menu while Glazed Menu isn't installed (with Glazed Menu, its screens show them instead). Booleans, numbers, enums and text get Configured's own widgets; colors, ids, lists and other types are edited as text. Synced configs are edited on the server for players allowed to.
+### 🔧 Changes
+- The config screens moved out of Core into **Glazed Menu**, a standalone client-only mod (`glazedmenu`) that reads Core's configs when Core is installed. `ConfigEditors`, `EditSlot` and `ValueEditor` are now in `net.ixdarklord.glazedmenu.api.editor`. Core's `ConfigScreens` (`api.config.client`) stays as a bridge: with Glazed Menu installed its methods open Glazed Menu's screens, and without it they open nothing (they return null; `isAvailable()` tells which, and `tellUnavailable(config)` tells the player how to change the config). `/coolcatcore_client config open` is now `/glazedmenu [mod] [config/category]`. Core still loads, saves, syncs and hot reloads configs and keeps its other commands; without Glazed Menu (or Configured) there's just no in-game editor, and a startup mismatch on joining a server is the disconnect message alone.
+- The styled widgets and theme effects moved to CoolCatLib: Canvas: `ConfigEffect` and `ConfigEffects` are in `net.ixdarklord.coolcatcanvas.api.client.gui.theme`. The player's screen settings (dark/light mode, opacities, effects, transitions) are Glazed Menu's now, so Core has no client config of its own anymore.
+- Core no longer registers config buttons in NeoForge's mod list or Mod Menu; Glazed Menu or Configured does.
+
 ## v26.1.2-1 Release | Sep 30, 2026 (Minecraft 26.1.2 port)
 ### ✨ New Features
 - Runs on Minecraft 26.1, 26.1.1 and 26.1.2 (NeoForge 26.1.0.19-beta or newer, Fabric API 0.145.1 or newer).
@@ -20,10 +32,10 @@ This file is for listing all the changes to this project
 - `EventResult.pass()`/`interrupt()`/`allow()`/`deny()`, and `EventResultHolder.result()`/`getValue()`.
 - A config system (`api.config`):
   - Declare configs with `Config.builder(modId, scope)` (typed values, nested groups, presets) or from an annotated class with `ConfigObject.register`.
-  - Scopes: `CLIENT`, `COMMON`, `SERVER` (synced to players) and `WORLD` (stored per world, seeded from `defaultconfigs`, synced).
+  - Scopes: `CLIENT`, `COMMON`, `SERVER` (synced to players) and `STARTUP` (read before content is registered).
   - Types: booleans, ranged numbers (optionally sliders), strings (length/pattern), enums, colors, ids, lists, and any `Codec`; custom `ConfigType`s with their own editors.
   - TOML (default) and JSON5 files with generated comments; a config whose format changes converts its old file once (kept as `.bak`); broken files are backed up; `version`/`migration` and `aliases` handle renamed or moved settings.
-  - Hot reloading of edited files, change listeners and `ConfigEvents`: `LOADED` (first read), `RELOADED` (hot reload, the reload command or `Config.reload()`), `UNLOADING` (a world config before its server's values are dropped), `VALUE_CHANGED` (each value, with its old and new value), `CHANGED` (once per batch), `SAVED` and `SYNCED`.
+  - Hot reloading of edited files, change listeners and `ConfigEvents`: `LOADED` (first read), `RELOADED` (hot reload, the reload command or `Config.reload()`), `VALUE_CHANGED` (each value, with its old and new value), `CHANGED` (once per batch), `SAVED` and `SYNCED`.
   - `serverOnly()` values that never leave the server; operators edit synced configs in-game with permission checks.
   - Generated config screen: search, undo/redo, reset, presets, validation, dependencies (`enabledWhen`), restart notices and list editing. Linked from the NeoForge mod list and Mod Menu.
   - `/coolcatcore config` (server) and `/coolcatcore_client config` (client) commands: list, get, set, reset, reload, preset, open.
@@ -39,7 +51,7 @@ This file is for listing all the changes to this project
   - Popup panel sprites: `ConfigTheme.Builder.popupSprite` (or `popup_sprite` in `config_theme.json`) draws a nine-slice GUI sprite as the panel of popups (category popups, confirmations, the color picker) instead of the flat panel, and `ConfigScreens.categoryPopup(parent, config, path, theme)` opens a category popup with its own theme, e.g. to match the screen it's opened from.
     - Toggle switches have an outline on their track: the panel border while off, a darker shade of the accent as they turn on.
     - Popups keep their buttons in a footer strip along the bottom and their content above it, so a sprite's footer band sits behind the buttons only (the color picker's Cancel and Done moved there).
-  - The config list shows each mod's icon (a theme can set another); config pages and their cards show an icon of their kind (client, common, server, world, startup).
+  - The config list shows each mod's icon (a theme can set another); config pages and their cards show an icon of their kind (client, common, server, startup).
   - `Platform.getModName`.
   - Dark and light mode: a sun/moon switch in every config screen's top bar, remembered in CoolCatLib: Core's own client config (`themeMode`). Each theme has a light scheme too (`ConfigTheme.Builder.lightColors`, by default derived from the mod's accent; `light_base`/`light_colors` in `config_theme.json`).
   - The main config screen's search bar searches every config it lists (names, keys, comments, group names, values), with results grouped by config; opening a result shows that config filtered to it. A config's own search covers only that config.
