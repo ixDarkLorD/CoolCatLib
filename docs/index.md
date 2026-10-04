@@ -30,13 +30,6 @@ hide:
   <a href="https://discord.gg/ZapGEPqm2V"><img src="https://img.shields.io/discord/1173075408556654592?style=flat&logo=discord&logoColor=white&label=&labelColor=e0703a&color=3A3F58" alt="Discord" height="26"></a>
 </p>
 
-<p class="ccl-hero__badges ccl-hero__badges--downloads">
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib"><img alt="Core on CurseForge" src="https://img.shields.io/curseforge/dt/916525?style=flat-square&logo=curseforge&label=Core&color=F16436"></a>
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas"><img alt="Canvas on CurseForge" src="https://img.shields.io/curseforge/dt/1716397?style=flat-square&logo=curseforge&label=Canvas&color=F16436"></a>
-  <a href="https://modrinth.com/mod/ASkaoGC8"><img alt="Core on Modrinth" src="https://img.shields.io/modrinth/dt/ASkaoGC8?style=flat-square&logo=modrinth&label=Core&color=1BD96A"></a>
-  <a href="https://modrinth.com/mod/NtytwOvv"><img alt="Canvas on Modrinth" src="https://img.shields.io/modrinth/dt/NtytwOvv?style=flat-square&logo=modrinth&label=Canvas&color=1BD96A"></a>
-</p>
-
 </div>
 
 ## Two mods, one toolkit
