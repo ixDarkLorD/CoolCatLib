@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
-import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectStage;
+import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.minecraft.client.DeltaTracker;
@@ -26,13 +26,13 @@ public abstract class GameRendererMixin {
     private void coolcatcanvas$renderWorldScreenEffects(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
         Minecraft minecraft = Minecraft.getInstance();
         if (advanceGameTime && minecraft.isGameLoadFinished() && minecraft.level != null) {
-            ScreenEffectManager.render(ScreenEffectStage.WORLD);
+            ScreenEffectManager.render(ScreenEffectScope.WORLD);
         }
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;endFrame()V", shift = At.Shift.AFTER))
     private void coolcatcanvas$renderScreenScreenEffects(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
-        ScreenEffectManager.render(ScreenEffectStage.SCREEN);
+        ScreenEffectManager.render(ScreenEffectScope.SCREEN);
     }
 
     @Inject(method = "render", at = @At("TAIL"))

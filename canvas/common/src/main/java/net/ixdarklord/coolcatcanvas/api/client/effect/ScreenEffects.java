@@ -41,7 +41,7 @@ import java.util.Optional;
  *         .strength(context -> Mth.inverseLerp(Sanity.of(context.player()), 0.4F, 0.8F))
  *         .setUniform("Contrast", 1.4F);
  * }</pre>
- * Effects start disabled, and draw over the world unless moved to {@link ScreenEffectStage#SCREEN}. The server can
+ * Effects start disabled, and draw over the world unless moved to {@link ScreenEffectScope#SCREEN}. The server can
  * drive a player's effects too, tints included, through {@code ScreenEffectControl}.
  *
  * @see ScreenEffect
@@ -66,7 +66,7 @@ public final class ScreenEffects {
      * ScreenEffects.tint(MyMod.id("frost"), 0x593366FF).enable();       // stays until disable()
      *
      * // Over the HUD and menus too, with a slow fade.
-     * ScreenEffects.tint(MyMod.id("blackout"), 0xE6000000).stage(ScreenEffectStage.SCREEN).fade(40).enable();
+     * ScreenEffects.tint(MyMod.id("blackout"), 0xE6000000).scope(ScreenEffectScope.SCREEN).fade(40).enable();
      *
      * // Set up once, then it runs by itself: redder the lower the player's health.
      * ScreenEffects.tint(MyMod.id("low_health"), 0x66FF0000)
@@ -74,7 +74,7 @@ public final class ScreenEffects {
      *         .strength(context -> 1.0F - context.player().getHealth() / 8.0F);
      * }</pre>
      * Each id is its own effect, with its own color and state. It's a {@link ScreenEffect} like any other (fades,
-     * strength, conditions), drawn over the world unless moved to {@link ScreenEffectStage#SCREEN}. Unlike registered
+     * strength, conditions), drawn over the world unless moved to {@link ScreenEffectScope#SCREEN}. Unlike registered
      * effects it starts out of the effects screen; {@code selectable(true)} lists it. To change the color smoothly
      * instead of at once, animate its {@link #TINT_COLOR} uniform.
      *

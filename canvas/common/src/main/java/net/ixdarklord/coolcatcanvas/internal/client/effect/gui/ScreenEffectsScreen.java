@@ -2,7 +2,7 @@ package net.ixdarklord.coolcatcanvas.internal.client.effect.gui;
 
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffect;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectLayers;
-import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectStage;
+import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffects;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcanvas.api.event.v2.client.ScreenEffectEvents;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 // The effects screen: the library of selectable effects on the left (a switch each), the active ones on the right as
-// layers, top drawn last, grouped by stage, with drag-and-drop, arrows and a strength slider. The game shows through
+// layers, top drawn last, grouped by scope, with drag-and-drop, arrows and a strength slider. The game shows through
 // unblurred as a live preview; "Preview" hides the panels altogether.
 public final class ScreenEffectsScreen extends StyledScreen {
     private static final int ROW = 26;
@@ -175,11 +175,11 @@ public final class ScreenEffectsScreen extends StyledScreen {
         return effects;
     }
 
-    /** The layers panel's effects of one stage, top (drawn last) first. */
-    private static List<ScreenEffect> layersOf(ScreenEffectStage stage) {
+    /** The layers panel's effects of one scope, top (drawn last) first. */
+    private static List<ScreenEffect> layersOf(ScreenEffectScope scope) {
         List<ScreenEffect> effects = new ArrayList<>();
         for (ScreenEffect effect : ScreenEffects.layers().order()) {
-            if (effect.stage() == stage && (effect.isEnabled() || effect.isVisible())) effects.addFirst(effect);
+            if (effect.scope() == scope && (effect.isEnabled() || effect.isVisible())) effects.addFirst(effect);
         }
         return effects;
     }
@@ -282,9 +282,9 @@ public final class ScreenEffectsScreen extends StyledScreen {
         ConfigStyle.rect(graphics, x + 4, trackY, TOGGLE_WIDTH, 12, track);
         ConfigStyle.rect(graphics, x + 5 + Math.round((TOGGLE_WIDTH - 12) * on), trackY + 1, 10, 10, locked ? ConfigStyle.colors().textMuted() : ConfigStyle.colors().knob());
 
-        // Name and description (or id), with the stage as a badge.
+        // Name and description (or id), with the scope as a badge.
         int textX = x + TOGGLE_WIDTH + 12;
-        Component badge = stageBadge(effect.stage());
+        Component badge = scopeBadge(effect.scope());
         int badgeWidth = this.font.width(badge) + 8;
         int textWidth = width - (textX - x) - badgeWidth - 10;
         int nameColor = effect.error() != null ? ConfigStyle.colors().error() : ConfigStyle.colors().text();
@@ -293,7 +293,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
                 : effect.isAutomatic() ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.automatic", "Automatic: its mod turns it on and off")
                 : effect.description() != null ? effect.description() : Component.literal(effect.id().toString());
         ConfigStyle.text(graphics, this.font, second, textX, y + 15, textWidth, ConfigStyle.colors().textMuted());
-        ConfigStyle.badge(graphics, this.font, badge, x + width - badgeWidth - 4, y + (ROW - 11) / 2, stageColor(effect.stage()));
+        ConfigStyle.badge(graphics, this.font, badge, x + width - badgeWidth - 4, y + (ROW - 11) / 2, scopeColor(effect.scope()));
 
         if (hovered) {
             Component tooltip = effect.error() != null ? Component.literal(effect.error()).withStyle(ChatFormatting.RED) : effect.description();
@@ -310,8 +310,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
 
         int top = this.listTop();
         int bottom = this.listBottom();
-        List<ScreenEffect> screen = layersOf(ScreenEffectStage.SCREEN);
-        List<ScreenEffect> world = layersOf(ScreenEffectStage.WORLD);
+        List<ScreenEffect> screen = layersOf(ScreenEffectScope.SCREEN);
+        List<ScreenEffect> world = layersOf(ScreenEffectScope.WORLD);
         int content = (screen.isEmpty() ? 0 : HEADER + screen.size() * ROW) + (world.isEmpty() ? 0 : HEADER + world.size() * ROW);
         this.layersScroll = Mth.clamp(this.layersScroll, 0, Math.max(0, content - (bottom - top)));
         if (content == 0) {
@@ -322,8 +322,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
 
         graphics.enableScissor(x + 1, top, x + width - 1, bottom);
         int y = top - (int) this.layersScroll;
-        y = this.extractGroup(graphics, ScreenEffectStage.SCREEN, screen, x + 4, y, width - 8, mouseX, mouseY, top, bottom);
-        this.extractGroup(graphics, ScreenEffectStage.WORLD, world, x + 4, y, width - 8, mouseX, mouseY, top, bottom);
+        y = this.extractGroup(graphics, ScreenEffectScope.SCREEN, screen, x + 4, y, width - 8, mouseX, mouseY, top, bottom);
+        this.extractGroup(graphics, ScreenEffectScope.WORLD, world, x + 4, y, width - 8, mouseX, mouseY, top, bottom);
         graphics.disableScissor();
         this.extractScrollbar(graphics, x + width - 4, top, bottom, content, this.layersScroll);
 
@@ -333,30 +333,30 @@ public final class ScreenEffectsScreen extends StyledScreen {
         }
     }
 
-    private int extractGroup(GuiGraphicsExtractor graphics, ScreenEffectStage stage, List<ScreenEffect> effects, int x, int y, int width, int mouseX, int mouseY, int top, int bottom) {
+    private int extractGroup(GuiGraphicsExtractor graphics, ScreenEffectScope scope, List<ScreenEffect> effects, int x, int y, int width, int mouseX, int mouseY, int top, int bottom) {
         if (effects.isEmpty()) return y;
-        Component header = stage == ScreenEffectStage.SCREEN
-                ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.stage.screen.header", "Over HUD and menus")
-                : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.stage.world.header", "Over the world");
-        ConfigStyle.rect(graphics, x, y + HEADER / 2, 3, 1, stageColor(stage));
-        ConfigStyle.text(graphics, this.font, header, x + 6, y + 4, width - 8, stageColor(stage));
+        Component header = scope == ScreenEffectScope.SCREEN
+                ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.screen.header", "Over HUD and menus")
+                : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.world.header", "Over the world");
+        ConfigStyle.rect(graphics, x, y + HEADER / 2, 3, 1, scopeColor(scope));
+        ConfigStyle.text(graphics, this.font, header, x + 6, y + 4, width - 8, scopeColor(scope));
         y += HEADER;
 
         for (int i = 0; i < effects.size(); i++) {
             ScreenEffect effect = effects.get(i);
-            LayerRow row = new LayerRow(effect, stage, i, x, y, width);
+            LayerRow row = new LayerRow(effect, scope, i, x, y, width);
             this.layerRows.add(row);
             if (y + ROW >= top && y <= bottom && effect != this.dragging) this.extractLayerRow(graphics, row, mouseX, mouseY, top, bottom, false);
             y += ROW;
         }
         // The dragged layer follows the mouse, over the others.
-        if (this.dragging != null && this.dragging.stage() == stage) {
+        if (this.dragging != null && this.dragging.scope() == scope) {
             for (LayerRow row : this.layerRows) {
                 if (row.effect == this.dragging) {
-                    int dropIndex = this.dropIndex(row.stage, mouseY);
-                    int lineY = this.rowY(stage, dropIndex);
+                    int dropIndex = this.dropIndex(row.scope, mouseY);
+                    int lineY = this.rowY(scope, dropIndex);
                     ConfigStyle.rect(graphics, x, lineY - 1, width, 2, ConfigStyle.accent());
-                    this.extractLayerRow(graphics, new LayerRow(row.effect, stage, row.index, x, mouseY - (int) this.dragY, width), mouseX, mouseY, top, bottom, true);
+                    this.extractLayerRow(graphics, new LayerRow(row.effect, scope, row.index, x, mouseY - (int) this.dragY, width), mouseX, mouseY, top, bottom, true);
                 }
             }
         }
@@ -400,7 +400,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
 
         // Up, down, remove.
         this.iconButton(graphics, ConfigIcons.UP, row.upX(), y, mouseX, mouseY, hovered && row.index > 0);
-        this.iconButton(graphics, ConfigIcons.DOWN, row.downX(), y, mouseX, mouseY, hovered && row.index < layersOf(row.stage).size() - 1);
+        this.iconButton(graphics, ConfigIcons.DOWN, row.downX(), y, mouseX, mouseY, hovered && row.index < layersOf(row.scope).size() - 1);
         this.iconButton(graphics, ConfigIcons.CLOSE, row.removeX(), y, mouseX, mouseY, hovered && !effect.isAutomatic() && effect.isEnabled());
 
         if (hovered && mouseX >= sliderX && mouseX < sliderX + sliderWidth && mouseY >= sliderY - 3) {
@@ -426,14 +426,14 @@ public final class ScreenEffectsScreen extends StyledScreen {
         ConfigStyle.rect(graphics, x, thumbY, 2, thumb, ConfigStyle.withAlpha(ConfigStyle.colors().text(), 0x50));
     }
 
-    private static Component stageBadge(ScreenEffectStage stage) {
-        return stage == ScreenEffectStage.SCREEN
-                ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.stage.screen", "SCREEN")
-                : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.stage.world", "WORLD");
+    private static Component scopeBadge(ScreenEffectScope scope) {
+        return scope == ScreenEffectScope.SCREEN
+                ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.screen", "SCREEN")
+                : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.world", "WORLD");
     }
 
-    private static int stageColor(ScreenEffectStage stage) {
-        return stage == ScreenEffectStage.SCREEN ? 0xFFC78BFF : 0xFF6FC7A8;
+    private static int scopeColor(ScreenEffectScope scope) {
+        return scope == ScreenEffectScope.SCREEN ? 0xFFC78BFF : 0xFF6FC7A8;
     }
 
     // ---- Input ----
@@ -524,30 +524,30 @@ public final class ScreenEffectsScreen extends StyledScreen {
         this.sliding.setStrength(Math.round(strength * 20) / 20.0F);
     }
 
-    /** Where in its stage's list (top first) a dragged layer would land. */
-    private int dropIndex(ScreenEffectStage stage, int mouseY) {
-        List<LayerRow> rows = this.layerRows.stream().filter(row -> row.stage == stage).toList();
+    /** Where in its scope's list (top first) a dragged layer would land. */
+    private int dropIndex(ScreenEffectScope scope, int mouseY) {
+        List<LayerRow> rows = this.layerRows.stream().filter(row -> row.scope == scope).toList();
         if (rows.isEmpty()) return 0;
         int index = (int) Math.floor((mouseY - rows.getFirst().y) / (double) ROW);
         return Mth.clamp(index, 0, rows.size() - 1);
     }
 
-    private int rowY(ScreenEffectStage stage, int index) {
+    private int rowY(ScreenEffectScope scope, int index) {
         for (LayerRow row : this.layerRows) {
-            if (row.stage == stage && row.index == index) return row.y + (index > this.indexOfDragged(stage) ? ROW : 0);
+            if (row.scope == scope && row.index == index) return row.y + (index > this.indexOfDragged(scope) ? ROW : 0);
         }
         return 0;
     }
 
-    private int indexOfDragged(ScreenEffectStage stage) {
-        for (LayerRow row : this.layerRows) if (row.stage == stage && row.effect == this.dragging) return row.index;
+    private int indexOfDragged(ScreenEffectScope scope) {
+        for (LayerRow row : this.layerRows) if (row.scope == scope && row.effect == this.dragging) return row.index;
         return -1;
     }
 
     // Takes the slot of the layer it's dropped on, in layer terms (the list shows the top first).
     private void drop(ScreenEffect effect, int mouseY) {
-        List<ScreenEffect> group = layersOf(effect.stage());
-        int target = this.dropIndex(effect.stage(), mouseY);
+        List<ScreenEffect> group = layersOf(effect.scope());
+        int target = this.dropIndex(effect.scope(), mouseY);
         if (target < 0 || target >= group.size() || group.get(target) == effect) return;
         ScreenEffectLayers layers = ScreenEffects.layers();
         layers.moveTo(effect, layers.indexOf(group.get(target)));
@@ -571,8 +571,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
         return super.keyPressed(event);
     }
 
-    // One layer row as laid out, top first within its stage.
-    private record LayerRow(ScreenEffect effect, ScreenEffectStage stage, int index, int x, int y, int width) {
+    // One layer row as laid out, top first within its scope.
+    private record LayerRow(ScreenEffect effect, ScreenEffectScope scope, int index, int x, int y, int width) {
         int removeX() {
             return this.x + this.width - ICON_BUTTON - 2;
         }

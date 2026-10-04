@@ -2,7 +2,7 @@
     "projects": {
         "fabric": 4,
         "neoforge": 6,
-        "canvas-fabric": 6,
-        "canvas-neoforge": 6
+        "canvas-fabric": 7,
+        "canvas-neoforge": 7
     }
 }
