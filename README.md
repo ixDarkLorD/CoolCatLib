@@ -15,6 +15,14 @@
   <a href="https://github.com/ixDarkLorD/CoolCatLib/issues">Issues</a>
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/fabric.svg" alt="Fabric" height="26">
+  <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/neoforge.svg" alt="NeoForge" height="26">
+  <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/forge.svg" alt="Forge" height="26">
+  <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/library.svg" alt="Library" height="26">
+  <a href="https://discord.gg/ZapGEPqm2V"><img src="https://img.shields.io/discord/1173075408556654592?style=flat&logo=discord&logoColor=white&label=&labelColor=e0703a&color=3A3F58" alt="Discord" height="26"></a>
+</p>
+
 <hr>
 
 ## About
