@@ -13,6 +13,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -48,5 +49,6 @@ public final class NeoForgeClientEventHooks {
         modBus.addListener((RegisterKeyMappingsEvent event) -> ClientServicesImpl.onRegisterKeyMappings(event));
         modBus.addListener((RegisterMenuScreensEvent event) -> ClientServicesImpl.onRegisterMenuScreens(event));
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) -> ClientServicesImpl.onRegisterTooltipComponents(event));
+        modBus.addListener((EntityRenderersEvent.RegisterRenderers event) -> ClientServicesImpl.onRegisterRenderers(event));
     }
 }

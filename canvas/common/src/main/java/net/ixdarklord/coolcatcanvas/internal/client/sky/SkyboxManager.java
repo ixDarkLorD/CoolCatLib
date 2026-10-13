@@ -51,7 +51,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class SkyboxManager {
     public static final String FOLDER = "skybox";
     private static final Comparator<SkyboxImpl> ORDER = Comparator.comparingInt(SkyboxImpl::priority);
-    private static final long START_NANOS = Util.getNanos();
     private static final VanillaSky[] PARTS = VanillaSky.values();
 
     // Registration may come from mod construction threads; everything else runs on the render thread.
@@ -63,7 +62,7 @@ public final class SkyboxManager {
     private static final SkyboxProgram.DrawList DRAWS = new SkyboxProgram.DrawList();
     private static final float[] HIDDEN = new float[PARTS.length];
     private static boolean resourcesLoaded;
-    private static long lastFrameNanos = -1L;
+    private static double lastFrameSeconds = -1.0;
     // Whether any skybox showing this frame has layers to draw.
     private static boolean anyLayers;
     // Whether this frame's sky pass only runs because a skybox needs it, in a dimension without a sky.
@@ -117,9 +116,10 @@ public final class SkyboxManager {
     // ---- Frame ----
 
     public static void beginFrame(DeltaTracker deltaTracker) {
-        long now = Util.getNanos();
-        float delta = lastFrameNanos < 0L ? 0.0F : Math.min(1.0F, (now - lastFrameNanos) / 1.0E9F);
-        lastFrameNanos = now;
+        // By the clock that stops while the game is paused: a sky's layers stand still behind the pause menu.
+        double now = net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds();
+        float delta = lastFrameSeconds < 0.0 ? 0.0F : (float) Math.min(1.0, now - lastFrameSeconds);
+        lastFrameSeconds = now;
         Arrays.fill(HIDDEN, 0.0F);
         anyLayers = false;
         if (!resourcesLoaded || SKYBOXES.isEmpty()) return;
@@ -127,7 +127,7 @@ public final class SkyboxManager {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
         float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
-        FRAME.realSeconds = (now - START_NANOS) / 1.0E9;
+        FRAME.realSeconds = now;
         if (level != null) {
             FRAME.gameSeconds = (level.getGameTime() + partialTick) / 20.0;
             FRAME.dayTime = Math.floorMod(level.getDefaultClockTime(), (long) SkyLayerDefinition.DayFade.DAY_LENGTH);

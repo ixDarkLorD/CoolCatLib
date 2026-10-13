@@ -69,6 +69,11 @@ public final class CommonServicesImpl implements CommonServices {
     }
 
     @Override
+    public void registerEntityAttributes(Supplier<? extends net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.LivingEntity>> type, Supplier<net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder> attributes) {
+        NeoForgeRegistrations.ENTITY_ATTRIBUTES.add(event -> event.put(type.get(), attributes.get().build()));
+    }
+
+    @Override
     public void registerServerReloadListener(Identifier id, PreparableReloadListener listener) {
         NeoForgeRegistrations.SERVER_RELOAD_LISTENERS.put(id, listener);
     }

@@ -110,6 +110,8 @@ public final class NeoForgeEventHooks {
             NeoForgeRegistrations.payloadsRegistered = true;
         });
         modBus.addListener(NeoForgeTransferCompat::register);
+        modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
+                NeoForgeRegistrations.ENTITY_ATTRIBUTES.forEach(registration -> registration.accept(event)));
         modBus.addListener((RegisterConfigurationTasksEvent event) -> {
             if (!NeoForgeRegistrations.CONFIGURATION_PAYLOADS.isEmpty()) event.register(new ConfigurationPayloadsTask());
         });

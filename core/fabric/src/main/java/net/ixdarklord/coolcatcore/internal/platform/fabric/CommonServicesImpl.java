@@ -118,6 +118,12 @@ public final class CommonServicesImpl implements CommonServices {
         });
     }
 
+    // Entity types are registered as soon as their DeferredRegister is on Fabric, so the type is there to read.
+    @Override
+    public void registerEntityAttributes(java.util.function.Supplier<? extends net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.LivingEntity>> type, java.util.function.Supplier<net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder> attributes) {
+        net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry.register(type.get(), attributes.get());
+    }
+
     @Override
     public void registerServerReloadListener(Identifier id, PreparableReloadListener listener) {
         ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(id, listener);

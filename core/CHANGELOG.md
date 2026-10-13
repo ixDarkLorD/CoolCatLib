@@ -1,6 +1,11 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v26.1.2-4 Release | Oct 5, 2026
+### ✨ New Features
+- `EntityAttributes.register(type, Mob::createAttributes)` (`api.registry`): the default attributes every living entity type needs, from common code on both loaders.
+- Renderer registries (`api.client.registry`): `EntityRendererRegistry.register(type, provider)` and `BlockEntityRendererRegistry.register(type, provider)`, from common code on both loaders. Types are passed as suppliers, so `RegistryEntry`s work before they are registered.
+
 ## v26.1.2-3 Release | Oct 4, 2026
 ### ✨ New Features
 - Item decorators: custom drawing over an item wherever the game draws it in a GUI (inventory slots, the hotbar, a held stack), after vanilla's durability bar, cooldown and count, the same on every loader. Implement `api.item.DecoratedItem` on the item's class and hand over its `api.client.gui.ItemDecorator` in `registerDecorators(registrar)`: that's all, Core registers it by itself, on the client, the first time the item is drawn. An item's own `isBarVisible` still decides whether vanilla's bar shows under it.

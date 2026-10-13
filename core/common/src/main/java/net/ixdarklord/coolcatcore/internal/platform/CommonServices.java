@@ -46,6 +46,8 @@ public interface CommonServices {
 
     void openExtendedMenu(ServerPlayer player, MenuProvider provider, Consumer<RegistryFriendlyByteBuf> data);
 
+    void registerEntityAttributes(Supplier<? extends net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.LivingEntity>> type, Supplier<net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder> attributes);
+
     void registerServerReloadListener(Identifier id, PreparableReloadListener listener);
 
     <T extends CustomPacketPayload> void registerServerbound(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, PayloadReceiver<T> receiver);

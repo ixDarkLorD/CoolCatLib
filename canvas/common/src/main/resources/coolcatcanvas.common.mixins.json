@@ -9,8 +9,11 @@
   ],
   "client": [
     "client.AbstractWidgetMixin",
+    "client.CameraMixin",
     "client.FontPreparedTextBuilderMixin",
     "client.GameRendererMixin",
+    "client.GuiMixin",
+    "client.MouseHandlerMixin",
     "client.ShaderManagerMixin",
     "client.SkyRendererMixin"
   ],

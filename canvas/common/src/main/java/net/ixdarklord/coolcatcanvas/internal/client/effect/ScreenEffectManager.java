@@ -50,12 +50,11 @@ public final class ScreenEffectManager {
     private static final AtomicInteger SERIALS = new AtomicInteger();
     private static final Map<String, RenderPipeline> PIPELINES = new HashMap<>();
     private static final RandomSource RANDOM = RandomSource.create();
-    private static final long START_NANOS = Util.getNanos();
 
     private static @Nullable CrossFrameResourcePool resourcePool;
     private static boolean resourcesLoaded;
     private static boolean firstLoadDone;
-    private static long lastFrameNanos = -1L;
+    private static double lastFrameSeconds = -1.0;
     private static EffectProgram.FrameInfo frameInfo = new EffectProgram.FrameInfo(0.0F, 0.0F);
     private static ScreenEffectEvents.ToggleCause cause = ScreenEffectEvents.ToggleCause.CODE;
     // While the effects screen is open, SCREEN effects are drawn under the GUI so it stays readable.
@@ -120,10 +119,11 @@ public final class ScreenEffectManager {
     // ---- Frame ----
 
     public static void beginFrame(DeltaTracker deltaTracker) {
-        long now = Util.getNanos();
-        float delta = lastFrameNanos < 0L ? 0.0F : Math.min(1.0F, (now - lastFrameNanos) / 1.0E9F);
-        lastFrameNanos = now;
-        float time = (float) (((now - START_NANOS) / 1.0E9D) % 3600.0D);
+        // By the clock that stops while the game is paused: effects neither animate nor age behind the pause menu.
+        double now = net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds();
+        float delta = lastFrameSeconds < 0.0 ? 0.0F : (float) Math.min(1.0, now - lastFrameSeconds);
+        lastFrameSeconds = now;
+        float time = (float) (now % 3600.0D);
         frameInfo = new EffectProgram.FrameInfo(time, RANDOM.nextFloat());
         if (!resourcesLoaded || EFFECTS.isEmpty()) return;
 
