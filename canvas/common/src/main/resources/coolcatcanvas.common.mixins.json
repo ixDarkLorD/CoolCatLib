@@ -9,6 +9,7 @@
   ],
   "client": [
     "client.AbstractWidgetMixin",
+    "client.CameraMixin",
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
     "client.LevelRendererMixin"
