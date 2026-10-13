@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.1.2.0 Release | Oct 13, 2026
+### ✨ New Features
+- Camera shake (`api.client.camera.CameraShake`): `CameraShake.shake(degrees, ticks)` for a jolt, `shake(origin, radius, degrees, ticks)` for one that is strongest at a place and gone at its radius, and `add(new Shake(...))` for a curve of the mod's own (a swell, a rumble), given as a `Curve` (`api.client.vfx.Curve`). Shakes add up, are capped, and follow the game's "Distortion Effects" accessibility slider; `CameraShake.setScale` is for a mod's own option. From the server: `api.vfx.ShakeControl.shake(level, origin, radius, degrees, ticks)` or `shake(player, degrees, ticks)`.
+
 ## v2001.1.1.0 Release | Oct 4, 2026
 ### ✨ New Features
 - A built-in tint screen effect, with nothing to set up: `ScreenEffects.tint(id, argb)` makes a color wash under a mod's own id the first time and recolors it after, so `ScreenEffects.tint(id, 0x59FF0000).enableFor(5)` is a red flash wherever it's called. It's a screen effect like any other (fades, strength, conditions), over the world or, on the `SCREEN` scope, over the HUD and menus too. From the server, `ScreenEffectControl.tint(player, id, argb[, ticks])` does the same for a player, with nothing registered on the client. The definition is `coolcatcanvas:tint` (`ScreenEffects.TINT`, color uniform `TINT_COLOR`).
