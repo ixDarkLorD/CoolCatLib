@@ -1,11 +1,11 @@
 ---
 icon: material/palette-outline
-description: Rendering and visuals, built on Core
+description: Rendering and visuals
 ---
 
-# CoolCatLib: Canvas
+# Canvas
 
-The visuals, built on CoolCatLib: Core. Mod id `coolcatcanvas`, package `net.ixdarklord.coolcatcanvas`. It requires Core.
+CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`, in the `coolcatlib` mod (it was the mod CoolCatLib: Canvas before CoolCatLib became one mod). Its asset namespace is still `coolcatcanvas`.
 
 <div class="grid cards" markdown>
 

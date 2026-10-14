@@ -3,9 +3,9 @@ icon: material/toolbox-outline
 description: The cross-loader foundation
 ---
 
-# CoolCatLib: Core
+# Core
 
-The foundation: one common codebase for Fabric, NeoForge and Forge. Mod id `coolcatcore`, package `net.ixdarklord.coolcatcore`. New here? Start with [Getting Started](../getting-started.md).
+CoolCatLib's foundation: one common codebase for Fabric, NeoForge and Forge. Package `net.ixdarklord.coolcatcore`, in the `coolcatlib` mod (it was the mod CoolCatLib: Core before CoolCatLib became one mod). New here? Start with [Getting Started](../getting-started.md).
 
 <div class="grid cards" markdown>
 

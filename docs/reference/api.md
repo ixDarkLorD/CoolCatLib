@@ -5,9 +5,9 @@ description: Every public package and class
 
 # API Reference
 
-Every public API package and class of CoolCatLib: Core and CoolCatLib: Canvas (26.1.2), with what it's for. Anything under an `internal` package is not API and may change without notice. The guide pages go into detail and have examples.
+Every public API package and class of CoolCatLib (26.1.2), in its two packages, Core and Canvas, with what it's for. Anything under an `internal` package is not API and may change without notice. The guide pages go into detail and have examples.
 
-# CoolCatLib: Core
+# Core
 
 Package prefix: `net.ixdarklord.coolcatcore.api`.
 
@@ -19,7 +19,7 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `ServerModConstructor` | Dedicated-server entrypoint: `onConstructMod()`, `onServerSetup()`. |
 | `DataGenerationConstructor` | Datagen entrypoint: `onGatherData(DataGenerationContext)`. |
 | `DataGenerationContext` | `getModId()`, `getRegistries()`, `addProvider(...)`. |
-| `core.fabric.FabricDataGenerationEntrypoint` | Fabric `fabric-datagen` entrypoint that runs the `coolcatcore:datagen` constructors. |
+| `core.fabric.FabricDataGenerationEntrypoint` | Fabric `fabric-datagen` entrypoint that runs the `coolcatlib:datagen` constructors. |
 | `core.neoforge.NeoForgeModEntrypoint` | Base class for a NeoForge `@Mod` class: `common(...)`, `client(...)`, `server(...)`, `dataGeneration(...)`. |
 | `core.forge.ForgeModEntrypoint` | The same for Forge (1.21.1 and 1.20.1). |
 | `core.commands.ArgumentTypeRegistry` | Registers custom command argument types. |
@@ -200,7 +200,7 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `KeysUtils` | Key-combination checks. |
 | `client.utils.MouseHelper` | Mouse position checks. |
 
-# CoolCatLib: Canvas
+# Canvas
 
 Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 

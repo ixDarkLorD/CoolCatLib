@@ -105,7 +105,7 @@ Core loads, saves, syncs and hot reloads configs, and has commands to read and c
 |---|---|
 | [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu) | Searchable editor screens with sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from its mod list, from `/glazedmenu [mod] [config/category]`, or from your code. |
 | Configured (MrCrayfish) | Configured's own screens, from the NeoForge mod list and from Mod Menu on Fabric. Booleans, numbers, enums and text get its widgets; colors, ids and lists are edited as text. Synced configs are edited on the server by players allowed to. |
-| Neither | No editor. The files and the `/coolcatcore config` commands (`list`, `get`, `set`, `reset`, `reload`, `preset`) still work. |
+| Neither | No editor. The files and the `/coolcatlib config` commands (`list`, `get`, `set`, `reset`, `reload`, `preset`) still work. |
 
 With both installed, Glazed Menu's screens show the configs.
 
@@ -145,7 +145,7 @@ ConfigTheme.setForMod(MyMod.MOD_ID, ConfigTheme.builder()
 - Pictures: `icon`, `background`, `mode` (`COVER`, `STRETCH`, `TILE`), `tiled`.
 - Opacity: `backgroundOpacity`, `textureOpacity`, `backgroundInWorld`.
 - `popupSprite`: a nine-slice sprite for category popups.
-- `effects`: animated effects by id. They are registered with CoolCatLib: Canvas's `ConfigEffects.register(id, effect)` (`net.ixdarklord.coolcatcanvas.api.client.gui.theme`).
+- `effects`: animated effects by id. They are registered with Canvas's `ConfigEffects.register(id, effect)` (`net.ixdarklord.coolcatcanvas.api.client.gui.theme`).
 
 ## Startup configs
 

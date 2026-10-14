@@ -1,4 +1,5 @@
-"""Builds the Changelog page from the mods' CHANGELOG.md files on each version branch.
+"""Builds the Changelog page from the changelogs on each version branch: CoolCatLib's CHANGELOG.md, and CHANGELOG-canvas.md
+with the releases CoolCatLib: Canvas had as a mod of its own, before CoolCatLib became one mod.
 
 The page (docs/changelog.md) holds a `<!-- changelog -->` marker; at build time it is replaced with the latest
 releases, the newest release's new features, and every release per mod and Minecraft version. The files are read
@@ -10,14 +11,16 @@ import urllib.request
 
 REPO = "https://raw.githubusercontent.com/ixDarkLorD/CoolCatLib"
 BRANCHES = [("26.1.2", "26.1 – 26.1.2"), ("1.21", "1.21 – 1.21.1"), ("1.20.1", "1.20.1")]
-MODS = [("core", "CoolCatLib: Core", ":material-toolbox-outline:"), ("canvas", "CoolCatLib: Canvas", ":material-palette-outline:")]
+# (file on each branch, name, icon)
+MODS = [("CHANGELOG.md", "CoolCatLib", ":material-toolbox-outline:"),
+        ("CHANGELOG-canvas.md", "CoolCatLib: Canvas (until the merge)", ":material-palette-outline:")]
 MARKER = "<!-- changelog -->"
 HEADING = re.compile(r"^## v?(?P<version>\S+)\s+(?:Release\s*)?(?:[|\-–]\s*)?(?P<rest>.*)$")
 
 
-def fetch(branch, mod):
+def fetch(branch, path):
     try:
-        with urllib.request.urlopen(f"{REPO}/{branch}/{mod}/CHANGELOG.md", timeout=20) as response:
+        with urllib.request.urlopen(f"{REPO}/{branch}/{path}", timeout=20) as response:
             return response.read().decode("utf-8")
     except Exception:
         return None

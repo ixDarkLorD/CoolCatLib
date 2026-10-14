@@ -32,23 +32,26 @@ hide:
 
 </div>
 
-## Two mods, one toolkit
+## One mod, two halves
+
+!!! success "CoolCatLib is one mod"
+    Since **26.1.2-5** (Minecraft 26.1 – 26.1.2), **2100.3.0.0** (1.21.1) and **2001.3.0.0** (1.20.1), CoolCatLib is a single mod with the id `coolcatlib`: one jar per loader holds everything. Before that it was two mods, CoolCatLib: Core (`coolcatcore`) and CoolCatLib: Canvas (`coolcatcanvas`). The code kept its two packages, which these docs call Core and Canvas.
 
 <div class="grid cards" markdown>
 
--   :material-toolbox-outline:{ .lg .middle } **CoolCatLib: Core**
+-   :material-toolbox-outline:{ .lg .middle } **Core**
 
     ---
 
-    `coolcatcore` · the purr-fect foundation. Entrypoints that replace per-loader setup; events, registration and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
+    `net.ixdarklord.coolcatcore` · the purr-fect foundation. Entrypoints that replace per-loader setup; events, registration and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
 
     [:octicons-arrow-right-24: Getting started](getting-started.md)
 
--   :material-palette-outline:{ .lg .middle } **CoolCatLib: Canvas**
+-   :material-palette-outline:{ .lg .middle } **Canvas**
 
     ---
 
-    `coolcatcanvas` · the cat's whiskers of visuals, built on Core. Live post-processing shaders, layered skyboxes, gradient and rainbow text, outlines, panels, pan & zoom views and easing curves.
+    `net.ixdarklord.coolcatcanvas` · the cat's whiskers of visuals. Live post-processing shaders, layered skyboxes, gradient and rainbow text, outlines, panels, pan & zoom views and easing curves.
 
     [:octicons-arrow-right-24: Screen effects](canvas/screen-effects.md)
 
@@ -124,7 +127,7 @@ flowchart LR
         CORE["Core<br/>events · registries · network<br/>configs · attachments"]
         CANVAS["Canvas<br/>effects · skyboxes · text · GUI"]
     end
-    F -- "coolcatcore:* entrypoints" --> C
+    F -- "coolcatlib:* entrypoints" --> C
     N -- "NeoForgeModEntrypoint<br/>ForgeModEntrypoint" --> C
     C --> CORE
     C --> CANVAS
@@ -133,11 +136,11 @@ flowchart LR
 
 ## Versions and loaders
 
-| Minecraft | NeoForge | Forge | Fabric | Source |
-|---|:-:|:-:|:-:|---|
-| **26.1 – 26.1.2** | :material-check: | – | :material-check: | [`26.1.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.1.2) |
-| **1.21 – 1.21.1** | :material-check: | :material-check: | :material-check: | [`1.21`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.21) |
-| **1.20.1** | – | :material-check: | :material-check: | [`1.20.1`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.20.1) |
+| Minecraft | One mod since | NeoForge | Forge | Fabric | Source |
+|---|---|:-:|:-:|:-:|---|
+| **26.1 – 26.1.2** | `26.1.2-5` | :material-check: | – | :material-check: | [`26.1.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.1.2) |
+| **1.21 – 1.21.1** | `2100.3.0.0` | :material-check: | :material-check: | :material-check: | [`1.21`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.21) |
+| **1.20.1** | `2001.3.0.0` | – | :material-check: | :material-check: | [`1.20.1`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.20.1) |
 
 !!! note "About these docs"
     The pages are written against **26.1.2**. The backports share the same API, adjusted for their Minecraft version: `ResourceLocation` instead of `Identifier`, `GuiGraphics` instead of `GuiGraphicsExtractor`, and a Forge entrypoint.

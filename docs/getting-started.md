@@ -5,11 +5,11 @@ description: Set up a multi-loader mod on CoolCatLib
 
 # Getting Started
 
-This guide sets up a multi-loader mod on CoolCatLib: Core, and optionally Canvas. It assumes the usual layout: a `common` module plus one module per loader, as with Architectury Loom.
+This guide sets up a multi-loader mod on CoolCatLib. It assumes the usual layout: a `common` module plus one module per loader, as with Architectury Loom.
 
 ## 1. Add the dependency
 
-CoolCatLib is published on the ModResources Maven. Artifacts are named `net.ixdarklord.coolcatlib:coolcatlib-<mod>-<module>:<minecraft>-<build>`, where `<mod>` is `core` or `canvas`.
+CoolCatLib is published on the ModResources Maven. Artifacts are named `net.ixdarklord.coolcatlib:coolcatlib-<module>:<minecraft>-<build>`, and one artifact holds everything, the foundation (Core) and the visuals (Canvas).
 
 ```groovy title="build.gradle"
 repositories {
@@ -21,8 +21,7 @@ repositories {
 
     ```groovy title="common/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-core-common:26.1.2-3"
-        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-common:26.1.2-3"   // only if you use Canvas
+        api "net.ixdarklord.coolcatlib:coolcatlib-common:26.1.2-5"
     }
     ```
 
@@ -30,8 +29,7 @@ repositories {
 
     ```groovy title="fabric/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-core-fabric:26.1.2-3"
-        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-fabric:26.1.2-3"
+        api "net.ixdarklord.coolcatlib:coolcatlib-fabric:26.1.2-5"
     }
     ```
 
@@ -39,8 +37,7 @@ repositories {
 
     ```groovy title="neoforge/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-core-neoforge:26.1.2-3"
-        api "net.ixdarklord.coolcatlib:coolcatlib-canvas-neoforge:26.1.2-3"
+        api "net.ixdarklord.coolcatlib:coolcatlib-neoforge:26.1.2-5"
     }
     ```
 
@@ -48,22 +45,20 @@ repositories {
 
     ```groovy title="forge/build.gradle"
     dependencies {
-        modApi "net.ixdarklord.coolcatlib:coolcatlib-core-forge:1.21.1-2100.2.0.1"
-        modApi "net.ixdarklord.coolcatlib:coolcatlib-canvas-forge:1.21.1-2100.1.0.0"
+        modApi "net.ixdarklord.coolcatlib:coolcatlib-forge:1.21.1-2100.3.0.0"   // 1.20.1: 1.20.1-2001.3.0.0
     }
     ```
 
 !!! tip "Remapped versions"
     On Minecraft versions that are still remapped (1.21.1 and 1.20.1), use Loom's `modApi` instead of `api`.
 
-Then declare the dependency in your mod's metadata. Versions take the form `<minecraft>-<build>`:
+Then declare the dependency in your mod's metadata, on the mod id `coolcatlib`. Versions take the form `<minecraft>-<build>` on 26.1.2 and are plain numbers on 1.21.1 (`2100.3.0.0`) and 1.20.1 (`2001.3.0.0`):
 
 === "Fabric"
 
     ```json title="fabric.mod.json"
     "depends": {
-      "coolcatcore": ">=26.1.2-3",
-      "coolcatcanvas": ">=26.1.2-3"
+      "coolcatlib": ">=26.1.2-5"
     }
     ```
 
@@ -71,12 +66,15 @@ Then declare the dependency in your mod's metadata. Versions take the form `<min
 
     ```toml title="neoforge.mods.toml (mods.toml on Forge)"
     [[dependencies.mymod]]
-    modId = "coolcatcore"
+    modId = "coolcatlib"
     type = "required"
-    versionRange = "[26.1.2-3,)"
+    versionRange = "[26.1.2-5,)"
     ordering = "AFTER"
     side = "BOTH"
     ```
+
+!!! warning "Coming from CoolCatLib: Core and Canvas"
+    Mods built for the two old mods have to move over: depend on `coolcatlib` alone (in Gradle and in the mod metadata), and rename the `coolcatcore:*` Fabric entrypoints to `coolcatlib:*`. The packages are unchanged, so no imports change. Players remove the old Core and Canvas jars; CoolCatLib refuses to start next to them.
 
 ## 2. Write your constructors
 
@@ -129,15 +127,15 @@ Everything starts from constructor classes in your **common** module: one per si
 
     ```json title="fabric.mod.json"
     "entrypoints": {
-      "coolcatcore:common": ["com.example.mymod.MyMod"],
-      "coolcatcore:client": ["com.example.mymod.MyModClient"],
-      "coolcatcore:server": ["com.example.mymod.MyModServer"],
-      "coolcatcore:datagen": ["com.example.mymod.MyModData"],
+      "coolcatlib:common": ["com.example.mymod.MyMod"],
+      "coolcatlib:client": ["com.example.mymod.MyModClient"],
+      "coolcatlib:server": ["com.example.mymod.MyModServer"],
+      "coolcatlib:datagen": ["com.example.mymod.MyModData"],
       "fabric-datagen": ["net.ixdarklord.coolcatcore.api.core.fabric.FabricDataGenerationEntrypoint"]
     }
     ```
 
-    `FabricDataGenerationEntrypoint` runs every `coolcatcore:datagen` constructor of the mod being generated. You only need it for datagen.
+    `FabricDataGenerationEntrypoint` runs every `coolcatlib:datagen` constructor of the mod being generated. You only need it for datagen.
 
 === "NeoForge"
 

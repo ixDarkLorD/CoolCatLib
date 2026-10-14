@@ -1,7 +1,7 @@
 # CoolCatLib docs
 
 Source of the CoolCatLib documentation site, https://ixdarklord.github.io/CoolCatLib/, built with
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/). The mods' code is on the version branches
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/). The mod's code is on the version branches
 (`26.1.2`, `1.21`, `1.20.1`).
 
 Every push to this branch rebuilds and publishes the site (`.github/workflows/docs.yml`).
