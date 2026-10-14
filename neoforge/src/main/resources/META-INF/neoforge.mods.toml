@@ -1,0 +1,48 @@
+modLoader = "javafml"
+loaderVersion = "[${min_neoforge_fml_version},)"
+issueTrackerURL = "${mod_issue_url}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${modid}"
+displayName = "${mod_name}"
+version = "${mod_version}"
+description = "${mod_description}"
+authors = "${mod_author}"
+logoFile = "mod_logo.png"
+updateJSONURL = "${mod_neoforge_update_url}"
+
+[[mixins]]
+config = "${modid}.common.mixins.json"
+
+[[mixins]]
+config = "coolcatcanvas.common.mixins.json"
+
+[[dependencies.${modid}]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${min_neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${modid}]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${mc_version},) , (,${max_mc_version}]"
+ordering = "NONE"
+side = "BOTH"
+
+# The two mods CoolCatLib used to be: their classes are in this jar now.
+[[dependencies.${modid}]]
+modId = "coolcatcore"
+type = "incompatible"
+reason = "CoolCatLib: Core and Canvas are part of CoolCatLib now; remove their jars."
+versionRange = "[0,)"
+side = "BOTH"
+
+[[dependencies.${modid}]]
+modId = "coolcatcanvas"
+type = "incompatible"
+reason = "CoolCatLib: Core and Canvas are part of CoolCatLib now; remove their jars."
+versionRange = "[0,)"
+side = "BOTH"

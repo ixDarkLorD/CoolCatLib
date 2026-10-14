@@ -1,2 +1,0 @@
-apply from: "${rootProject.sharedScripts}/fabric.gradle"
-apply from: rootProject.file("canvas/canvas.gradle")

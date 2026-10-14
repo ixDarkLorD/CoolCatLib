@@ -6,5 +6,4 @@ dependencies {
     modImplementation libs.jei.fabric
 
     implementation project(path: ":fabric", configuration: "namedElements")
-    implementation project(path: ":canvas-fabric", configuration: "namedElements")
 }
