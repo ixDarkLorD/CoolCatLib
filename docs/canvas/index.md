@@ -21,6 +21,18 @@ CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`,
 
     Layered custom skies, from a JSON file or from code.
 
+-   :material-shimmer:{ .lg .middle } **[World Effects](world-effects.md)**
+
+    ---
+
+    Glowing particles, beams, flashes and trails in the world, rifts that tear open, and effects the server starts.
+
+-   :material-movie-open-outline:{ .lg .middle } **[Cutscenes](cutscenes.md)**
+
+    ---
+
+    Camera paths with letterbox bars, fades, subtitles and markers, from code, resource packs, the server or an in-game editor.
+
 -   :material-format-color-text:{ .lg .middle } **[Text and Colors](text-and-colors.md)**
 
     ---

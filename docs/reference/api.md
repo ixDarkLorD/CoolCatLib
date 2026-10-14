@@ -237,6 +237,31 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `SkyContext` | The frame a skybox draws in. |
 | `sky.SkyboxControl` | Drives players' skyboxes from the server. |
 
+### `client.vfx` and `vfx` ([Canvas World Effects](../canvas/world-effects.md))
+| Class | Functionality |
+|---|---|
+| `client.vfx.WorldVfx` | Renderers called every frame (`register`), and one-line `beam`, `flash` and `groundFlash` effects. |
+| `client.vfx.VfxMaterial`, `VfxBlend` | What a world effect is drawn with: a texture (built-ins `GLOW`, `SPARKLE`, `STAR`, `RING`, `SMOKE`, `STREAK`), a blend, a softness and an optional fragment shader. |
+| `client.vfx.VfxRenderer`, `VfxFrame`, `VfxDraw` | Drawing every frame: billboards, beams, flat squares, quads and trails. |
+| `client.vfx.ParticleSpec`, `WorldParticles` | Effect particles: what they look like and how they live, and spawning them (`spawn`, `burst`, `line`). |
+| `client.vfx.Curve`, `Trail` | A three-point eased value over a lifetime, and the path something moved along. |
+| `client.vfx.VfxEffect`, `VfxEffects` | Named client effects the server can start. |
+| `client.vfx.WorldRifts`, `Rift`, `RiftSpec` | Rifts: tears in the air that open, hang and close. |
+| `vfx.VfxControl`, `VfxParams` | Plays a named effect on players' clients from the server. |
+| `vfx.RiftControl` | Opens and closes registered rifts from the server. |
+
+### `cutscene`, `client.cutscene` and the cutscene events ([Canvas Cutscenes](../canvas/cutscenes.md))
+| Class | Functionality |
+|---|---|
+| `cutscene.Cutscene` | A cutscene as data: keyframes, letterbox, fades, focuses, subtitles, markers and settings; `builder()` and a JSON codec. |
+| `cutscene.CameraKeyframe`, `Interpolation`, `CameraPose` | A pose the camera passes through and how it gets there, and a camera at a moment. |
+| `cutscene.CameraFocus`, `CutsceneAnchor`, `ValueTrack` | Looking at a point, entity or the player; what positions are measured from; a number over time. |
+| `cutscene.CutsceneControl` | Plays and stops cutscenes on a player's client from the server. |
+| `cutscene.CutsceneEndReason` | Why a cutscene ended. |
+| `client.cutscene.Cutscenes`, `CutscenePlayback` | Registering, playing and controlling cutscenes on the client, and the in-game editor. |
+| `client.cutscene.Letterbox` | Letterbox bars without a cutscene. |
+| `event.v2.client.CutsceneEvents`, `event.v2.common.ServerCutsceneEvents` | What a cutscene does as it plays, on the client and as each player's client reports it to the server. |
+
 ### `client.utils` ([Canvas Text and Colors](../canvas/text-and-colors.md), [Canvas GUI](../canvas/gui.md))
 | Class | Functionality |
 |---|---|

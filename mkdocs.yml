@@ -126,6 +126,8 @@ nav:
       - canvas/index.md
       - Screen Effects: canvas/screen-effects.md
       - Skyboxes: canvas/skyboxes.md
+      - World Effects: canvas/world-effects.md
+      - Cutscenes: canvas/cutscenes.md
       - Text and Colors: canvas/text-and-colors.md
       - GUI: canvas/gui.md
   - Reference: reference/api.md
