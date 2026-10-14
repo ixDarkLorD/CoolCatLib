@@ -26,4 +26,4 @@ CLAUDE.local.md
 logs/
 
 # Local asset scripts
-canvas/tools/
+tools/

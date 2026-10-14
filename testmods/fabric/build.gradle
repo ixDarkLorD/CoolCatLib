@@ -6,7 +6,6 @@ dependencies {
     implementation libs.jei.fabric
 
     implementation project(":fabric")
-    implementation project(":canvas-fabric")
     // Glazed Menu (its own project), from Maven Local.
     implementation("net.ixdarklord.glazedmenu:glazedmenu-fabric:${glazedmenu_version}") { transitive = false }
 }
