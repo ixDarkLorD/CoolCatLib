@@ -1,0 +1,7 @@
+apply from: "${rootProject.sharedScripts}/forge.gradle"
+
+// The mixin configs of the visuals (the coolcatcanvas package), beside the ones the shared script names after the mod id.
+loom.forge {
+    mixinConfig "coolcatcanvas.common.mixins.json"
+    mixinConfig "coolcatcanvas.forge.mixins.json"
+}

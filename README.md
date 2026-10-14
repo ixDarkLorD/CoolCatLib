@@ -1,20 +1,24 @@
-<h1 align="center">CoolCatLib: Core & CoolCatLib: Canvas</h1>
-<p align="center"><b>Minecraft library mods.</b></p>
+<h1 align="center">CoolCatLib</h1>
+<p align="center"><b>A Minecraft library mod.</b></p>
 <p align="center">
-  Core: <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib">CurseForge</a> / <a href="https://modrinth.com/mod/ASkaoGC8">Modrinth</a> ·
-  Canvas: <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib-canvas">CurseForge</a> / <a href="https://modrinth.com/mod/NtytwOvv">Modrinth</a> ·
+  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib">CurseForge</a> ·
+  <a href="https://modrinth.com/mod/ASkaoGC8">Modrinth</a> ·
   <a href="https://ixdarklord.github.io/CoolCatLib/">Documentation</a>
 </p>
 <hr>
 
-| Mod | Folder | Mod id | What it holds |
-|---|---|---|---|
-| **CoolCatLib: Core** | `core/` | `coolcatcore` | Mod constructors, events, networking, registries, configs (and their screens), attachments, containers, menus and utilities. |
-| **CoolCatLib: Canvas** | `canvas/` | `coolcatcanvas` | Screen effects, skyboxes, GUI widgets and render utilities. Requires CoolCatLib: Core. |
+One mod (`coolcatlib`), in two packages:
 
-Each mod has `common`, `fabric` and `forge` modules and its own `CHANGELOG.md`; `testmods/` holds the Fabric test mod,
-which runs with both. Both mods' attributes are in `gradle.properties` (Canvas's with a `canvas_`
-prefix). `canvas/canvas.gradle` sets up Canvas's
-projects and `testmods/testmod.gradle` the test mods'.
+| Package | What it holds |
+|---|---|
+| `net.ixdarklord.coolcatcore` | Mod constructors, events, networking, registries, configs (and their screens), attachments, containers, menus and utilities. |
+| `net.ixdarklord.coolcatcanvas` | Screen effects, skyboxes, GUI widgets and render utilities. |
+
+The second package was its own mod, CoolCatLib: Canvas (its releases are in `CHANGELOG-canvas.md`), and the first was
+CoolCatLib: Core. Canvas's asset namespace and commands are unchanged; the old
+`coolcatcore` and `coolcatcanvas` mod ids are gone.
+
+The `common`, `fabric` and `forge` modules are in the root folder, with the mod's attributes in `gradle.properties`.
+`testmods/` holds the Fabric test mod; `testmods/testmod.gradle` sets them up.
 
 <p align="center"> <img src="https://i.imgur.com/iQlGHUt.png" alt="">
