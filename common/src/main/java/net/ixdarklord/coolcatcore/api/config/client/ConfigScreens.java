@@ -17,17 +17,18 @@ import java.nio.file.Path;
 import java.util.function.IntConsumer;
 
 /**
- * Client only: config screens for Core's configs. Core has none of its own: they come from Glazed Menu (a separate,
- * client-side mod) when it's installed. Without it every method here opens nothing (returning null), and the configs
- * still work from their files; {@link #isAvailable()} tells which, and {@link #tellUnavailable(Config)} tells the
- * player how to change a config without screens.
+ * Client only: config screens for Core's configs. They come from Glazed Menu (a separate, client-side mod) when it's
+ * installed; without it, CoolCatLib's own simpler screens, in the style of its screen effects screen, stand in. The
+ * methods return null only when neither is there (on a dedicated server, or before the client started), and
+ * {@link #tellUnavailable(Config)} tells the player how to change a config without screens.
  */
 public final class ConfigScreens {
     private static @Nullable Provider provider;
+    private static @Nullable Provider fallback;
 
     private ConfigScreens() {}
 
-    /** What makes the screens: Glazed Menu sets it as it starts. */
+    /** What makes the screens: Glazed Menu sets it as it starts, and CoolCatLib's own screens are the fallback. */
     @ApiStatus.Internal
     public interface Provider {
         @Nullable Screen create(@Nullable Screen parent, String modId);
@@ -50,34 +51,54 @@ public final class ConfigScreens {
         provider = screens;
     }
 
-    /** Whether there are config screens: Glazed Menu is installed. */
+    /** CoolCatLib's own screens, used while no provider is set. */
+    @ApiStatus.Internal
+    public static void setFallback(Provider screens) {
+        fallback = screens;
+    }
+
+    /** Whether there are config screens: Glazed Menu's or CoolCatLib's own. */
     public static boolean isAvailable() {
+        return screens() != null;
+    }
+
+    /** Whether the screens are Glazed Menu's rather than CoolCatLib's simpler ones. */
+    public static boolean isGlazedMenu() {
         return provider != null;
+    }
+
+    private static @Nullable Provider screens() {
+        return provider != null ? provider : fallback;
     }
 
     /** The mod's config screen (its configs' list, or the one config), or null when it has none or there are no screens. */
     public static @Nullable Screen create(@Nullable Screen parent, String modId) {
-        return provider != null ? provider.create(parent, modId) : null;
+        Provider screens = screens();
+        return screens != null ? screens.create(parent, modId) : null;
     }
 
     /** The screen editing one config, or null without screens. */
     public static @Nullable Screen create(@Nullable Screen parent, Config config) {
-        return provider != null ? provider.create(parent, config) : null;
+        Provider screens = screens();
+        return screens != null ? screens.create(parent, config) : null;
     }
 
     /** A popup editing one category of a config (its path, like {@code "client.visuals"}), or null without screens. */
     public static @Nullable Screen categoryPopup(@Nullable Screen parent, Config config, String path) {
-        return provider != null ? provider.categoryPopup(parent, config, path, null) : null;
+        Provider screens = screens();
+        return screens != null ? screens.categoryPopup(parent, config, path, null) : null;
     }
 
     /** As {@link #categoryPopup(Screen, Config, String)}, in its own theme. */
     public static @Nullable Screen categoryPopup(@Nullable Screen parent, Config config, String path, ConfigTheme theme) {
-        return provider != null ? provider.categoryPopup(parent, config, path, theme) : null;
+        Provider screens = screens();
+        return screens != null ? screens.categoryPopup(parent, config, path, theme) : null;
     }
 
     /** A popup editing one category of a mod's configs, or null when it has none there or there are no screens. */
     public static @Nullable Screen categoryPopup(@Nullable Screen parent, String modId, String path) {
-        return provider != null ? provider.categoryPopup(parent, modId, path) : null;
+        Provider screens = screens();
+        return screens != null ? screens.categoryPopup(parent, modId, path) : null;
     }
 
     /** Opens {@link #categoryPopup(Screen, String, String)} over the current screen; nothing without screens. */
@@ -89,7 +110,8 @@ public final class ConfigScreens {
 
     /** A screen listing every mod's configs, or null without screens. */
     public static @Nullable Screen createModList(@Nullable Screen parent) {
-        return provider != null ? provider.createModList(parent) : null;
+        Provider screens = screens();
+        return screens != null ? screens.createModList(parent) : null;
     }
 
     /** Opens a mod's config screen on top of the current screen; nothing without screens. */
@@ -101,12 +123,14 @@ public final class ConfigScreens {
 
     /** A color picker in the screens' style, or null without screens. */
     public static @Nullable Screen colorPicker(@Nullable Screen parent, Component title, int color, boolean alpha, IntConsumer onDone) {
-        return provider != null ? provider.colorPicker(parent, title, color, alpha, onDone) : null;
+        Provider screens = screens();
+        return screens != null ? screens.colorPicker(parent, title, color, alpha, onDone) : null;
     }
 
     /** Whether the mod has configs the screens can show; false without screens. */
     public static boolean hasConfigs(String modId) {
-        return provider != null && provider.hasConfigs(modId);
+        Provider screens = screens();
+        return screens != null && screens.hasConfigs(modId);
     }
 
     /**
