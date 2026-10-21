@@ -215,7 +215,8 @@ public final class ConfigStyle {
     }
 
     // Blurs what's been drawn so far (the panorama or the world), as newer versions' menus do.
-    private static void blur(GuiGraphics graphics) {
+    /** The panorama or world behind a screen, blurred (also for the canvas's styled screens). */
+    public static void blur(GuiGraphics graphics) {
         if (blurUnavailable) return;
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget target = minecraft.getMainRenderTarget();

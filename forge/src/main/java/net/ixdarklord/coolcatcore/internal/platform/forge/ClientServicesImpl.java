@@ -42,6 +42,7 @@ public final class ClientServicesImpl implements ClientServices {
     public static void register(IEventBus modBus) {
         modBus.addListener(EventPriority.NORMAL, false, RegisterKeyMappingsEvent.class, ClientServicesImpl::onRegisterKeyMappings);
         modBus.addListener(EventPriority.NORMAL, false, RegisterClientTooltipComponentFactoriesEvent.class, ClientServicesImpl::onRegisterTooltipComponents);
+        modBus.addListener(EventPriority.NORMAL, false, net.minecraftforge.client.event.ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
         modBus.addListener(EventPriority.NORMAL, false, FMLClientSetupEvent.class, event -> event.enqueueWork(ClientServicesImpl::registerMenuScreens));
     }
 
@@ -97,5 +98,23 @@ public final class ClientServicesImpl implements ClientServices {
         synchronized (TOOLTIP_COMPONENTS) {
             TOOLTIP_COMPONENTS.forEach(registration -> registration.accept(event));
         }
+    }
+    // Extra models wait for the model event, which loads each from its id.
+    private static final java.util.List<java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>>> EXTRA_MODELS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    @Override
+    public void registerExtraModels(java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>> provider) {
+        EXTRA_MODELS.add(provider);
+    }
+
+    @Override
+    public net.minecraft.client.resources.model.BakedModel getExtraModel(net.minecraft.resources.ResourceLocation model) {
+        return net.minecraft.client.Minecraft.getInstance().getModelManager().getModel(model);
+    }
+
+    public static void onRegisterAdditionalModels(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event) {
+        // The packs being loaded are the game's by now: a reload puts them in place before its listeners run.
+        net.minecraft.server.packs.resources.ResourceManager resources = net.minecraft.client.Minecraft.getInstance().getResourceManager();
+        EXTRA_MODELS.forEach(source -> source.apply(resources).forEach(model -> event.register(model)));
     }
 }

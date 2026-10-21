@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 // current transform, but text without a shadow where the field asks for the default (shadowed) text, and no plain
 // fills, which the field only uses for its frame (its cursor and selection use their own render types). Vanilla's
 // field has no switch for either.
-final class FieldGraphics extends GuiGraphics {
-    FieldGraphics(GuiGraphics target) {
+public final class FieldGraphics extends GuiGraphics {
+    public FieldGraphics(GuiGraphics target) {
         super(Minecraft.getInstance(), target.bufferSource());
         this.pose().last().pose().set(target.pose().last().pose());
         this.pose().last().normal().set(target.pose().last().normal());

@@ -3,6 +3,8 @@ package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
+import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
+import net.ixdarklord.coolcatcanvas.internal.client.vfx.GhostRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceProvider;
@@ -20,6 +22,8 @@ public abstract class GameRendererMixin {
     private void coolcatcanvas$beginFrame(float partialTicks, long nanoTime, boolean renderLevel, CallbackInfo ci) {
         ScreenEffectManager.beginFrame(partialTicks);
         SkyboxManager.beginFrame(partialTicks);
+        // Scene viewports are drawn to their own targets now, before the level, while nothing else waits to be drawn.
+        SceneViewportManager.beginFrame(partialTicks);
     }
 
     // Where the main target is bound again for the GUI, only reached after the level was rendered.
@@ -38,11 +42,15 @@ public abstract class GameRendererMixin {
         Minecraft minecraft = Minecraft.getInstance();
         ScreenEffectManager.reload(minecraft.getResourceManager());
         SkyboxManager.reload(minecraft.getResourceManager());
+        SceneViewportManager.onResourceReload();
+        GhostRenderer.close();
     }
 
     @Inject(method = "close()V", at = @At("TAIL"))
     private void coolcatcanvas$close(CallbackInfo ci) {
         ScreenEffectManager.close();
         SkyboxManager.close();
+        SceneViewportManager.close();
+        GhostRenderer.close();
     }
 }

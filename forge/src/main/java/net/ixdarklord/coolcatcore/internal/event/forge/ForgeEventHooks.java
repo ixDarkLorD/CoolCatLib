@@ -3,6 +3,7 @@ package net.ixdarklord.coolcatcore.internal.event.forge;
 import net.ixdarklord.coolcatcore.api.event.v2.common.BlockEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.EntityEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.InteractionEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
@@ -11,13 +12,16 @@ import net.ixdarklord.coolcatcore.internal.platform.forge.ForgeRegistrations;
 import net.ixdarklord.coolcatcore.internal.platform.forge.ForgeTransferCompat;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -71,6 +75,38 @@ public final class ForgeEventHooks {
 
         bus.addListener((EntityJoinLevelEvent event) -> {
             if (event.getLevel() instanceof ServerLevel level) EntityEvents.LOAD.invoker().onLoad(event.getEntity(), level);
+        });
+
+        bus.addListener((PlayerInteractEvent.RightClickBlock event) -> {
+            InteractionResult result = InteractionEvents.USE_BLOCK.invoker().onUseBlock(event.getEntity(), event.getHand(), event.getHitVec());
+            if (result != InteractionResult.PASS) {
+                event.setCanceled(true);
+                event.setCancellationResult(result);
+            }
+        });
+        bus.addListener((PlayerInteractEvent.RightClickItem event) -> {
+            InteractionResult result = InteractionEvents.USE_ITEM.invoker().onUseItem(event.getEntity(), event.getHand());
+            if (result != InteractionResult.PASS) {
+                event.setCanceled(true);
+                event.setCancellationResult(result);
+            }
+        });
+        bus.addListener((PlayerInteractEvent.EntityInteract event) -> {
+            InteractionResult result = InteractionEvents.USE_ENTITY.invoker().onUseEntity(event.getEntity(), event.getHand(), event.getTarget());
+            if (result != InteractionResult.PASS) {
+                event.setCanceled(true);
+                event.setCancellationResult(result);
+            }
+        });
+        // Fired again as the block is let go of or given up on; only the first click counts, as on Fabric.
+        bus.addListener((PlayerInteractEvent.LeftClickBlock event) -> {
+            if (event.getAction() == PlayerInteractEvent.LeftClickBlock.Action.START
+                    && InteractionEvents.ATTACK_BLOCK.invoker().onAttackBlock(event.getEntity(), event.getHand(), event.getPos(), event.getFace()).isInterrupt()) {
+                event.setCanceled(true);
+            }
+        });
+        bus.addListener((AttackEntityEvent event) -> {
+            if (InteractionEvents.ATTACK_ENTITY.invoker().onAttackEntity(event.getEntity(), event.getTarget()).isInterrupt()) event.setCanceled(true);
         });
 
         bus.addListener((BlockEvent.BreakEvent event) -> {

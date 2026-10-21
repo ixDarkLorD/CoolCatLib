@@ -44,4 +44,25 @@ public final class ClientServicesImpl implements ClientServices {
     public void sendToServer(CustomPacketPayload payload) {
         FabricClientNetworking.send(payload);
     }
+    // Extra models go in through Fabric's model loading plugin, registered once, which asks the providers at every load.
+    private static final java.util.List<java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>>> EXTRA_MODELS = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private static boolean modelPluginRegistered;
+
+    @Override
+    public synchronized void registerExtraModels(java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>> provider) {
+        EXTRA_MODELS.add(provider);
+        if (!modelPluginRegistered) {
+            modelPluginRegistered = true;
+            net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.register(context -> {
+                // The packs being loaded are the game's by now: a reload puts them in place before its listeners run.
+                net.minecraft.server.packs.resources.ResourceManager resources = net.minecraft.client.Minecraft.getInstance().getResourceManager();
+                EXTRA_MODELS.forEach(source -> context.addModels(source.apply(resources)));
+            });
+        }
+    }
+
+    @Override
+    public net.minecraft.client.resources.model.BakedModel getExtraModel(net.minecraft.resources.ResourceLocation model) {
+        return net.minecraft.client.Minecraft.getInstance().getModelManager().getModel(model);
+    }
 }
