@@ -14,7 +14,10 @@
     "TrackedEntityAccessor"
   ],
   "client": [
-    "client.GuiGraphicsMixin"
+    "client.BlockEntityWithoutLevelRendererMixin",
+    "client.GuiGraphicsMixin",
+    "client.ItemColorsMixin",
+    "client.ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

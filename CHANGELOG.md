@@ -2,6 +2,14 @@
 This file is for listing all the changes to this project
 
 ## v2100.3.0.0 Release | Oct 14, 2026
+### ✨ New Features
+- `InteractionEvents` (`api.event.v2.common`): `USE_BLOCK`, `USE_ITEM` and `USE_ENTITY` (answer with an `InteractionResult`: `PASS` lets the game go on, anything else stops it there) and `ATTACK_BLOCK` and `ATTACK_ENTITY` (interrupt to stop them), on both sides, before the game acts, the same on Fabric, NeoForge and Forge.
+- `HeldItemSwaps` (`api.client.item`): which changes to a held stack are quiet, so the item stays where it is in the hand instead of being put away and taken out again: `quiet(...)` for components (a `Supplier` for one registered later), `register(...)` for any test of the old and new stacks. Attachments' changes are quiet unless the attachment was built with `swapAnimation()`.
+- `GhostBlocks` (`api.client.vfx`): blocks drawn as ghosts with their real models (block entities too), one see-through picture so only their outside shows, tinted and faded by one colour; shown through walls, in the world as real blocks would be, or always; full bright or shaded. Call it right after the level is drawn.
+- Scene viewports (`api.client.viewport.SceneViewport`, `api.client.gui.components.SceneViewportWidget`): a 3D view of blocks, block entities, entities and items, drawn into a texture of its own (by the game's own renderers, lit as the world is) for a GUI or any textured face; turned, zoomed and framed in code or by dragging, with a ground of grid lines and shadows, and text laid flat on the picture.
+- `ItemRendererRegistry` (`api.client.registry`): items drawn in code, the same on every loader: an item whose model is `builtin/entity` is drawn by its renderer wherever it shows.
+- `ItemColorRegistry` (`api.client.registry`): colours for items' tinted faces, the same on every loader.
+- `ExtraModels` (`api.client.registry`): models baked with the game's though no item or block uses them, for drawing in code; named outright or found in the resources as they load.
 ### 🔧 Changes
 - CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.
 - The mod id is now `coolcatlib`. With it changed: the Fabric entrypoints (`coolcatlib:common`, `coolcatlib:client`, `coolcatlib:server`, `coolcatlib:datagen`), the commands (`/coolcatlib config ...`, `/coolcatlib_client config ...`), Core's translation keys (`config.coolcatlib.*`, `tooltip.coolcatlib.*`), its payload ids and `ConfigTheme.STARFALL` (`coolcatlib:starfall`). Players and servers need the same version, as with any update.

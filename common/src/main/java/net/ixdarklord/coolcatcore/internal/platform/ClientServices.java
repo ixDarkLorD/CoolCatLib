@@ -28,4 +28,10 @@ public interface ClientServices {
     <T extends TooltipComponent> void registerTooltipComponent(Class<T> type, Function<? super T, ? extends ClientTooltipComponent> factory);
 
     void sendToServer(CustomPacketPayload payload);
+
+    /** Bakes models no item or block uses (ExtraModels): those named by the provider, asked at every model load. */
+    void registerExtraModels(java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>> provider);
+
+    /** A model registered with registerExtraModel, once baked; null before. */
+    net.minecraft.client.resources.model.@org.jetbrains.annotations.Nullable BakedModel getExtraModel(net.minecraft.resources.ResourceLocation model);
 }

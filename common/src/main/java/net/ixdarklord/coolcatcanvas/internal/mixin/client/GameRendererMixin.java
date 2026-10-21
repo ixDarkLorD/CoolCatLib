@@ -3,6 +3,8 @@ package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
+import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
+import net.ixdarklord.coolcatcanvas.internal.client.vfx.GhostRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -22,6 +24,8 @@ public abstract class GameRendererMixin {
     private void coolcatcanvas$beginFrame(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ScreenEffectManager.beginFrame(deltaTracker);
         SkyboxManager.beginFrame(deltaTracker);
+        // Scene viewports are drawn to their own targets now, before the level, while nothing else waits to be drawn.
+        SceneViewportManager.beginFrame(deltaTracker);
     }
 
     // Inside the block that renders the level, after vanilla's post effect, as the main target is bound for the GUI.
@@ -50,6 +54,8 @@ public abstract class GameRendererMixin {
     private void coolcatcanvas$close(CallbackInfo ci) {
         ScreenEffectManager.close();
         SkyboxManager.close();
+        SceneViewportManager.close();
+        GhostRenderer.close();
     }
 
     // The provider only holds shaders/; definitions and textures come from the (already swapped) resource manager.
@@ -58,5 +64,7 @@ public abstract class GameRendererMixin {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
         ScreenEffectManager.reload(manager);
         SkyboxManager.reload(manager);
+        SceneViewportManager.onResourceReload();
+        GhostRenderer.close();
     }
 }

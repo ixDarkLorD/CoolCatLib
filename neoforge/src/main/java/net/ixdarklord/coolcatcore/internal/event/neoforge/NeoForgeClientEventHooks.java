@@ -48,5 +48,6 @@ public final class NeoForgeClientEventHooks {
         modBus.addListener((RegisterKeyMappingsEvent event) -> ClientServicesImpl.onRegisterKeyMappings(event));
         modBus.addListener((RegisterMenuScreensEvent event) -> ClientServicesImpl.onRegisterMenuScreens(event));
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) -> ClientServicesImpl.onRegisterTooltipComponents(event));
+        modBus.addListener((net.neoforged.neoforge.client.event.ModelEvent.RegisterAdditional event) -> ClientServicesImpl.onRegisterAdditionalModels(event));
     }
 }

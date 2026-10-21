@@ -49,5 +49,6 @@ public final class ForgeClientEventHooks {
 
         listen(modBus, RegisterKeyMappingsEvent.class, ClientServicesImpl::onRegisterKeyMappings);
         listen(modBus, RegisterClientTooltipComponentFactoriesEvent.class, ClientServicesImpl::onRegisterTooltipComponents);
+        listen(modBus, net.minecraftforge.client.event.ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
     }
 }
