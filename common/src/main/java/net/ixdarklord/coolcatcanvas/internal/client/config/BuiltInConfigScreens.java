@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.IntConsumer;
 
-// CoolCatLib's own config screens, for when Glazed Menu isn't installed: every request opens a StyledConfigScreen (a
-// category "popup" opens the config's screen at that category).
+// CoolCatLib's own config screens, for when Glazed Menu isn't installed: a StyledConfigScreen for a mod's or a config's
+// settings, and a CategoryPopup for one category.
 public final class BuiltInConfigScreens implements ConfigScreens.Provider {
     @Override
     public @Nullable Screen create(@Nullable Screen parent, String modId) {
@@ -31,9 +31,11 @@ public final class BuiltInConfigScreens implements ConfigScreens.Provider {
         return new StyledConfigScreen(parent, config.title(), config.theme(), List.of(config), null);
     }
 
+    // A small window over the parent with just that category, like Glazed Menu's; null when the config has no such group.
     @Override
     public @Nullable Screen categoryPopup(@Nullable Screen parent, Config config, String path, @Nullable ConfigTheme theme) {
-        return new StyledConfigScreen(parent, config.title(), theme != null ? theme : config.theme(), List.of(config), path);
+        if (!path.isEmpty() && group(config.root(), path) == null) return null;
+        return CategoryPopup.create(parent, config, path, theme != null ? theme : config.theme());
     }
 
     // The mod's config holding that group, the path taken as within one of its configs or led by the config's name.

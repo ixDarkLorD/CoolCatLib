@@ -24,6 +24,7 @@ import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
 import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -225,16 +226,24 @@ public final class StyledConfigScreen extends StyledScreen {
         }
     }
 
-    // Each config's changes, applied and saved here, or sent to the server for one that's edited there.
     private void save() {
         this.commitEditing();
         if (this.pending.isEmpty()) return;
+        apply(this.pending);
+        this.pending.clear();
+    }
+
+    /**
+     * Each config's changes, applied and saved here, or sent to the server for one that's edited there; then a toast
+     * when some need a restart. The category popup saves through this too.
+     */
+    static void apply(Map<ConfigValue<?>, Object> pending) {
         RestartRequirement restart = RestartRequirement.NONE;
         Map<Config, Map<ConfigValue<?>, Object>> byConfig = new LinkedHashMap<>();
-        this.pending.forEach((value, newValue) -> byConfig.computeIfAbsent(value.config(), config -> new LinkedHashMap<>()).put(value, newValue));
+        pending.forEach((value, newValue) -> byConfig.computeIfAbsent(value.config(), config -> new LinkedHashMap<>()).put(value, newValue));
         for (Map.Entry<Config, Map<ConfigValue<?>, Object>> entry : byConfig.entrySet()) {
             if (!(entry.getKey() instanceof ConfigImpl config)) continue;
-            switch (this.access(config)) {
+            switch (ClientConfigManager.access(config)) {
                 case LOCAL -> {
                     Map<ConfigValueImpl<?>, Object> changes = new LinkedHashMap<>();
                     entry.getValue().forEach((value, newValue) -> changes.put((ConfigValueImpl<?>) value, newValue));
@@ -255,11 +264,10 @@ public final class StyledConfigScreen extends StyledScreen {
                 restart = restart.max(needed);
             }
         }
-        this.pending.clear();
         if (restart == RestartRequirement.GAME) {
             ClientConfigManager.toast(Component.translatableWithFallback("coolcatlib.config.screen.restart.title", "Restart needed"),
                     Component.translatableWithFallback("coolcatlib.config.screen.restart.game", "Some changes apply after restarting the game"));
-        } else if (restart == RestartRequirement.WORLD && this.minecraft.level != null) {
+        } else if (restart == RestartRequirement.WORLD && Minecraft.getInstance().level != null) {
             ClientConfigManager.toast(Component.translatableWithFallback("coolcatlib.config.screen.restart.title", "Restart needed"),
                     Component.translatableWithFallback("coolcatlib.config.screen.restart.world", "Some changes apply after rejoining the world"));
         }
