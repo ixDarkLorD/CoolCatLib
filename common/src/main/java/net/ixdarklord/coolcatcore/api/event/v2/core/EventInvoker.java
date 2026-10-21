@@ -76,7 +76,9 @@ public interface EventInvoker<T> {
     }
 
     /**
-     * Adds a listener in the given phase.
+     * Adds a listener in the given phase. For events whose loader hook fires each {@link EventPhase.Band} at its own
+     * place, {@link EventPhase#FIRST} also runs before other mods' own listeners of the game event and
+     * {@link EventPhase#LAST} after them.
      */
     void register(EventPhase phase, T listener);
 
@@ -93,7 +95,18 @@ public interface EventInvoker<T> {
     boolean hasListeners();
 
     /**
+     * @return whether the event has listeners in phases of this band
+     */
+    boolean hasListeners(EventPhase.Band band);
+
+    /**
      * Fires the event: calls every listener as the event combines them.
      */
     T invoker();
+
+    /**
+     * Fires the event for the listeners of one band only, in phase order: what a loader hook calls from each of its
+     * places (before, among and after other mods' listeners). The three bands together are {@link #invoker()}.
+     */
+    T invoker(EventPhase.Band band);
 }

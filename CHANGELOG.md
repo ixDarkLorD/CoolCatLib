@@ -3,6 +3,9 @@ This file is for listing all the changes to this project
 
 ## v26.1.2-5 Release | Oct 14, 2026
 ### ✨ New Features
+- Event phases reach other mods' own listeners: `EventPhase.band()` sorts phases into `FIRST` (FIRST and earlier), `MIDDLE` and `LAST` (LAST and later), and events whose loader hook fires each band at its own place run `FIRST` listeners before other mods' NeoForge or Fabric listeners of the game event and `LAST` ones after them. `EventInvoker.invoker(Band)` and `hasListeners(Band)` let a hook fire one band; `invoker()` still fires them all, in order.
+- `ItemTooltipEvents.MODIFY` does this on both loaders (NeoForge's highest, normal and lowest priorities; Fabric phases before, at and after the default one).
+- `ItemTooltipEvents.APPEND`: lines added at the very end of an item's tooltip, after the loaders' tooltip events and every other mod's lines, with the player when there is one; not fired for tooltips an item hides.
 - World effects can be drawn pixel for pixel: `VfxMaterial.withSmoothing(false)` samples the texture with nearest filtering instead of linear, so pixel art (block and item textures) stays crisp up close. Materials are smooth by default, as before.
 ### 🔧 Changes
 - CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, world effects, cutscenes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.

@@ -13,9 +13,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -28,11 +31,17 @@ public final class EventInvokerImpl<T> implements EventInvoker<T> {
     private final List<Entry<T>> entries = new ArrayList<>();
     private volatile T invoker;
     private volatile boolean hasListeners;
+    // The same per band, for loader hooks that fire each band at its own place; replaced whole on every change.
+    private volatile Map<EventPhase.Band, T> bandInvokers;
+    private volatile Set<EventPhase.Band> bandsWithListeners = EnumSet.noneOf(EventPhase.Band.class);
 
     private EventInvokerImpl(Class<T> type, Function<List<T>, T> combiner) {
         this.type = type;
         this.combiner = combiner;
         this.invoker = combiner.apply(List.of());
+        Map<EventPhase.Band, T> bands = new EnumMap<>(EventPhase.Band.class);
+        for (EventPhase.Band band : EventPhase.Band.values()) bands.put(band, this.invoker);
+        this.bandInvokers = bands;
     }
 
     public static <T> EventInvoker<T> create(Class<T> type, @Nullable Function<List<T>, T> combiner) {
@@ -89,14 +98,33 @@ public final class EventInvokerImpl<T> implements EventInvoker<T> {
     }
 
     @Override
+    public boolean hasListeners(EventPhase.Band band) {
+        return this.bandsWithListeners.contains(band);
+    }
+
+    @Override
     public T invoker() {
         return this.invoker;
+    }
+
+    @Override
+    public T invoker(EventPhase.Band band) {
+        return this.bandInvokers.get(band);
     }
 
     private void rebuild() {
         List<T> listeners = this.entries.stream().map(Entry::listener).toList();
         this.invoker = this.combiner.apply(listeners);
         this.hasListeners = !listeners.isEmpty();
+        Map<EventPhase.Band, T> bands = new EnumMap<>(EventPhase.Band.class);
+        Set<EventPhase.Band> withListeners = EnumSet.noneOf(EventPhase.Band.class);
+        for (EventPhase.Band band : EventPhase.Band.values()) {
+            List<T> inBand = this.entries.stream().filter(entry -> entry.phase.band() == band).map(Entry::listener).toList();
+            bands.put(band, this.combiner.apply(inBand));
+            if (!inBand.isEmpty()) withListeners.add(band);
+        }
+        this.bandInvokers = bands;
+        this.bandsWithListeners = withListeners;
     }
 
     private record Entry<T>(EventPhase phase, T listener) {}

@@ -6,12 +6,15 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.event.Event;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientCommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientGuiEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ItemTooltipEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.core.EventPhase;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.resources.Identifier;
 
 // Fires CoolCatLib's client events from Fabric's.
 public final class FabricClientEventHooks {
@@ -34,7 +37,20 @@ public final class FabricClientEventHooks {
             if (ClientGuiEvents.RENDER_HUD.hasListeners()) ClientGuiEvents.RENDER_HUD.invoker().render(graphics, delta);
         });
 
-        ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> ItemTooltipEvents.MODIFY.invoker().modify(stack, context, flag, lines));
+        // Each band in its own Fabric phase: FIRST before other mods' tooltip callbacks (the default phase), LAST after.
+        Identifier firstPhase = CoolCatCore.rl("first");
+        Identifier lastPhase = CoolCatCore.rl("last");
+        ItemTooltipCallback.EVENT.addPhaseOrdering(firstPhase, Event.DEFAULT_PHASE);
+        ItemTooltipCallback.EVENT.addPhaseOrdering(Event.DEFAULT_PHASE, lastPhase);
+        ItemTooltipCallback.EVENT.register(firstPhase, (stack, context, flag, lines) -> {
+            if (ItemTooltipEvents.MODIFY.hasListeners(EventPhase.Band.FIRST)) ItemTooltipEvents.MODIFY.invoker(EventPhase.Band.FIRST).modify(stack, context, flag, lines);
+        });
+        ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> {
+            if (ItemTooltipEvents.MODIFY.hasListeners(EventPhase.Band.MIDDLE)) ItemTooltipEvents.MODIFY.invoker(EventPhase.Band.MIDDLE).modify(stack, context, flag, lines);
+        });
+        ItemTooltipCallback.EVENT.register(lastPhase, (stack, context, flag, lines) -> {
+            if (ItemTooltipEvents.MODIFY.hasListeners(EventPhase.Band.LAST)) ItemTooltipEvents.MODIFY.invoker(EventPhase.Band.LAST).modify(stack, context, flag, lines);
+        });
 
         // FabricClientCommandSource is a SharedSuggestionProvider, the source type client commands are built with.
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) ->

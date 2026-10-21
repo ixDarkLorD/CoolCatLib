@@ -13,7 +13,8 @@
     "TrackedEntityAccessor"
   ],
   "client": [
-    "client.GuiGraphicsExtractorMixin"
+    "client.GuiGraphicsExtractorMixin",
+    "client.ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

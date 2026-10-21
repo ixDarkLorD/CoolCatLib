@@ -6,14 +6,16 @@ import net.ixdarklord.coolcatcore.api.event.v2.client.ClientGuiEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ItemTooltipEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.core.EventPhase;
 import net.ixdarklord.coolcatcore.internal.platform.neoforge.ClientServicesImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -39,8 +41,10 @@ public final class NeoForgeClientEventHooks {
             if (ClientGuiEvents.RENDER_HUD.hasListeners()) ClientGuiEvents.RENDER_HUD.invoker().render(event.getGuiGraphics(), event.getPartialTick());
         });
 
-        bus.addListener((ItemTooltipEvent event) ->
-                ItemTooltipEvents.MODIFY.invoker().modify(event.getItemStack(), event.getContext(), event.getFlags(), event.getToolTip()));
+        // Each band at its own priority: FIRST before other mods' tooltip listeners, LAST after them.
+        tooltipBand(bus, EventPriority.HIGHEST, EventPhase.Band.FIRST);
+        tooltipBand(bus, EventPriority.NORMAL, EventPhase.Band.MIDDLE);
+        tooltipBand(bus, EventPriority.LOWEST, EventPhase.Band.LAST);
 
         // CommandSourceStack is a SharedSuggestionProvider, the source type client commands are built with.
         bus.addListener((RegisterClientCommandsEvent event) ->
@@ -50,5 +54,13 @@ public final class NeoForgeClientEventHooks {
         modBus.addListener((RegisterMenuScreensEvent event) -> ClientServicesImpl.onRegisterMenuScreens(event));
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) -> ClientServicesImpl.onRegisterTooltipComponents(event));
         modBus.addListener((EntityRenderersEvent.RegisterRenderers event) -> ClientServicesImpl.onRegisterRenderers(event));
+    }
+
+    private static void tooltipBand(IEventBus bus, EventPriority priority, EventPhase.Band band) {
+        bus.addListener(priority, (ItemTooltipEvent event) -> {
+            if (ItemTooltipEvents.MODIFY.hasListeners(band)) {
+                ItemTooltipEvents.MODIFY.invoker(band).modify(event.getItemStack(), event.getContext(), event.getFlags(), event.getToolTip());
+            }
+        });
     }
 }
