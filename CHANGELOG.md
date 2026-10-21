@@ -2,8 +2,11 @@
 This file is for listing all the changes to this project
 
 ## v26.1.2-5 Release | Oct 14, 2026
+### ✨ New Features
+- World effects can be drawn pixel for pixel: `VfxMaterial.withSmoothing(false)` samples the texture with nearest filtering instead of linear, so pixel art (block and item textures) stays crisp up close. Materials are smooth by default, as before.
 ### 🔧 Changes
 - CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, world effects, cutscenes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.
+- NeoForge: payloads are registered as optional, CoolCatLib's own included, so a client with CoolCatLib (and client-only mods built on it) can join a server without it and the other way round, as on Fabric (NeoForge used to disconnect whichever side lacked a channel). Configuration payloads are only sent to clients that have their channel. `Network.sendToPlayer` skips a player whose client lacks the payload's channel instead of throwing.
 - The mod id is now `coolcatlib`. With it changed: the Fabric entrypoints (`coolcatlib:common`, `coolcatlib:client`, `coolcatlib:server`, `coolcatlib:datagen`), the commands (`/coolcatlib config ...`, `/coolcatlib_client config ...`), Core's translation keys (`config.coolcatlib.*`, `tooltip.coolcatlib.*`), its payload ids and `ConfigTheme.STARFALL` (`coolcatlib:starfall`). Players and servers need the same version, as with any update.
 - Nothing moved in the code: the packages are still `net.ixdarklord.coolcatcore` and `net.ixdarklord.coolcatcanvas`, and Canvas's classes keep their asset namespace (`coolcatcanvas:bloom`, `coolcatcanvas:vfx.glsl`, ...), command (`/coolcatcanvas_client`) and config files.
 - Mods built for CoolCatLib: Core or Canvas have to be updated: the `coolcatcore` and `coolcatcanvas` mod ids are gone, and constructors are only read from the `coolcatlib:*` Fabric entrypoints. Depend on `coolcatlib` alone.

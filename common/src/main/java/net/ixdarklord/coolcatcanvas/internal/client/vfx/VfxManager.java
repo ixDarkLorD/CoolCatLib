@@ -415,7 +415,7 @@ public final class VfxManager {
                     pass.setPipeline(pipelines[i]);
                     RenderSystem.bindDefaultUniforms(pass);
                     pass.setUniform(VfxUniform.BLOCK, slices[i]);
-                    pass.bindTexture("Sampler0", textures[i], linear);
+                    pass.bindTexture("Sampler0", textures[i], batch.material.smooth() ? linear : nearest);
                     pass.bindTexture("DepthSampler", depth, nearest);
                     pass.setVertexBuffer(0, vertexBuffer);
                     pass.draw(batch.firstVertex, batch.quads() * VfxBatch.VERTICES_PER_QUAD);

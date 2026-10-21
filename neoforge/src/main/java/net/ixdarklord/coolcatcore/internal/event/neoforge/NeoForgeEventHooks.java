@@ -9,6 +9,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
 import net.ixdarklord.coolcatcore.api.hooks.ServerLifecycleHooks;
 import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeTransferCompat;
 import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeRegistrations;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -104,7 +105,10 @@ public final class NeoForgeEventHooks {
                 NeoForgeRegistrations.SERVER_RELOAD_LISTENERS.forEach(event::addListener));
 
         modBus.addListener((RegisterPayloadHandlersEvent event) -> {
-            PayloadRegistrar registrar = event.registrar(NETWORK_VERSION);
+            // Optional, CoolCatLib's own included, so a client with CoolCatLib (and client-only mods built on it) can
+            // join a server without it, and the other way round, as on Fabric: NeoForge otherwise disconnects whichever
+            // side lacks a channel. Senders check canPlayerReceive first.
+            PayloadRegistrar registrar = event.registrar(NETWORK_VERSION).optional();
             NeoForgeRegistrations.PAYLOADS.forEach(registration -> registration.accept(registrar));
             NeoForgeRegistrations.PAYLOADS.clear();
             NeoForgeRegistrations.payloadsRegistered = true;
@@ -113,7 +117,7 @@ public final class NeoForgeEventHooks {
         modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
                 NeoForgeRegistrations.ENTITY_ATTRIBUTES.forEach(registration -> registration.accept(event)));
         modBus.addListener((RegisterConfigurationTasksEvent event) -> {
-            if (!NeoForgeRegistrations.CONFIGURATION_PAYLOADS.isEmpty()) event.register(new ConfigurationPayloadsTask());
+            if (!NeoForgeRegistrations.CONFIGURATION_PAYLOADS.isEmpty()) event.register(new ConfigurationPayloadsTask(event.getListener()));
         });
     }
 
@@ -154,14 +158,21 @@ public final class NeoForgeEventHooks {
         }
     }
 
-    // Sends the configuration payloads and finishes at once; nothing waits for a reply.
+    // Sends the configuration payloads the client can receive and finishes at once; nothing waits for a reply. A client
+    // without CoolCatLib has none of its (optional) channels and is sent nothing.
     private static final class ConfigurationPayloadsTask implements ICustomConfigurationTask {
         private static final ConfigurationTask.Type TYPE = new ConfigurationTask.Type(CoolCatCore.rl("configuration_payloads").toString());
+
+        private final ServerConfigurationPacketListener listener;
+
+        private ConfigurationPayloadsTask(ServerConfigurationPacketListener listener) {
+            this.listener = listener;
+        }
 
         @Override
         public void run(Consumer<CustomPacketPayload> sender) {
             for (Supplier<List<CustomPacketPayload>> payloads : NeoForgeRegistrations.CONFIGURATION_PAYLOADS) {
-                payloads.get().forEach(sender);
+                payloads.get().stream().filter(this.listener::hasChannel).forEach(sender);
             }
         }
 
