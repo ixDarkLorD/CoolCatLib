@@ -3,7 +3,12 @@ package net.ixdarklord.coolcatcanvas.internal.client.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.preprocessor.GlslPreprocessor;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.EffectInstanceAccessor;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.ShaderInstanceAccessor;
 import net.minecraft.FileUtil;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
@@ -13,15 +18,12 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -35,7 +37,9 @@ import java.util.regex.Pattern;
  * {@link #compile(ResourceManager, String, ResourceLocation, ResourceLocation, List, List)} binds more.
  * <p>
  * Kept out of vanilla's program caches, so its names never collide with vanilla's and reloading vanilla's shaders
- * never frees it. Render thread only.
+ * never frees it. Binding one tells vanilla its own shader is no longer bound ({@link #use}). Uniform locations and the
+ * values last uploaded are remembered, so setting a uniform to the value it already has (samplers, matrices that
+ * didn't change, every frame) costs no GL call. Render thread only.
  */
 public final class CanvasProgram implements AutoCloseable {
     private static final Pattern VERSION_LINE = Pattern.compile("#version[^\\n]*\\n");
@@ -43,11 +47,18 @@ public final class CanvasProgram implements AutoCloseable {
 
     private final String name;
     private int id;
-    private final Map<String, Integer> locations = new HashMap<>();
+    private static final int UNKNOWN = -2;
+
+    private final Object2IntOpenHashMap<String> locations = new Object2IntOpenHashMap<>();
+    // The values last uploaded, by location: a program's uniforms keep their values, and only this class sets them.
+    private final Int2IntOpenHashMap ints = new Int2IntOpenHashMap();
+    private final Int2ObjectOpenHashMap<float[]> floats = new Int2ObjectOpenHashMap<>();
+    private final float[] matrix = new float[16];
 
     private CanvasProgram(String name, int id) {
         this.name = name;
         this.id = id;
+        this.locations.defaultReturnValue(UNKNOWN);
     }
 
     /**
@@ -132,18 +143,33 @@ public final class CanvasProgram implements AutoCloseable {
         return this.id;
     }
 
+    /**
+     * Binds the program. Vanilla remembers the core and post shaders it bound last and skips binding the same one again,
+     * so binding this one behind its back would have its next draw with that shader run this program instead (or none,
+     * after {@link #unuse}), with its uniforms uploaded to the wrong program. Its records are cleared here, so it binds
+     * its own again.
+     */
     public void use() {
         GlStateManager._glUseProgram(this.id);
+        forgetVanillaProgram();
     }
 
     public static void unuse() {
         GlStateManager._glUseProgram(0);
+        forgetVanillaProgram();
+    }
+
+    private static void forgetVanillaProgram() {
+        ShaderInstanceAccessor.coolcatcanvas$setLastProgramId(-1);
+        ShaderInstanceAccessor.coolcatcanvas$setLastAppliedShader(null);
+        EffectInstanceAccessor.coolcatcanvas$setLastProgramId(-1);
+        EffectInstanceAccessor.coolcatcanvas$setLastAppliedEffect(null);
     }
 
     /** The uniform's location, or -1 if the program doesn't use it. */
     public int location(String uniform) {
-        Integer location = this.locations.get(uniform);
-        if (location == null) {
+        int location = this.locations.getInt(uniform);
+        if (location == UNKNOWN) {
             location = GlStateManager._glGetUniformLocation(this.id, uniform);
             this.locations.put(uniform, location);
         }
@@ -158,22 +184,43 @@ public final class CanvasProgram implements AutoCloseable {
 
     public void setInt(String uniform, int value) {
         int location = this.location(uniform);
-        if (location != -1) GL20.glUniform1i(location, value);
+        if (location == -1 || (this.ints.containsKey(location) && this.ints.get(location) == value)) return;
+        this.ints.put(location, value);
+        GL20.glUniform1i(location, value);
     }
 
     public void setFloat(String uniform, float value) {
         int location = this.location(uniform);
-        if (location != -1) GL20.glUniform1f(location, value);
+        if (location != -1 && this.changed(location, value, 0.0F, 0.0F, 0.0F, 1)) GL20.glUniform1f(location, value);
     }
 
     public void setVec2(String uniform, float x, float y) {
         int location = this.location(uniform);
-        if (location != -1) GL20.glUniform2f(location, x, y);
+        if (location != -1 && this.changed(location, x, y, 0.0F, 0.0F, 2)) GL20.glUniform2f(location, x, y);
     }
 
     public void setVec4(String uniform, float x, float y, float z, float w) {
         int location = this.location(uniform);
-        if (location != -1) GL20.glUniform4f(location, x, y, z, w);
+        if (location != -1 && this.changed(location, x, y, z, w, 4)) GL20.glUniform4f(location, x, y, z, w);
+    }
+
+    // Whether the uniform at the location had other values, remembering the new ones.
+    private boolean changed(int location, float x, float y, float z, float w, int size) {
+        float[] last = this.floats.get(location);
+        if (last != null && last.length == size && last[0] == x && (size < 2 || last[1] == y) && (size < 4 || last[2] == z && last[3] == w)) {
+            return false;
+        }
+        if (last == null || last.length != size) {
+            last = new float[size];
+            this.floats.put(location, last);
+        }
+        last[0] = x;
+        if (size >= 2) last[1] = y;
+        if (size >= 4) {
+            last[2] = z;
+            last[3] = w;
+        }
+        return true;
     }
 
     public void setVec4(String uniform, float[] xyzw) {
@@ -183,17 +230,21 @@ public final class CanvasProgram implements AutoCloseable {
     /** A {@code vec4[]}, from 4 floats per element. */
     public void setVec4Array(String uniform, float[] values) {
         int location = this.location(uniform);
-        if (location != -1) GL20.glUniform4fv(location, values);
+        if (location == -1) return;
+        float[] last = this.floats.get(location);
+        if (last != null && Arrays.equals(last, values)) return;
+        this.floats.put(location, values.clone());
+        GL20.glUniform4fv(location, values);
     }
 
     public void setMat4(String uniform, Matrix4fc matrix) {
         int location = this.location(uniform);
         if (location == -1) return;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(16);
-            matrix.get(buffer);
-            GL20.glUniformMatrix4fv(location, false, buffer);
-        }
+        matrix.get(this.matrix);
+        float[] last = this.floats.get(location);
+        if (last != null && Arrays.equals(last, this.matrix)) return;
+        this.floats.put(location, this.matrix.clone());
+        GL20.glUniformMatrix4fv(location, false, this.matrix);
     }
 
     @Override
@@ -202,6 +253,9 @@ public final class CanvasProgram implements AutoCloseable {
             RenderSystem.assertOnRenderThread();
             GlStateManager.glDeleteProgram(this.id);
             this.id = 0;
+            this.locations.clear();
+            this.ints.clear();
+            this.floats.clear();
         }
     }
 

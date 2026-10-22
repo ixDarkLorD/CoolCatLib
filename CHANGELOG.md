@@ -1,6 +1,13 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.4.0.1 Release | Unreleased
+### 🐛 Bug Fixes
+- Screen effects, skyboxes, world effects and ghost blocks no longer leave the game believing its own shader is still bound. Vanilla skips binding a core or post shader it bound last; after one of CoolCatLib's programs, the next draw with that shader could run with the wrong program (or none) and send its uniforms to it.
+
+### 🔧 Changes
+- CoolCatLib's shader programs remember their uniform locations and the values last sent, so a uniform set to the value it already has (samplers, unchanged matrices, every frame) costs no GL call, and matrices are sent without a temporary buffer.
+
 ## v2001.4.0.0 Release | Oct 22, 2026
 ### ✨ New Features
 - World effects (`api.client.vfx`), as on 26.1.2: glowing shapes drawn in the world, after the whole level and before the hand, lit by nothing. They hide behind solid things and fade softly where they meet them (`VfxMaterial.softness`), so nothing ends in a hard line at a wall or the ground.

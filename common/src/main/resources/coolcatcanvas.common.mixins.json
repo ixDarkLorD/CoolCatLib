@@ -10,9 +10,11 @@
   "client": [
     "client.AbstractWidgetMixin",
     "client.CameraMixin",
+    "client.EffectInstanceAccessor",
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.ShaderInstanceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
