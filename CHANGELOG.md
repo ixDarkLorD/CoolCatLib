@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v26.1.2-5 Release | Oct 14, 2026
+## v26.1.2-6 Release | Oct 22, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on Fabric and NeoForge:
   - `InteractionEvents`: `USE_BLOCK`, `USE_ITEM` and `USE_ENTITY` (answer with an `InteractionResult`: `PASS` lets the game go on, anything else stops it there) and `ATTACK_BLOCK` and `ATTACK_ENTITY` (interrupt to stop them), on both sides, before the game acts.
@@ -38,15 +38,18 @@ This file is for listing all the changes to this project
 - Quiet held-item changes (`HeldItemSwaps`, client): data a mod changes on a held item no longer makes it dip out of view and back as if swapped. `HeldItemSwaps.quiet(component...)` names components whose changes alone are quiet; `HeldItemSwaps.register((shown, next) -> ...)` decides for any change, from the stack shown and the one now held. Changes to attachments on an item are quiet by default; `Attachment.Builder.swapAnimation()` makes an attachment's changes play the swap as before.
 - `GhostBlocks` (`api.client.vfx`): blocks drawn as ghosts with their real models (block entities too), one see-through picture so only their outside shows, tinted and faded by one colour; shown through walls, in the world as real blocks would be, or always; full bright or shaded.
 - `HeldItemSwaps.quiet(Supplier)`: a component registered later (a `RegistryEntry`) can be named while a mod sets up; it is looked up once stacks are first compared. Calling `.get()` on it then fails on NeoForge, where components aren't registered yet.
-
 ### 🔧 Changes
 - Block entity attachments kept in dropped items are written and read with plain injections instead of redirects, which the MixinExtras bundled with NeoForge could fail on at startup.
 - NeoForge: payloads are registered as optional, CoolCatLib's own included, so a client with CoolCatLib (and client-only mods built on it) can join a server without it and the other way round, as on Fabric (NeoForge used to disconnect whichever side lacked a channel). Configuration payloads are only sent to clients that have their channel. `Network.sendToPlayer` skips a player whose client lacks the payload's channel instead of throwing.
 - Rifts (`WorldRifts`) can be held facing one way (`rift.facing(direction)`), as a portal set in a wall, instead of turning to the camera.
-- CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, world effects, cutscenes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.
-- The mod id is now `coolcatlib`. With it changed: the Fabric entrypoints (`coolcatlib:common`, `coolcatlib:client`, `coolcatlib:server`, `coolcatlib:datagen`), the commands (`/coolcatlib config ...`, `/coolcatlib_client config ...`), Core's translation keys (`config.coolcatlib.*`, `tooltip.coolcatlib.*`), its payload ids and `ConfigTheme.STARFALL` (`coolcatlib:starfall`). Players and servers need the same version, as with any update.
 - Canvas's namespace is `coolcatlib` too: its assets (`coolcatlib:bloom`, `coolcatlib:tint`, `#moj_import <coolcatlib:vfx.glsl>`, `coolcatlib:sky.glsl`, `coolcatlib:screen_effect.glsl`, the GUI and VFX textures), text colours in JSON and commands (`"coolcatlib:rainbow"`, `"coolcatlib:gradient/..."`), saved cutscenes (`coolcatlib:saved/<name>`, from `config/coolcatlib/cutscenes/`), translation keys, key bindings and payload ids. Its development commands are under `/coolcatlib_client` (`effects`, `cutscene ...`), and the effects screen's choices are saved to `config/coolcatlib-screen-effects.json` (choices saved by Canvas are not carried over). Shaders, resource packs and text that named `coolcatcanvas:` need the new name.
 - The packages are still `net.ixdarklord.coolcatcore` and `net.ixdarklord.coolcatcanvas`, so code that calls CoolCatLib needs no import changes.
+
+## v26.1.2-5 Release | Oct 14, 2026
+### 🔧 Changes
+- CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, world effects, cutscenes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.
+- The mod id is now `coolcatlib`. With it changed: the Fabric entrypoints (`coolcatlib:common`, `coolcatlib:client`, `coolcatlib:server`, `coolcatlib:datagen`), the commands (`/coolcatlib config ...`, `/coolcatlib_client config ...`), Core's translation keys (`config.coolcatlib.*`, `tooltip.coolcatlib.*`), its payload ids and `ConfigTheme.STARFALL` (`coolcatlib:starfall`). Players and servers need the same version, as with any update.
+- Nothing moved in the code: the packages are still `net.ixdarklord.coolcatcore` and `net.ixdarklord.coolcatcanvas`, and Canvas's classes keep their asset namespace (`coolcatcanvas:bloom`, `coolcatcanvas:vfx.glsl`, ...), command (`/coolcatcanvas_client`) and config files.
 - Mods built for CoolCatLib: Core or Canvas have to be updated: the `coolcatcore` and `coolcatcanvas` mod ids are gone, and constructors are only read from the `coolcatlib:*` Fabric entrypoints. Depend on `coolcatlib` alone.
 - Remove the CoolCatLib: Core and Canvas jars when updating: their classes are in this one. The loaders refuse to start with them installed.
 - Maven: the artifacts are now `net.ixdarklord.coolcatlib:coolcatlib-<loader>` (`coolcatlib-common`, `coolcatlib-fabric`, `coolcatlib-neoforge`) and hold everything. `coolcatlib-core-<loader>` and `coolcatlib-canvas-<loader>` stop at their last versions: replace both dependencies with the one.
