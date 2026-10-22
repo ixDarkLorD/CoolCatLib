@@ -70,7 +70,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
     private record Label(Component text, int x, int y) {}
 
     public CutsceneEditorScreen() {
-        super(Component.translatableWithFallback("cutscene.coolcatcanvas.editor.title", "Cutscene Editor"), ConfigTheme.forMod(CoolCatCore.MOD_ID));
+        super(Component.translatableWithFallback("cutscene.coolcatlib.editor.title", "Cutscene Editor"), ConfigTheme.forMod(CoolCatCore.MOD_ID));
     }
 
     // ---- Layout ----
@@ -153,7 +153,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
 
         int right = this.width - EDGE - 2;
         this.add(FlatButton.of(text("save", "Save"), 40, button -> this.say(CutsceneEditor.save())).style(FlatButton.Style.PRIMARY)
-                .tooltip(text("save.tooltip", "Writes it to config/coolcatcanvas/cutscenes/ as JSON, playable as coolcatcanvas:saved/<name>")), right - 40, y);
+                .tooltip(text("save.tooltip", "Writes it to config/coolcatlib/cutscenes/ as JSON, playable as coolcatlib:saved/<name>")), right - 40, y);
         FlatButton load = FlatButton.of(text("load", "Load"), 40, button -> this.openLoadMenu((FlatButton) button));
         this.add(load, right - 84, y);
         this.add(FlatButton.of(text("new", "New"), 36, button -> {
@@ -294,7 +294,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
     }
 
     private static Component text(String key, String fallback) {
-        return Component.translatableWithFallback("cutscene.coolcatcanvas.editor." + key, fallback);
+        return Component.translatableWithFallback("cutscene.coolcatlib.editor." + key, fallback);
     }
 
     // A label and a number box after it.
@@ -498,7 +498,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
         Key selected = CutsceneEditor.selected;
         if (selected != null) {
             ConfigStyle.panel(graphics, this.keyPanelX(), panelsY, KEY_WIDTH, PANEL_TITLE + ROW * 6 + 2 + 16 + 5);
-            Component heading = Component.translatableWithFallback("cutscene.coolcatcanvas.editor.keyframe", "Keyframe %s of %s", CutsceneEditor.keys.indexOf(selected) + 1, CutsceneEditor.keys.size());
+            Component heading = Component.translatableWithFallback("cutscene.coolcatlib.editor.keyframe", "Keyframe %s of %s", CutsceneEditor.keys.indexOf(selected) + 1, CutsceneEditor.keys.size());
             graphics.text(this.font, heading.copy().withStyle(ChatFormatting.BOLD), this.keyPanelX() + 6, panelsY + 4, ConfigStyle.colors().text(), false);
         } else {
             Component hint = CutsceneEditor.keys.isEmpty()

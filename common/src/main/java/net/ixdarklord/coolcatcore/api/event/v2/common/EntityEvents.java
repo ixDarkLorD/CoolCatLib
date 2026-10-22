@@ -11,6 +11,9 @@ public final class EntityEvents {
     public static final EventInvoker<Load> LOAD = EventInvoker.create(Load.class, listeners -> (entity, level) -> {
         for (Load listener : listeners) listener.onLoad(entity, level);
     });
+    public static final EventInvoker<Unload> UNLOAD = EventInvoker.create(Unload.class, listeners -> (entity, level) -> {
+        for (Unload listener : listeners) listener.onUnload(entity, level);
+    });
 
     private EntityEvents() {}
 
@@ -18,5 +21,11 @@ public final class EntityEvents {
     @FunctionalInterface
     public interface Load {
         void onLoad(Entity entity, ServerLevel level);
+    }
+
+    /** An entity was taken out of a server level: killed, discarded, unloaded with its chunk, or gone to another dimension. */
+    @FunctionalInterface
+    public interface Unload {
+        void onUnload(Entity entity, ServerLevel level);
     }
 }

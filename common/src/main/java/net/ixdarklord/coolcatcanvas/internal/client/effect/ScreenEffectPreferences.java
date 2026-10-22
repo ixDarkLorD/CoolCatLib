@@ -40,7 +40,7 @@ public final class ScreenEffectPreferences {
     private ScreenEffectPreferences() {}
 
     private static Path file() {
-        return Platform.getConfigFolder().resolve("coolcatcanvas-screen-effects.json");
+        return Platform.getConfigFolder().resolve("coolcatlib-screen-effects.json");
     }
 
     static synchronized void load() {

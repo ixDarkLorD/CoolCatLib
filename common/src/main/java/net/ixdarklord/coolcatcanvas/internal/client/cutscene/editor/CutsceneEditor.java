@@ -43,7 +43,7 @@ import java.util.Locale;
 // keyframe there (K) with the path drawn in the world around them, then open the timeline again. The screen
 // (CutsceneEditorScreen) previews through a paused playback that is scrubbed and, for "play", let run.
 public final class CutsceneEditor {
-    private static final KeyMapping OPEN = new KeyMapping("key.coolcatcanvas.cutscene_editor", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.MISC);
+    private static final KeyMapping OPEN = new KeyMapping("key.coolcatlib.cutscene_editor", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.MISC);
     private static final Identifier PATH_RENDERER = CoolCatCanvas.rl("cutscene_editor_path");
     private static final VfxMaterial DOT = VfxMaterial.alpha(VfxMaterial.GLOW).withSoftness(0.1F);
     private static final VfxMaterial LINE = VfxMaterial.alpha(VfxMaterial.STREAK).withSoftness(0.1F);
@@ -179,15 +179,15 @@ public final class CutsceneEditor {
     /** Saves under the session's name; the message says where, or what went wrong. */
     static Component save() {
         Cutscene cutscene = build();
-        if (cutscene == null) return Component.translatableWithFallback("cutscene.coolcatcanvas.editor.save.empty", "Add a keyframe first");
-        if (!CutsceneFiles.isValidName(name)) return Component.translatableWithFallback("cutscene.coolcatcanvas.editor.save.bad_name", "Name it with a-z, 0-9, _ and - only");
+        if (cutscene == null) return Component.translatableWithFallback("cutscene.coolcatlib.editor.save.empty", "Add a keyframe first");
+        if (!CutsceneFiles.isValidName(name)) return Component.translatableWithFallback("cutscene.coolcatlib.editor.save.bad_name", "Name it with a-z, 0-9, _ and - only");
         try {
             Path file = CutsceneFiles.save(name, cutscene);
             dirty = false;
-            return Component.translatableWithFallback("cutscene.coolcatcanvas.editor.save.done", "Saved to %s", "config/coolcatcanvas/cutscenes/" + file.getFileName());
+            return Component.translatableWithFallback("cutscene.coolcatlib.editor.save.done", "Saved to %s", "config/coolcatlib/cutscenes/" + file.getFileName());
         } catch (IOException | RuntimeException e) {
             CoolCatCanvas.LOGGER.warn("Couldn't save the cutscene {}", name, e);
-            return Component.translatableWithFallback("cutscene.coolcatcanvas.editor.save.failed", "Couldn't save: %s", String.valueOf(e.getMessage()));
+            return Component.translatableWithFallback("cutscene.coolcatlib.editor.save.failed", "Couldn't save: %s", String.valueOf(e.getMessage()));
         }
     }
 
@@ -375,7 +375,7 @@ public final class CutsceneEditor {
         if (down && !addKeyWasDown) {
             Key key = addKeyFromView();
             if (key != null) {
-                minecraft.gui.setOverlayMessage(Component.translatableWithFallback("cutscene.coolcatcanvas.editor.added", "Keyframe %s added at %s ticks",
+                minecraft.gui.setOverlayMessage(Component.translatableWithFallback("cutscene.coolcatlib.editor.added", "Keyframe %s added at %s ticks",
                         keys.indexOf(key) + 1, format(key.time)), false);
             }
         }
@@ -390,8 +390,8 @@ public final class CutsceneEditor {
         Font font = minecraft.font;
         // The timeline's key is named when it has one; it is unbound until the player binds it.
         Component text = OPEN.isUnbound()
-                ? Component.translatableWithFallback("cutscene.coolcatcanvas.editor.hud", "Cutscene editor: %s keyframes  |  K: add one here", keys.size())
-                : Component.translatableWithFallback("cutscene.coolcatcanvas.editor.hud.key", "Cutscene editor: %s keyframes  |  K: add one here  |  %s: timeline",
+                ? Component.translatableWithFallback("cutscene.coolcatlib.editor.hud", "Cutscene editor: %s keyframes  |  K: add one here", keys.size())
+                : Component.translatableWithFallback("cutscene.coolcatlib.editor.hud.key", "Cutscene editor: %s keyframes  |  K: add one here  |  %s: timeline",
                 keys.size(), OPEN.getTranslatedKeyMessage());
         int width = font.width(text) + 12;
         int x = (graphics.guiWidth() - width) / 2;

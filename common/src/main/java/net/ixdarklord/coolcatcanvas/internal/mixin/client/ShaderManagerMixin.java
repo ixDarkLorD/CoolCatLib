@@ -23,5 +23,6 @@ public abstract class ShaderManagerMixin {
         VfxManager.reload();
         CutsceneManager.reload(manager);
         net.ixdarklord.coolcatcanvas.internal.client.model.ObjModelCache.reload();
+        net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureLibrary.reload();
     }
 }

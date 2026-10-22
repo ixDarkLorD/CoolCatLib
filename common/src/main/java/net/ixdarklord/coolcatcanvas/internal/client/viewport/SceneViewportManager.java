@@ -192,6 +192,22 @@ public final class SceneViewportManager {
         float scale = framed ? (float) (width / viewport.frameSpan()) * viewport.zoom() : fitted;
         Vec3 middle = framed ? viewport.frameCentre() : centre;
 
+        // Text laid flat on the picture, in its own pixels.
+        if (!viewport.texts().isEmpty()) {
+            PoseStack flat = new PoseStack();
+            SubmitNodeStorage texts = minecraft.gameRenderer.getFeatureRenderDispatcher().getSubmitNodeStorage();
+            for (SceneViewport.PlacedText placed : viewport.texts()) {
+                flat.pushPose();
+                flat.translate(placed.x(), placed.y(), 0.0F);
+                flat.scale(placed.scale(), placed.scale(), 1.0F);
+                texts.submitText(flat, 0.0F, 0.0F, placed.text(), false, net.minecraft.client.gui.Font.DisplayMode.NORMAL, FULL_BRIGHT, placed.color(), 0, 0);
+                flat.popPose();
+            }
+            minecraft.gameRenderer.getFeatureRenderDispatcher().renderAllFeatures();
+            minecraft.renderBuffers().bufferSource().endBatch();
+            if (viewport.blocks().isEmpty() && viewport.entities().isEmpty() && viewport.items().isEmpty()) return;
+        }
+
         // Items' icons first, on their own: they are lit as icons are, flat ones from the front and blocks' from above
         // and the side, which are two lightings, so they are drawn in two goes.
         if (!viewport.items().isEmpty()) {
@@ -246,6 +262,8 @@ public final class SceneViewportManager {
             pose.popPose();
         }
 
+        if (viewport.hasGround()) ground(viewport, pose, storage);
+
         EntityRenderDispatcher entities = minecraft.getEntityRenderDispatcher();
         CameraRenderState camera = new CameraRenderState();
         // Things that face the camera (a name, a flame) face out of the picture.
@@ -262,6 +280,61 @@ public final class SceneViewportManager {
 
         features.renderAllFeatures();
         minecraft.renderBuffers().bufferSource().endBatch();
+    }
+
+    private static final Identifier WHITE = Identifier.fromNamespaceAndPath("coolcatlib", "textures/misc/white.png");
+    private static final Identifier SHADOW = Identifier.withDefaultNamespace("textures/misc/shadow.png");
+
+    // The ground: grid lines lying on it, thin strips fading towards its edge, and a shadow under each entity.
+    private static void ground(SceneViewport viewport, PoseStack pose, SubmitNodeStorage storage) {
+        float y = (float) viewport.groundY();
+        int margin = viewport.groundCells();
+        int color = viewport.groundColor();
+        // Under the scene and no further: the whole blocks its things stand over, and `margin` more each way.
+        net.minecraft.world.phys.AABB box = viewport.bounds();
+        float x0 = (float) Math.floor(box.minX + 1.0E-4) - margin;
+        float x1 = (float) Math.ceil(box.maxX - 1.0E-4) + margin;
+        float z0 = (float) Math.floor(box.minZ + 1.0E-4) - margin;
+        float z1 = (float) Math.ceil(box.maxZ - 1.0E-4) + margin;
+        int floor = viewport.groundFloor();
+        if ((floor >>> 24) != 0) {
+            storage.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(WHITE), (last, consumer) ->
+                    flat(consumer, last, x0, z0, x1, z1, y, floor));
+        }
+        if ((color >>> 24) != 0) {
+            float thick = 0.03F;
+            storage.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(WHITE), (last, consumer) -> {
+                // A line on every block edge, the outermost ones on the ground's own edge.
+                for (float at = x0; at <= x1 + 1.0E-4F; at++) {
+                    flat(consumer, last, Math.max(x0, at - thick), z0, Math.min(x1, at + thick), z1, y + 0.001F, color);
+                }
+                for (float at = z0; at <= z1 + 1.0E-4F; at++) {
+                    flat(consumer, last, x0, Math.max(z0, at - thick), x1, Math.min(z1, at + thick), y + 0.001F, color);
+                }
+            });
+        }
+        if (viewport.groundShadows()) {
+            for (SceneViewport.PlacedEntity placed : viewport.entities()) {
+                float radius = Math.max(0.3F, placed.entity().getBbWidth() * 0.65F);
+                float x = (float) placed.pos().x;
+                float z = (float) placed.pos().z;
+                storage.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(SHADOW), (last, consumer) -> {
+                    int shade = 0x50FFFFFF;
+                    float h = y + 0.002F;
+                    consumer.addVertex(last, x - radius, h, z - radius).setColor(shade).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+                    consumer.addVertex(last, x - radius, h, z + radius).setColor(shade).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+                    consumer.addVertex(last, x + radius, h, z + radius).setColor(shade).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+                    consumer.addVertex(last, x + radius, h, z - radius).setColor(shade).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+                });
+            }
+        }
+    }
+
+    private static void flat(com.mojang.blaze3d.vertex.VertexConsumer consumer, PoseStack.Pose last, float x0, float z0, float x1, float z1, float y, int color) {
+        consumer.addVertex(last, x0, y, z0).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+        consumer.addVertex(last, x0, y, z1).setColor(color).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+        consumer.addVertex(last, x1, y, z1).setColor(color).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
+        consumer.addVertex(last, x1, y, z0).setColor(color).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
     }
 
     // The camera: from the scene's own space to the picture's.

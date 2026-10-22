@@ -11,10 +11,13 @@ import java.util.UUID;
  * Rifts: tears in the air, drawn by a shader ({@link VfxMaterial#RIFT_SHADER}) and run through three acts. A rift
  * <b>opens</b> (a flash, a jagged slit that widens, its opening sound, a shake of the camera nearby), stays <b>open</b>
  * (its edge crawls and pulses, motes are drawn into it, its ambient sound loops), and <b>closes</b> (it narrows to a
- * line and snaps shut with a last flash and its closing sound). It always turns to face whoever looks at it.
+ * line and snaps shut with a last flash and its closing sound). It turns to face whoever looks at it, unless it is held
+ * facing one way ({@link Rift#facing}), as a portal set in a wall is.
  * <pre>{@code
  * Rift rift = WorldRifts.open(RiftSpec.DEFAULT, pos);          // stays until closed
  * rift.close();
+ *
+ * WorldRifts.open(RiftSpec.DEFAULT, pos).facing(new Vec3(0, 0, 1));   // a fixed face, looking south
  *
  * WorldRifts.open(RiftSpec.DEFAULT, pos, 100);                 // closes by itself after five seconds open
  *
@@ -27,7 +30,7 @@ import java.util.UUID;
  */
 public final class WorldRifts {
     /** The spec the server can always ask for: {@link RiftSpec#DEFAULT}. */
-    public static final Identifier DEFAULT = Identifier.fromNamespaceAndPath("coolcatcanvas", "rift");
+    public static final Identifier DEFAULT = Identifier.fromNamespaceAndPath("coolcatlib", "rift");
 
     private WorldRifts() {}
 

@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-// The cutscenes saved from the in-game editor: one JSON file each in config/coolcatcanvas/cutscenes/, in the same
+// The cutscenes saved from the in-game editor: one JSON file each in config/coolcatlib/cutscenes/, in the same
 // format as a resource pack's, so a file can be copied straight to assets/<namespace>/cutscene/. They play by the id
-// coolcatcanvas:saved/<name>.
+// coolcatlib:saved/<name>.
 public final class CutsceneFiles {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Map<String, Cutscene> SAVED = new TreeMap<>();
@@ -34,7 +34,7 @@ public final class CutsceneFiles {
     private CutsceneFiles() {}
 
     public static Path folder() {
-        return Platform.getConfigFolder().resolve("coolcatcanvas").resolve("cutscenes");
+        return Platform.getConfigFolder().resolve("coolcatlib").resolve("cutscenes");
     }
 
     public static Identifier id(String name) {

@@ -74,7 +74,7 @@ public final class CutsceneManager {
         if (!Platform.isDevelopmentEnvironment()) return;
         // Merges into CoolCatLib's client command.
         ClientCommandEvents.REGISTER.register((dispatcher, context) -> dispatcher.register(
-                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatcanvas_client")
+                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatlib_client")
                         .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("cutscene")
                                 .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("play")
                                         .then(RequiredArgumentBuilder.<SharedSuggestionProvider, String>argument("id", StringArgumentType.greedyString())
@@ -337,7 +337,7 @@ public final class CutsceneManager {
     // A key mapping whose bound key can be read, on every loader.
     private static final class SkipKey extends KeyMapping {
         SkipKey() {
-            super("key.coolcatcanvas.skip_cutscene", GLFW.GLFW_KEY_ENTER, KeyMapping.Category.MISC);
+            super("key.coolcatlib.skip_cutscene", GLFW.GLFW_KEY_ENTER, KeyMapping.Category.MISC);
         }
 
         InputConstants.Key bound() {
