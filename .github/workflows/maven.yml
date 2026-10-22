@@ -10,9 +10,9 @@ on:
 permissions:
   contents: read
 
-# One release at a time: every branch writes the same maven-metadata.xml files.
+# One run per branch at a time; runs of different branches (or mods) meet at the push to ModResources below.
 concurrency:
-  group: modresources-maven
+  group: maven-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -72,23 +72,27 @@ jobs:
           distribution: temurin
           java-version: ${{ steps.version.outputs.java }}
 
+      # Each version branch keeps its own Gradle cache (by default only the default branch saves one).
       - uses: gradle/actions/setup-gradle@v4
         if: steps.version.outputs.publish == 'true'
+        with:
+          cache-read-only: false
 
+      # Another release may push to ModResources first: then publish again on top of it, so the maven-metadata.xml files
+      # list both versions.
       - name: Publish
         if: steps.version.outputs.publish == 'true'
-        run: ./gradlew ${{ steps.version.outputs.tasks }} -Pmod_resources="$GITHUB_WORKSPACE/.modresources" -Ptestmods=false --no-daemon
-
-      - name: Push to ModResources
-        if: steps.version.outputs.publish == 'true'
-        working-directory: .modresources
         run: |
-          git config user.name '!DARK'
-          git config user.email '34784038+ixDarkLorD@users.noreply.github.com'
-          git add maven
-          git commit -m "Publish ${{ steps.version.outputs.name }} to the maven"
+          chmod +x gradlew
+          git -C .modresources config user.name '!DARK'
+          git -C .modresources config user.email '34784038+ixDarkLorD@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
-            git push && exit 0
-            git pull --rebase
+            git -C .modresources fetch -q origin HEAD
+            git -C .modresources reset -q --hard FETCH_HEAD
+            ./gradlew ${{ steps.version.outputs.tasks }} -Pmod_resources="$GITHUB_WORKSPACE/.modresources" -Ptestmods=false
+            git -C .modresources add maven
+            git -C .modresources commit -q -m "Publish ${{ steps.version.outputs.name }} to the maven"
+            git -C .modresources push -q origin HEAD && exit 0
+            sleep $((attempt * 10))
           done
           exit 1
