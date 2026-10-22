@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2001.3.0.0 Release | Oct 14, 2026
+## v2001.4.0.0 Release | Oct 22, 2026
 ### ✨ New Features
 - World effects (`api.client.vfx`), as on 26.1.2: glowing shapes drawn in the world, after the whole level and before the hand, lit by nothing. They hide behind solid things and fade softly where they meet them (`VfxMaterial.softness`), so nothing ends in a hard line at a wall or the ground.
   - Materials (`VfxMaterial`): a texture, a blend (`VfxBlend.ADDITIVE` for light, `ALPHA` for smoke, `LUMINOUS` for black-background glow textures against bright skies), a softness, and smooth or pixel-for-pixel sampling (`withSmoothing(false)` keeps block and item textures crisp). Everything of one material in a frame is one draw call.
@@ -21,6 +21,8 @@ This file is for listing all the changes to this project
 - `ItemRendererRegistry` (`api.client.registry`): items drawn in code, the same on every loader: an item whose model is `builtin/entity` is drawn by its renderer wherever it shows.
 - `ItemColorRegistry` (`api.client.registry`): colours for items' tinted faces, the same on every loader.
 - `ExtraModels` (`api.client.registry`): models baked with the game's though no item or block uses them, for drawing in code; named outright or found in the resources as they load.
+
+## v2001.3.0.0 Release | Oct 14, 2026
 ### 🔧 Changes
 - CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.
 - The mod id is now `coolcatlib`. With it changed: the Fabric entrypoints (`coolcatlib:common`, `coolcatlib:client`, `coolcatlib:server`, `coolcatlib:datagen`), the commands (`/coolcatlib config ...`, `/coolcatlib_client config ...`), Core's translation keys (`config.coolcatlib.*`, `tooltip.coolcatlib.*`), its payload ids and `ConfigTheme.STARFALL` (`coolcatlib:starfall`). Players and servers need the same version, as with any update.
