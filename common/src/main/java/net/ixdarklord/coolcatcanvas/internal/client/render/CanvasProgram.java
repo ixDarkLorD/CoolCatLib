@@ -31,7 +31,8 @@ import java.util.regex.Pattern;
  * A GLSL program linked from a vertex and a fragment shader in resources. Sources go through vanilla's preprocessor,
  * with namespaced imports: {@code #moj_import <namespace:file.glsl>} reads {@code assets/<namespace>/shaders/include/},
  * {@code #moj_import "file.glsl"} a path next to the importing shader. Extra {@code #define}s go right after
- * {@code #version}. The {@code Position} attribute is bound to location 0, where 1.20.1's vertex formats put it.
+ * {@code #version}. The {@code Position} attribute is bound to location 0, where 1.20.1's vertex formats put it;
+ * {@link #compile(ResourceManager, String, ResourceLocation, ResourceLocation, List, List)} binds more.
  * <p>
  * Kept out of vanilla's program caches, so its names never collide with vanilla's and reloading vanilla's shaders
  * never frees it. Render thread only.
@@ -56,6 +57,13 @@ public final class CanvasProgram implements AutoCloseable {
      * @throws IOException if a file is missing, or a shader doesn't compile or link
      */
     public static CanvasProgram compile(ResourceManager resources, String name, ResourceLocation vertex, ResourceLocation fragment, List<String> defines) throws IOException {
+        return compile(resources, name, vertex, fragment, defines, List.of("Position"));
+    }
+
+    /**
+     * @param attributes vertex attribute names, bound to locations 0, 1, ... in order (as the vertex format's elements)
+     */
+    public static CanvasProgram compile(ResourceManager resources, String name, ResourceLocation vertex, ResourceLocation fragment, List<String> defines, List<String> attributes) throws IOException {
         RenderSystem.assertOnRenderThread();
         int vertexShader = compileShader(resources, GL20.GL_VERTEX_SHADER, vertex, defines);
         int fragmentShader;
@@ -74,7 +82,7 @@ public final class CanvasProgram implements AutoCloseable {
         }
         GlStateManager.glAttachShader(program, vertexShader);
         GlStateManager.glAttachShader(program, fragmentShader);
-        GlStateManager._glBindAttribLocation(program, 0, "Position");
+        for (int i = 0; i < attributes.size(); i++) GlStateManager._glBindAttribLocation(program, i, attributes.get(i));
         GlStateManager.glLinkProgram(program);
         // Attached shaders are only flagged, and go with the program.
         GlStateManager.glDeleteShader(vertexShader);

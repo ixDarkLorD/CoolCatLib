@@ -5,6 +5,8 @@ import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.GhostRenderer;
+import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceProvider;
@@ -15,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 // Screen effects: updated at the start of the frame, drawn after the world (once vanilla's own post effect has run)
 // and after the GUI. Skyboxes: updated at the start of the frame too (they're drawn from LevelRendererMixin). Both
-// rebuild once vanilla's shaders are (re)loaded, which isn't reached if vanilla's own shaders failed.
+// rebuild once vanilla's shaders are (re)loaded, which isn't reached if vanilla's own shaders failed. World effects:
+// drawn right after the level, with the projection it was drawn with, before the hand clears its depth.
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "render(FJZ)V", at = @At("HEAD"))
@@ -32,6 +35,16 @@ public abstract class GameRendererMixin {
         ScreenEffectManager.render(ScreenEffectScope.WORLD);
     }
 
+    @Inject(method = "renderLevel(FJLcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V"))
+    private void coolcatcanvas$beginWorldVfx(float partialTicks, long finishTimeNano, PoseStack poseStack, CallbackInfo ci) {
+        VfxManager.beginLevel();
+    }
+
+    @Inject(method = "renderLevel(FJLcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", shift = At.Shift.AFTER))
+    private void coolcatcanvas$renderWorldVfx(float partialTicks, long finishTimeNano, PoseStack poseStack, CallbackInfo ci) {
+        VfxManager.render(partialTicks);
+    }
+
     @Inject(method = "render(FJZ)V", at = @At("TAIL"))
     private void coolcatcanvas$renderScreenScreenEffects(float partialTicks, long nanoTime, boolean renderLevel, CallbackInfo ci) {
         if (!Minecraft.getInstance().noRender) ScreenEffectManager.render(ScreenEffectScope.SCREEN);
@@ -44,6 +57,7 @@ public abstract class GameRendererMixin {
         SkyboxManager.reload(minecraft.getResourceManager());
         SceneViewportManager.onResourceReload();
         GhostRenderer.close();
+        VfxManager.reload();
     }
 
     @Inject(method = "close()V", at = @At("TAIL"))
@@ -52,5 +66,6 @@ public abstract class GameRendererMixin {
         SkyboxManager.close();
         SceneViewportManager.close();
         GhostRenderer.close();
+        VfxManager.close();
     }
 }

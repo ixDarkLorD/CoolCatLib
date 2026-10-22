@@ -5,8 +5,8 @@ import net.minecraft.util.Mth;
 
 /**
  * A value over a lifetime, in three points: it eases from {@code start} to {@code middle} over the first half, then
- * from {@code middle} to {@code end} over the second. A camera shake uses one for its strength, which is what
- * lets it swell and die away instead of starting and stopping dead.
+ * from {@code middle} to {@code end} over the second. Particles use one for their size, opacity and spin, which is what
+ * lets them swell and fade instead of popping in and out.
  * <pre>{@code
  * Curve.constant(0.25F)                       // always 0.25
  * Curve.of(0.0F, 1.0F)                        // grows, linearly
@@ -20,6 +20,8 @@ import net.minecraft.util.Mth;
 public record Curve(float start, float middle, float end, Easing in, Easing out) {
     public static final Curve ZERO = constant(0.0F);
     public static final Curve ONE = constant(1.0F);
+    /** Opacity for most particles: quickly in, slowly out. */
+    public static final Curve FADE = new Curve(0.0F, 1.0F, 0.0F, Easing.EXPO_OUT, Easing.SINE_IN_OUT);
 
     public static Curve constant(float value) {
         return new Curve(value, value, value, Easing.LINEAR, Easing.LINEAR);

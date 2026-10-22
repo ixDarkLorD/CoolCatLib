@@ -2,6 +2,8 @@ package net.ixdarklord.coolcatcanvas.internal.core.client;
 
 import net.ixdarklord.coolcatcanvas.internal.client.camera.CameraShakeManager;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectsClient;
+import net.ixdarklord.coolcatcanvas.internal.client.vfx.RiftManager;
+import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 
@@ -10,6 +12,11 @@ public final class CoolCatCanvasClientConstructor implements ClientModConstructo
     @Override
     public void onConstructMod() {
         ScreenEffectsClient.init();
-        ClientTickEvents.END.register(CameraShakeManager::tick);
+        VfxManager.init();
+        RiftManager.init();
+        ClientTickEvents.END.register(minecraft -> {
+            CameraShakeManager.tick(minecraft);
+            RiftManager.tick(minecraft);
+        });
     }
 }
