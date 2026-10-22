@@ -1,0 +1,94 @@
+name: Maven
+# Publishes each release to the ModResources Maven (the maven/ folder of ixDarkLorD/ModResources), where other mods can
+# build against it without a token. A push that changes mod_version in gradle.properties publishes that version; the
+# Run workflow button publishes the chosen branch's current version. A version already in the Maven is left alone.
+on:
+  push:
+    paths: [gradle.properties]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One release at a time: every branch writes the same maven-metadata.xml files.
+concurrency:
+  group: modresources-maven
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check mod_version
+        id: changed
+        run: |
+          prop() { sed -n "s/^$1=//p" "${2:-gradle.properties}" | tr -d '\r'; }
+          if [ -z "$(prop dependencies_catalog_version)" ]; then
+            echo "This branch has no mod to publish."; echo "publish=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          before='${{ github.event.before }}'
+          if [ '${{ github.event_name }}' = push ] && git cat-file -e "$before" 2>/dev/null; then
+            git show "$before:gradle.properties" > previous.properties
+            if [ "$(prop mod_version previous.properties)" = "$(prop mod_version)" ]; then
+              echo "mod_version is still $(prop mod_version)."; echo "publish=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          fi
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.changed.outputs.publish == 'true'
+        with:
+          repository: ixDarkLorD/ModResources
+          ssh-key: ${{ secrets.MODRESOURCES_DEPLOY_KEY }}
+          path: .modresources
+
+      - name: Find the version
+        id: version
+        if: steps.changed.outputs.publish == 'true'
+        run: |
+          prop() { sed -n "s/^$1=//p" "${2:-gradle.properties}" | tr -d '\r'; }
+          catalog=$(prop dependencies_catalog_version)
+          toml=".modresources/maven/net/ixdarklord/sharedcatalogs/$catalog/sharedcatalogs-$catalog.toml"
+          entry() { sed -n "s/^$1 *= *\"\([^\",]*\).*/\1/p" "$toml" | head -n1; }
+          modid=$(prop modid)
+          version="$(entry minecraft)-$(prop mod_version)"
+          group="$(prop mod_maven_group | tr . /)/$modid"
+          echo "java=$(entry java)" >> "$GITHUB_OUTPUT"
+          echo "name=$(prop mod_name) $version" >> "$GITHUB_OUTPUT"
+          echo "tasks=$(echo "common,$(prop project_loaders)" | tr , '\n' | sed 's/.*/:&:publishAllPublicationsToModResourcesRepository/' | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          if [ -d ".modresources/maven/$group/$modid-common/$version" ]; then
+            echo "$modid $version is already in the Maven."; echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.version.outputs.publish == 'true'
+        with:
+          distribution: temurin
+          java-version: ${{ steps.version.outputs.java }}
+
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.version.outputs.publish == 'true'
+
+      - name: Publish
+        if: steps.version.outputs.publish == 'true'
+        run: ./gradlew ${{ steps.version.outputs.tasks }} -Pmod_resources="$GITHUB_WORKSPACE/.modresources" -Ptestmods=false --no-daemon
+
+      - name: Push to ModResources
+        if: steps.version.outputs.publish == 'true'
+        working-directory: .modresources
+        run: |
+          git config user.name '!DARK'
+          git config user.email '34784038+ixDarkLorD@users.noreply.github.com'
+          git add maven
+          git commit -m "Publish ${{ steps.version.outputs.name }} to the maven"
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            git pull --rebase
+          done
+          exit 1
