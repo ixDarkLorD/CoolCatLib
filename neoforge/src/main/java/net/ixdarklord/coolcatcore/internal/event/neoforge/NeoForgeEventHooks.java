@@ -3,6 +3,8 @@ package net.ixdarklord.coolcatcore.internal.event.neoforge;
 import net.ixdarklord.coolcatcore.api.event.v2.common.BlockEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.EntityEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.InteractionEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.LivingEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
@@ -14,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 
@@ -30,7 +33,12 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -89,6 +97,62 @@ public final class NeoForgeEventHooks {
 
         bus.addListener((EntityJoinLevelEvent event) -> {
             if (event.getLevel() instanceof ServerLevel level) EntityEvents.LOAD.invoker().onLoad(event.getEntity(), level);
+        });
+        bus.addListener((EntityLeaveLevelEvent event) -> {
+            if (event.getLevel() instanceof ServerLevel level) EntityEvents.UNLOAD.invoker().onUnload(event.getEntity(), level);
+        });
+
+        bus.addListener((PlayerEvent.Clone event) -> {
+            if (event.getOriginal() instanceof ServerPlayer original && event.getEntity() instanceof ServerPlayer player) {
+                PlayerEvents.CLONE.invoker().onClone(original, player, event.isWasDeath());
+            }
+        });
+        bus.addListener((PlayerEvent.PlayerRespawnEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.RESPAWN.invoker().onRespawn(player, event.isEndConquered());
+        });
+        bus.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, event.getFrom(), event.getTo());
+        });
+
+        bus.addListener((LivingIncomingDamageEvent event) -> {
+            if (LivingEvents.DAMAGE.invoker().onDamage(event.getEntity(), event.getSource(), event.getAmount()).isInterrupt()) event.setCanceled(true);
+        });
+        bus.addListener((LivingDeathEvent event) -> {
+            if (LivingEvents.DEATH.invoker().onDeath(event.getEntity(), event.getSource()).isInterrupt()) event.setCanceled(true);
+        });
+
+        bus.addListener((PlayerInteractEvent.RightClickBlock event) -> {
+            InteractionResult result = InteractionEvents.USE_BLOCK.invoker().onUseBlock(event.getEntity(), event.getHand(), event.getHitVec());
+            if (result != InteractionResult.PASS) {
+                event.setCanceled(true);
+                event.setCancellationResult(result);
+            }
+        });
+        bus.addListener((PlayerInteractEvent.RightClickItem event) -> {
+            InteractionResult result = InteractionEvents.USE_ITEM.invoker().onUseItem(event.getEntity(), event.getHand());
+            if (result != InteractionResult.PASS) {
+                ((ICancellableEvent) event).setCanceled(true);
+                event.setCancellationResult(result);
+            }
+        });
+        bus.addListener((PlayerInteractEvent.EntityInteract event) -> {
+            InteractionResult result = InteractionEvents.USE_ENTITY.invoker().onUseEntity(event.getEntity(), event.getHand(), event.getTarget());
+            if (result != InteractionResult.PASS) {
+                ((ICancellableEvent) event).setCanceled(true);
+                event.setCancellationResult(result);
+            }
+        });
+        // Fired again as the block is let go of or given up on; only the first click counts, as on Fabric.
+        bus.addListener((PlayerInteractEvent.LeftClickBlock event) -> {
+            if (event.getAction() == PlayerInteractEvent.LeftClickBlock.Action.START
+                    && InteractionEvents.ATTACK_BLOCK.invoker().onAttackBlock(event.getEntity(), event.getHand(), event.getPos(), event.getFace()).isInterrupt()) {
+                event.setCanceled(true);
+            }
+        });
+        bus.addListener((AttackEntityEvent event) -> {
+            if (InteractionEvents.ATTACK_ENTITY.invoker().onAttackEntity(event.getEntity(), event.getTarget()).isInterrupt()) {
+                ((ICancellableEvent) event).setCanceled(true);
+            }
         });
 
         registerBreakListener(bus);

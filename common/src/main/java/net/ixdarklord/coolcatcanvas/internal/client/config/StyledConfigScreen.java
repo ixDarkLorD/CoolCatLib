@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.client.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.google.gson.JsonObject;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
@@ -173,7 +174,7 @@ public final class StyledConfigScreen extends StyledScreen {
 
         FlatButton done = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, 70, button -> {
             this.save();
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
         }).style(FlatButton.Style.PRIMARY));
         done.setPosition(right - 70, bottomY);
         FlatButton cancel = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_CANCEL, 70, button -> this.onClose()));
@@ -184,13 +185,13 @@ public final class StyledConfigScreen extends StyledScreen {
     public void onClose() {
         this.cancelEditing();
         if (this.pending.isEmpty()) {
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
             return;
         }
-        this.minecraft.setScreen(new ConfirmPopup(this, this.theme, Component.translatableWithFallback("coolcatlib.config.screen.discard.title", "Discard changes?"),
+        this.minecraft.gui.setScreen(new ConfirmPopup(this, this.theme, Component.translatableWithFallback("coolcatlib.config.screen.discard.title", "Discard changes?"),
                 Component.translatableWithFallback("coolcatlib.config.screen.discard", "The changes you made haven't been saved. Press Done to save them."),
                 Component.translatableWithFallback("coolcatlib.config.screen.discard.yes", "Discard"), true,
-                discard -> this.minecraft.setScreen(discard ? this.parent : this)));
+                discard -> this.minecraft.gui.setScreen(discard ? this.parent : this)));
     }
 
     @Override
@@ -672,7 +673,7 @@ public final class StyledConfigScreen extends StyledScreen {
         } else if (value.type() instanceof EnumType<?> enumType) {
             this.openDropdown(row, enumType);
         } else if (value.type() instanceof ColorType colorType && mouseX < row.editorX() + FIELD_HEIGHT) {
-            this.minecraft.setScreen(new ColorPickerPopup(this, this.theme, value.displayName(), (Integer) this.current(value), colorType.hasAlpha(),
+            this.minecraft.gui.setScreen(new ColorPickerPopup(this, this.theme, value.displayName(), (Integer) this.current(value), colorType.hasAlpha(),
                     color -> this.stage(value, colorType.validate(color).value())));
         } else {
             this.startEditing(row);
@@ -681,7 +682,7 @@ public final class StyledConfigScreen extends StyledScreen {
 
     private <E extends Enum<E>> void openDropdown(EntryRow row, EnumType<E> type) {
         @SuppressWarnings("unchecked") E current = (E) this.current(row.value);
-        this.minecraft.setScreen(new DropdownScreen<>(this, row.editorX(), row.y + (ROW - FIELD_HEIGHT) / 2, row.editorWidth(), FIELD_HEIGHT,
+        this.minecraft.gui.setScreen(new DropdownScreen<>(this, row.editorX(), row.y + (ROW - FIELD_HEIGHT) / 2, row.editorWidth(), FIELD_HEIGHT,
                 type.constants(), current, type::displayName, type::description, picked -> this.stage(row.value, picked)));
     }
 
@@ -708,7 +709,7 @@ public final class StyledConfigScreen extends StyledScreen {
         double mouseY = event.y();
         if (this.editor != null && !this.editor.isMouseOver(mouseX, mouseY) && !this.commitEditing()) this.cancelEditing();
         if (super.mouseClicked(event, doubleClick)) return true;
-        if (event.button() != 0) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
         if (mouseY < this.listTop() || mouseY >= this.listBottom()) return false;
 
         if (mouseX >= this.navX() && mouseX < this.navX() + this.navWidth()) {

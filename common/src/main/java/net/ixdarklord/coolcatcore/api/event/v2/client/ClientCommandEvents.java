@@ -22,7 +22,7 @@ public final class ClientCommandEvents {
 
     /** A message in the chat, as a command's reply. */
     public static void sendFeedback(Component message) {
-        Minecraft.getInstance().gui.getChat().addClientSystemMessage(message);
+        Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(message);
     }
 
     /** An error reply, in red. */

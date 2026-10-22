@@ -9,7 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2fStack;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.function.IntSupplier;
 
@@ -382,13 +382,13 @@ public abstract class ViewportPanel extends Panel {
         double cx = b.left() + b.width() / 2.0, cy = b.top() + b.height() / 2.0;
         double pan = 24.0 / this.zoom;
         switch (event.key()) {
-            case GLFW.GLFW_KEY_EQUAL, GLFW.GLFW_KEY_KP_ADD -> this.zoomBy(this.zoomStep, cx, cy);
-            case GLFW.GLFW_KEY_MINUS, GLFW.GLFW_KEY_KP_SUBTRACT -> this.zoomBy(1.0 / this.zoomStep, cx, cy);
-            case GLFW.GLFW_KEY_0, GLFW.GLFW_KEY_KP_0, GLFW.GLFW_KEY_HOME -> this.requestFit();
-            case GLFW.GLFW_KEY_LEFT -> this.offsetX -= pan;
-            case GLFW.GLFW_KEY_RIGHT -> this.offsetX += pan;
-            case GLFW.GLFW_KEY_UP -> this.offsetY -= pan;
-            case GLFW.GLFW_KEY_DOWN -> this.offsetY += pan;
+            case InputConstants.KEY_EQUALS, InputConstants.KEY_ADD -> this.zoomBy(this.zoomStep, cx, cy);
+            case InputConstants.KEY_MINUS, InputConstants.KEY_ADD - 1 -> this.zoomBy(1.0 / this.zoomStep, cx, cy);
+            case InputConstants.KEY_0, InputConstants.KEY_NUMPAD0, InputConstants.KEY_HOME -> this.requestFit();
+            case InputConstants.KEY_LEFT -> this.offsetX -= pan;
+            case InputConstants.KEY_RIGHT -> this.offsetX += pan;
+            case InputConstants.KEY_UP -> this.offsetY -= pan;
+            case InputConstants.KEY_DOWN -> this.offsetY += pan;
             default -> {
                 return false;
             }

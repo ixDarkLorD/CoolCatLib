@@ -28,7 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
     private record Label(Component text, int x, int y) {}
 
     public CutsceneEditorScreen() {
-        super(Component.translatableWithFallback("cutscene.coolcatcanvas.editor.title", "Cutscene Editor"), ConfigTheme.forMod(CoolCatCore.MOD_ID));
+        super(Component.translatableWithFallback("cutscene.coolcatlib.editor.title", "Cutscene Editor"), ConfigTheme.forMod(CoolCatCore.MOD_ID));
     }
 
     // ---- Layout ----
@@ -153,7 +153,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
 
         int right = this.width - EDGE - 2;
         this.add(FlatButton.of(text("save", "Save"), 40, button -> this.say(CutsceneEditor.save())).style(FlatButton.Style.PRIMARY)
-                .tooltip(text("save.tooltip", "Writes it to config/coolcatcanvas/cutscenes/ as JSON, playable as coolcatcanvas:saved/<name>")), right - 40, y);
+                .tooltip(text("save.tooltip", "Writes it to config/coolcatlib/cutscenes/ as JSON, playable as coolcatlib:saved/<name>")), right - 40, y);
         FlatButton load = FlatButton.of(text("load", "Load"), 40, button -> this.openLoadMenu((FlatButton) button));
         this.add(load, right - 84, y);
         this.add(FlatButton.of(text("new", "New"), 36, button -> {
@@ -272,7 +272,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
         int right = this.width - EDGE - 6;
         this.add(new FlatButton(30, 16, text("exit", "Exit"), button -> {
             CutsceneEditor.exit();
-            this.minecraft.setScreen(null);
+            this.minecraft.gui.setScreen(null);
         }).style(FlatButton.Style.DANGER).tooltip(text("exit.tooltip", "Leaves the editor. Esc only hides this screen, so you can fly to the next keyframe")), right - 30, y);
         this.add(new FlatButton(70, 16, viewLabel(), button -> {
             CutsceneEditor.cameraView = !CutsceneEditor.cameraView;
@@ -294,7 +294,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
     }
 
     private static Component text(String key, String fallback) {
-        return Component.translatableWithFallback("cutscene.coolcatcanvas.editor." + key, fallback);
+        return Component.translatableWithFallback("cutscene.coolcatlib.editor." + key, fallback);
     }
 
     // A label and a number box after it.
@@ -343,7 +343,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
 
     private void openEasingMenu(FlatButton anchor, Key key) {
         String current = Easings.nameOf(key.easing);
-        this.minecraft.setScreen(new DropdownScreen<>(this, anchor.getX(), anchor.getY(), anchor.getWidth(), anchor.getHeight(), Easings.names(),
+        this.minecraft.gui.setScreen(new DropdownScreen<>(this, anchor.getX(), anchor.getY(), anchor.getWidth(), anchor.getHeight(), Easings.names(),
                 current != null ? current : "", Component::literal, name -> null, name -> {
             Easing easing = Easings.byName(name);
             if (easing != null) {
@@ -367,7 +367,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
             this.say(text("load.empty", "Nothing to load yet"));
             return;
         }
-        this.minecraft.setScreen(new DropdownScreen<>(this, anchor.getX(), anchor.getY(), 150, anchor.getHeight(), choices, "", Component::literal, choice -> null, choice -> {
+        this.minecraft.gui.setScreen(new DropdownScreen<>(this, anchor.getX(), anchor.getY(), 150, anchor.getHeight(), choices, "", Component::literal, choice -> null, choice -> {
             boolean ownSave = choices.indexOf(choice) < saved;
             Cutscene cutscene = ownSave ? CutsceneFiles.get(choice) : null;
             String name = choice;
@@ -498,7 +498,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
         Key selected = CutsceneEditor.selected;
         if (selected != null) {
             ConfigStyle.panel(graphics, this.keyPanelX(), panelsY, KEY_WIDTH, PANEL_TITLE + ROW * 6 + 2 + 16 + 5);
-            Component heading = Component.translatableWithFallback("cutscene.coolcatcanvas.editor.keyframe", "Keyframe %s of %s", CutsceneEditor.keys.indexOf(selected) + 1, CutsceneEditor.keys.size());
+            Component heading = Component.translatableWithFallback("cutscene.coolcatlib.editor.keyframe", "Keyframe %s of %s", CutsceneEditor.keys.indexOf(selected) + 1, CutsceneEditor.keys.size());
             graphics.text(this.font, heading.copy().withStyle(ChatFormatting.BOLD), this.keyPanelX() + 6, panelsY + 4, ConfigStyle.colors().text(), false);
         } else {
             Component hint = CutsceneEditor.keys.isEmpty()
@@ -610,7 +610,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
         if (super.mouseClicked(event, doubleClick)) return true;
         // A click on nothing takes the keyboard back from whatever box had it.
         this.setFocused(null);
-        if (event.button() != 0 || !this.overTimeline(event.x(), event.y())) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT || !this.overTimeline(event.x(), event.y())) return false;
         Key key = this.keyAt(event.x(), event.y());
         if (key != null) {
             CutsceneEditor.selected = key;
@@ -665,11 +665,11 @@ public final class CutsceneEditorScreen extends StyledScreen {
         }
         boolean typing = this.getFocused() instanceof EditBox box && box.isFocused();
         if (!typing) {
-            if (event.key() == GLFW.GLFW_KEY_SPACE) {
+            if (event.key() == InputConstants.KEY_SPACE) {
                 this.play();
                 return true;
             }
-            if (event.key() == GLFW.GLFW_KEY_DELETE && CutsceneEditor.selected != null) {
+            if (event.key() == InputConstants.KEY_DELETE && CutsceneEditor.selected != null) {
                 CutsceneEditor.delete(CutsceneEditor.selected);
                 this.rebuildWidgets();
                 return true;

@@ -5,8 +5,6 @@
   "priority": 951,
   "package": "net.ixdarklord.coolcatcore.mixin",
   "mixins": [
-    "PotionBrewingMixin",
-    "PotionBrewingMixin\u0024BuilderMixin",
     "BlockItemMixin",
     "PlayerMixin"
   ],

@@ -60,17 +60,17 @@ public final class ConstructorServicesImpl implements ConstructorServices {
 
         @Override
         public CompletableFuture<HolderLookup.Provider> getRegistries() {
-            return this.event.getLookupProvider();
+            return this.event.getWorldLookupProvider();
         }
 
         @Override
         public <T extends DataProvider> T addProvider(DataProvider.Factory<T> factory) {
-            return this.event.createProvider((GatherDataEvent.DataProviderFromOutput<T>) factory::create);
+            return this.event.createProvider((net.neoforged.neoforge.data.event.PackGenerator.DataProviderFromOutput<T>) factory::create);
         }
 
         @Override
         public <T extends DataProvider> T addProvider(RegistryDependentFactory<T> factory) {
-            return this.event.createProvider((GatherDataEvent.DataProviderFromOutputLookup<T>) factory::create);
+            return this.event.createProvider((net.neoforged.neoforge.data.event.PackGenerator.DataProviderFromOutputLookup<T>) factory::create);
         }
     }
 }

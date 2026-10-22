@@ -1,21 +1,21 @@
 package net.ixdarklord.coolcatcanvas.internal.client.effect;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.framegraph.FramePass;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.resource.ResourceHandle;
-import com.mojang.blaze3d.shaders.UniformType;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectDefinition;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.Minecraft;
@@ -112,7 +112,9 @@ final class EffectProgram implements AutoCloseable {
         targets.put(ScreenEffectDefinition.MAIN_TARGET, main);
 
         this.definition.targets().forEach((id, target) -> {
-            RenderTargetDescriptor descriptor = new RenderTargetDescriptor(target.width().orElse(width), target.height().orElse(height), true, target.clearColor());
+            RenderTargetDescriptor descriptor = new RenderTargetDescriptor(target.width().orElse(width), target.height().orElse(height),
+                    new RenderTargetDescriptor.TextureProperties(argb(target.clearColor()), com.mojang.renderpearl.api.GpuFormat.RGBA8_UNORM),
+                    RenderTargetDescriptor.TextureProperties.DEFAULT_DEPTH);
             if (target.persistent()) {
                 targets.put(id, frame.importExternal(effect.id() + "/" + id, this.persistentTarget(id, descriptor)));
             } else {
@@ -163,10 +165,10 @@ final class EffectProgram implements AutoCloseable {
                     .withVertexShader(this.vertexShader)
                     .withFragmentShader(this.fragmentShader)
                     .withLocation(this.location);
-            for (String sampler : this.samplers) builder.withSampler(sampler + "Sampler");
-            builder.withUniform("SamplerInfo", UniformType.UNIFORM_BUFFER);
-            builder.withUniform("EffectInfo", UniformType.UNIFORM_BUFFER);
-            for (String block : this.uniformBlocks) builder.withUniform(block, UniformType.UNIFORM_BUFFER);
+            for (String sampler : this.samplers) builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform(sampler + "Sampler", com.mojang.renderpearl.api.pipeline.UniformType.COMBINED_IMAGE_SAMPLER).build());
+            builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("SamplerInfo", UniformType.UNIFORM_BUFFER).build());
+            builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("EffectInfo", UniformType.UNIFORM_BUFFER).build());
+            for (String block : this.uniformBlocks) builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform(block, UniformType.UNIFORM_BUFFER).build());
             return builder.build();
         }
     }
@@ -230,12 +232,12 @@ final class EffectProgram implements AutoCloseable {
                 samplers.add(RenderSystem.getSamplerCache().getClampToEdge(input.bilinear() ? FilterMode.LINEAR : FilterMode.NEAREST));
             }
 
-            try (GpuBuffer.MappedView view = encoder.mapBuffer(this.samplerInfo.currentBuffer(), false, true)) {
+            try (com.mojang.renderpearl.api.buffers.GpuBufferSlice.MappedView view = this.samplerInfo.currentBuffer().map(false, true)) {
                 Std140Builder builder = Std140Builder.intoBuffer(view.data());
                 builder.putVec2(output.width, output.height);
                 for (GpuTextureView input : views) builder.putVec2(input.getWidth(0), input.getHeight(0));
             }
-            try (GpuBuffer.MappedView view = encoder.mapBuffer(this.effectInfo.currentBuffer(), false, true)) {
+            try (com.mojang.renderpearl.api.buffers.GpuBufferSlice.MappedView view = this.effectInfo.currentBuffer().map(false, true)) {
                 Std140Builder.intoBuffer(view.data())
                         .putFloat(effect.strength())
                         .putFloat(info.time())
@@ -243,7 +245,7 @@ final class EffectProgram implements AutoCloseable {
                         .putFloat(info.seed());
             }
             for (UniformBlock block : this.blocks) {
-                try (GpuBuffer.MappedView view = encoder.mapBuffer(block.buffer.currentBuffer(), false, true)) {
+                try (com.mojang.renderpearl.api.buffers.GpuBufferSlice.MappedView view = block.buffer.currentBuffer().map(false, true)) {
                     Std140Builder builder = Std140Builder.intoBuffer(view.data());
                     for (ScreenEffectDefinition.UniformSpec spec : block.specs) {
                         EffectUniformImpl uniform = effect.uniformIfSet(spec.name());
@@ -254,16 +256,16 @@ final class EffectProgram implements AutoCloseable {
             }
 
             // No depth attachment: a pass may sample main's depth while drawing into main's color.
-            try (RenderPass renderPass = encoder.createRenderPass(() -> "Screen effect " + this.label, output.getColorTextureView(), OptionalInt.empty(), null, OptionalDouble.empty())) {
-                renderPass.setPipeline(this.pipeline);
+            try (RenderPass renderPass = encoder.createRenderPass(() -> "Screen effect " + this.label, output.getColorTextureView(), java.util.Optional.empty(), null, OptionalDouble.empty())) {
+                renderPass.setPipeline(com.mojang.blaze3d.systems.RenderSystem.getCompiledPipeline(this.pipeline));
                 RenderSystem.bindDefaultUniforms(renderPass);
                 renderPass.setUniform("SamplerInfo", this.samplerInfo.currentBuffer());
                 renderPass.setUniform("EffectInfo", this.effectInfo.currentBuffer());
                 for (UniformBlock block : this.blocks) renderPass.setUniform(block.name, block.buffer.currentBuffer());
                 for (int i = 0; i < this.inputs.size(); i++) {
-                    renderPass.bindTexture(this.inputs.get(i).samplerName() + "Sampler", views.get(i), samplers.get(i));
+                    renderPass.setUniform(this.inputs.get(i).samplerName() + "Sampler", views.get(i), samplers.get(i));
                 }
-                renderPass.draw(0, 3);
+                renderPass.draw(3, 1, 0, 0);
             }
 
             this.samplerInfo.rotate();
@@ -280,5 +282,10 @@ final class EffectProgram implements AutoCloseable {
         }
 
         private record UniformBlock(String name, List<ScreenEffectDefinition.UniformSpec> specs, MappableRingBuffer buffer) {}
+    }
+
+    // An ARGB colour as the floats a render target is cleared to (0 to 1, red green blue alpha).
+    private static org.joml.Vector4f argb(int color) {
+        return new org.joml.Vector4f((color >> 16 & 0xFF) / 255.0F, (color >> 8 & 0xFF) / 255.0F, (color & 0xFF) / 255.0F, (color >>> 24) / 255.0F);
     }
 }

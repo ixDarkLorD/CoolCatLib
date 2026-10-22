@@ -8,9 +8,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.client.renderer.state.level.SkyRenderState;
-import net.minecraft.util.ARGB;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import net.minecraft.world.level.MoonPhase;
 import org.joml.Vector4f;
+import org.joml.Vector3fc;
 import org.joml.Vector4fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,29 +33,29 @@ public abstract class SkyRendererMixin {
     // ---- Overworld-style skies ----
 
     @Inject(method = "renderSkyDisc", at = @At("HEAD"), cancellable = true)
-    private void coolcatcanvas$hideSkyDisc(int skyColor, CallbackInfo ci) {
+    private void coolcatcanvas$hideSkyDisc(RenderPass pass, Vector3fc skyColor, CallbackInfo ci) {
         if (SkyboxManager.hidden(VanillaSky.SKY) >= 1.0F) ci.cancel();
     }
 
     @ModifyVariable(method = "renderSkyDisc", at = @At("HEAD"), argsOnly = true)
-    private int coolcatcanvas$fadeSkyDisc(int skyColor) {
+    private Vector3fc coolcatcanvas$fadeSkyDisc(Vector3fc skyColor) {
         return SkyboxManager.skyColor(skyColor);
     }
 
     @ModifyVariable(method = "renderSunriseAndSunset", at = @At("HEAD"), argsOnly = true)
-    private int coolcatcanvas$fadeSunrise(int sunriseAndSunsetColor) {
+    private Vector4fc coolcatcanvas$fadeSunrise(Vector4fc sunriseAndSunsetColor) {
         float hidden = SkyboxManager.hidden(VanillaSky.SUNRISE);
-        return hidden > 0.0F ? ARGB.multiplyAlpha(sunriseAndSunsetColor, 1.0F - hidden) : sunriseAndSunsetColor;
+        return hidden > 0.0F ? new Vector4f(sunriseAndSunsetColor.x(), sunriseAndSunsetColor.y(), sunriseAndSunsetColor.z(), sunriseAndSunsetColor.w() * (1.0F - hidden)) : sunriseAndSunsetColor;
     }
 
     @Inject(method = "renderSunMoonAndStars", at = @At("HEAD"))
-    private void coolcatcanvas$renderLayersBehindCelestials(PoseStack poseStack, float sunAngle, float moonAngle, float starAngle, MoonPhase moonPhase, float rainBrightness, float starBrightness, CallbackInfo ci) {
-        SkyboxManager.render(SkyLayerStage.BEHIND_CELESTIALS);
+    private void coolcatcanvas$renderLayersBehindCelestials(RenderPass pass, PoseStack poseStack, float sunAngle, float moonAngle, float starAngle, MoonPhase moonPhase, float rainBrightness, float starBrightness, CallbackInfo ci) {
+        SkyboxManager.render(SkyLayerStage.BEHIND_CELESTIALS, pass);
     }
 
     @Inject(method = "renderSunMoonAndStars", at = @At("TAIL"))
-    private void coolcatcanvas$renderLayersAboveCelestials(PoseStack poseStack, float sunAngle, float moonAngle, float starAngle, MoonPhase moonPhase, float rainBrightness, float starBrightness, CallbackInfo ci) {
-        SkyboxManager.render(SkyLayerStage.ABOVE_CELESTIALS);
+    private void coolcatcanvas$renderLayersAboveCelestials(RenderPass pass, PoseStack poseStack, float sunAngle, float moonAngle, float starAngle, MoonPhase moonPhase, float rainBrightness, float starBrightness, CallbackInfo ci) {
+        SkyboxManager.render(SkyLayerStage.ABOVE_CELESTIALS, pass);
     }
 
     // Vanilla skips the stars entirely at 0 brightness.
@@ -64,7 +65,7 @@ public abstract class SkyRendererMixin {
     }
 
     @Inject(method = "renderSun", at = @At("HEAD"), cancellable = true)
-    private void coolcatcanvas$hideSun(float rainBrightness, PoseStack poseStack, CallbackInfo ci) {
+    private void coolcatcanvas$hideSun(RenderPass pass, float rainBrightness, PoseStack poseStack, CallbackInfo ci) {
         if (SkyboxManager.hidden(VanillaSky.SUN) >= 1.0F) ci.cancel();
     }
 
@@ -74,7 +75,7 @@ public abstract class SkyRendererMixin {
     }
 
     @Inject(method = "renderMoon", at = @At("HEAD"), cancellable = true)
-    private void coolcatcanvas$hideMoon(MoonPhase moonPhase, float rainBrightness, PoseStack poseStack, CallbackInfo ci) {
+    private void coolcatcanvas$hideMoon(RenderPass pass, MoonPhase moonPhase, float rainBrightness, PoseStack poseStack, CallbackInfo ci) {
         if (SkyboxManager.hidden(VanillaSky.MOON) >= 1.0F) ci.cancel();
     }
 
@@ -85,33 +86,36 @@ public abstract class SkyRendererMixin {
 
     // The dark disc is opaque black: it can't fade, so it goes once the skybox is half there.
     @Inject(method = "renderDarkDisc", at = @At("HEAD"), cancellable = true)
-    private void coolcatcanvas$hideDarkDisc(CallbackInfo ci) {
+    private void coolcatcanvas$hideDarkDisc(RenderPass pass, CallbackInfo ci) {
         if (SkyboxManager.hidden(VanillaSky.VOID) >= 0.5F) ci.cancel();
     }
 
     // ---- The End ----
 
     @Inject(method = "renderEndSky", at = @At("HEAD"), cancellable = true)
-    private void coolcatcanvas$hideEndSky(CallbackInfo ci) {
+    private void coolcatcanvas$hideEndSky(RenderPass pass, CallbackInfo ci) {
         if (SkyboxManager.hidden(VanillaSky.END_SKY) >= 1.0F) {
-            coolcatcanvas$renderEndLayers();
+            coolcatcanvas$renderEndLayers(pass);
             ci.cancel();
         }
     }
 
     @Inject(method = "renderEndSky", at = @At("TAIL"))
-    private void coolcatcanvas$renderLayersAfterEndSky(CallbackInfo ci) {
-        coolcatcanvas$renderEndLayers();
+    private void coolcatcanvas$renderLayersAfterEndSky(RenderPass pass, CallbackInfo ci) {
+        coolcatcanvas$renderEndLayers(pass);
     }
 
-    @ModifyArg(method = "renderEndSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DynamicUniforms;writeTransform(Lorg/joml/Matrix4fc;Lorg/joml/Vector4fc;Lorg/joml/Vector3fc;Lorg/joml/Matrix4fc;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"), index = 1)
-    private Vector4fc coolcatcanvas$fadeEndSky(Vector4fc color) {
+    // The end sky's transforms written again with a colour (vanilla writes none): white, faded as a skybox hides it. An
+    // argument swap rather than a redirect, which the MixinExtras NeoForge ships can't read.
+    @ModifyArg(method = "renderEndSky", at = @At(value = "INVOKE", target = "Lcom/mojang/renderpearl/api/commands/RenderPass;setUniform(Ljava/lang/String;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;)V"), index = 1)
+    private com.mojang.renderpearl.api.buffers.GpuBufferSlice coolcatcanvas$fadeEndSky(com.mojang.renderpearl.api.buffers.GpuBufferSlice transforms) {
         float hidden = SkyboxManager.hidden(VanillaSky.END_SKY);
-        return hidden > 0.0F ? new Vector4f(color.x(), color.y(), color.z(), color.w() * (1.0F - hidden)) : color;
+        if (hidden <= 0.0F) return transforms;
+        return com.mojang.blaze3d.systems.RenderSystem.getDynamicUniforms().writeTransform(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrixCopy(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F - hidden));
     }
 
     @Inject(method = "renderEndFlash", at = @At("HEAD"), cancellable = true)
-    private void coolcatcanvas$hideEndFlash(PoseStack poseStack, float intensity, float xAngle, float yAngle, CallbackInfo ci) {
+    private void coolcatcanvas$hideEndFlash(RenderPass pass, PoseStack poseStack, float intensity, float xAngle, float yAngle, CallbackInfo ci) {
         if (SkyboxManager.hidden(VanillaSky.END_FLASH) >= 1.0F) ci.cancel();
     }
 
@@ -120,8 +124,8 @@ public abstract class SkyRendererMixin {
         return intensity * (1.0F - SkyboxManager.hidden(VanillaSky.END_FLASH));
     }
 
-    private static void coolcatcanvas$renderEndLayers() {
-        SkyboxManager.render(SkyLayerStage.BEHIND_CELESTIALS);
-        SkyboxManager.render(SkyLayerStage.ABOVE_CELESTIALS);
+    private static void coolcatcanvas$renderEndLayers(RenderPass pass) {
+        SkyboxManager.render(SkyLayerStage.BEHIND_CELESTIALS, pass);
+        SkyboxManager.render(SkyLayerStage.ABOVE_CELESTIALS, pass);
     }
 }

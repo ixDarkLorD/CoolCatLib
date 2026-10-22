@@ -33,7 +33,9 @@ Write your mod's setup once: `ModConstructor`, `ClientModConstructor`, `ServerMo
 
 Listen to server, player, entity, block and client events from common code. Listeners are ordered by phase and can pass, allow, deny or interrupt. You can also make your own events with `EventInvoker.create`.
 - Server lifecycle and ticks, data pack syncs
-- Player join, leave and tick, entity loading
+- Player join, leave, tick, respawn, cloning and changing dimension
+- Entity loading and unloading, living entities' damage and death
+- Using and attacking blocks, items and entities
 - Block break and place, commands
 - Client ticks, HUD rendering, item tooltips, client commands
 

@@ -12,9 +12,9 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.SharedSuggestionProvider;
 
 // Ways to open the effects screen: a key (unbound by default), and in a development environment only,
-// "/coolcatcanvas_client effects" for testing.
+// "/coolcatlib_client effects" for testing.
 public final class ScreenEffectsClient {
-    private static final KeyMapping OPEN_SCREEN = new KeyMapping("key.coolcatcanvas.screen_effects", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.MISC);
+    private static final KeyMapping OPEN_SCREEN = new KeyMapping("key.coolcatlib.screen_effects", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.MISC);
 
     private ScreenEffectsClient() {}
 
@@ -22,13 +22,13 @@ public final class ScreenEffectsClient {
         KeyMappingRegistry.register(OPEN_SCREEN);
         ClientTickEvents.END.register(minecraft -> {
             while (OPEN_SCREEN.consumeClick()) {
-                if (minecraft.screen == null) ScreenEffects.openScreen();
+                if (minecraft.gui.screen() == null) ScreenEffects.openScreen();
             }
         });
         if (!Platform.isDevelopmentEnvironment()) return;
         // CoolCatLib's own client command; other subcommands can merge into it.
         ClientCommandEvents.REGISTER.register((dispatcher, context) -> dispatcher.register(
-                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatcanvas_client")
+                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatlib_client")
                         .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("effects").executes(ctx -> {
                             ClientConfigManager.openLater(() -> ScreenEffects.createScreen(null));
                             return 1;

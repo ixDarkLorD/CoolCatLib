@@ -1,19 +1,18 @@
 package net.ixdarklord.coolcatcanvas.internal.client.sky;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyBlend;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
-import net.minecraft.client.renderer.DynamicUniformStorage;
+import net.minecraft.client.renderer.DynamicGpuDataStorageMapped;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
@@ -30,7 +29,7 @@ final class SkyResources {
     static final int SPRITE_VERTICES = 6;
 
     private static @Nullable GpuBuffer mesh;
-    private static @Nullable DynamicUniformStorage<LayerUniform> uniforms;
+    private static @Nullable DynamicGpuDataStorageMapped<LayerUniform> uniforms;
     private static final Map<PipelineKey, RenderPipeline> PIPELINES = new HashMap<>();
     private static int nextPipeline;
 
@@ -41,8 +40,8 @@ final class SkyResources {
         return mesh;
     }
 
-    static DynamicUniformStorage<LayerUniform> uniforms() {
-        if (uniforms == null) uniforms = new DynamicUniformStorage<>("CoolCatLib sky layers UBO", LayerUniform.SIZE, 8);
+    static DynamicGpuDataStorageMapped<LayerUniform> uniforms() {
+        if (uniforms == null) uniforms = new DynamicGpuDataStorageMapped<>("CoolCatLib sky layers UBO", LayerUniform.SIZE, com.mojang.renderpearl.api.buffers.GpuBuffer.USAGE_UNIFORM, 8);
         return uniforms;
     }
 
@@ -55,8 +54,8 @@ final class SkyResources {
         RenderPipeline cached = PIPELINES.get(key);
         if (cached != null) return cached;
         RenderPipeline pipeline = key.build(CoolCatCanvas.rl("pipeline/sky_layer_" + nextPipeline++));
-        CompiledRenderPipeline compiled = RenderSystem.getDevice().precompilePipeline(pipeline);
-        if (!compiled.isValid()) {
+        // Compiled now, so a broken shader fails here rather than mid-frame.
+        if (RenderSystem.getCompiledPipelineNullable(pipeline) == null) {
             throw new IllegalStateException("Sky shader " + key.fragmentShader() + " failed to compile or link (see the log above)");
         }
         PIPELINES.put(key, pipeline);
@@ -84,7 +83,7 @@ final class SkyResources {
     private static GpuBuffer buildMesh() {
         VertexFormat format = DefaultVertexFormat.POSITION;
         try (ByteBufferBuilder bytes = ByteBufferBuilder.exactlySized((CUBE_VERTICES + SPRITE_VERTICES) * format.getVertexSize())) {
-            BufferBuilder builder = new BufferBuilder(bytes, VertexFormat.Mode.TRIANGLES, format);
+            BufferBuilder builder = new BufferBuilder(bytes, com.mojang.renderpearl.api.pipeline.PrimitiveTopology.TRIANGLES, format);
             // Six faces of [-1, 1]^3; winding is irrelevant, the pipelines don't cull.
             for (int axis = 0; axis < 3; axis++) {
                 for (int side = -1; side <= 1; side += 2) {
@@ -119,14 +118,14 @@ final class SkyResources {
                     .withVertexShader(VERTEX_SHADER)
                     .withFragmentShader(this.fragmentShader)
                     .withShaderDefine("SKY_BLEND_" + this.blend.name())
-                    .withUniform("Projection", UniformType.UNIFORM_BUFFER)
-                    .withUniform("Fog", UniformType.UNIFORM_BUFFER)
-                    .withUniform("Globals", UniformType.UNIFORM_BUFFER)
-                    .withUniform(LayerUniform.BLOCK, UniformType.UNIFORM_BUFFER)
+                    .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("Projection", UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("Fog", UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("Globals", UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform(LayerUniform.BLOCK, UniformType.UNIFORM_BUFFER).build())
                     .withColorTargetState(new ColorTargetState(this.blend.function()))
                     .withCull(false)
-                    .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.TRIANGLES);
-            if (this.textured) builder.withSampler("Sampler0");
+                    .withVertexBinding(0, DefaultVertexFormat.POSITION).withPrimitiveTopology(com.mojang.renderpearl.api.pipeline.PrimitiveTopology.TRIANGLES);
+            if (this.textured) builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("Sampler0", com.mojang.renderpearl.api.pipeline.UniformType.COMBINED_IMAGE_SAMPLER).build());
             return builder.build();
         }
     }

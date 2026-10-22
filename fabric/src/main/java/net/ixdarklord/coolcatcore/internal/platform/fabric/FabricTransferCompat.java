@@ -67,11 +67,11 @@ public final class FabricTransferCompat {
         }
 
         private ItemStack getStack() {
-            return this.contents().allItemsCopyStream().skip(this.slot).findFirst().orElse(ItemStack.EMPTY);
+            return this.contents().itemCopies().skip(this.slot).findFirst().orElse(ItemStack.EMPTY);
         }
 
         private boolean setStack(ItemStack stack, TransactionContext transaction) {
-            List<ItemStack> stacks = this.contents().allItemsCopyStream().collect(Collectors.toList());
+            List<ItemStack> stacks = this.contents().itemCopies().collect(Collectors.toList());
             while (stacks.size() <= this.slot) stacks.add(ItemStack.EMPTY);
             stacks.set(this.slot, stack);
             ItemVariant changed = this.context.getItemVariant().withComponents(DataComponentPatch.builder()

@@ -14,7 +14,7 @@ import java.util.Set;
  * <p>
  * A cutscene gets an id in one of three ways: {@link #register} from code, a file at
  * {@code assets/<namespace>/cutscene/<path>.json} (id {@code <namespace>:<path>}; resource packs can add and replace
- * them, and they reload with resources), or saved from the in-game editor (id {@code coolcatcanvas:saved/<name>}).
+ * them, and they reload with resources), or saved from the in-game editor (id {@code coolcatlib:saved/<name>}).
  * Registered ones win over files of the same id.
  * <pre>{@code
  * Cutscenes.register(MyMod.id("intro"), intro);
@@ -94,7 +94,7 @@ public final class Cutscenes {
 
     /**
      * Opens the in-game cutscene editor: a timeline of keyframes placed from where the player flies, previewed live
-     * through the camera, and saved as JSON under {@code config/coolcatcanvas/cutscenes/}. Players reach it with a
+     * through the camera, and saved as JSON under {@code config/coolcatlib/cutscenes/}. Players reach it with a
      * key that is unbound by default. Does nothing outside a world.
      */
     public static void openEditor() {

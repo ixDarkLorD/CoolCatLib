@@ -38,7 +38,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.awt.*;
 import java.util.List;
@@ -192,7 +192,7 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
         if (super.mouseClicked(event, doubleClick))
             return true;
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_1 && this.movable && this.isMouseOverDraggingRectangle(mouseX, mouseY)) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && this.movable && this.isMouseOverDraggingRectangle(mouseX, mouseY)) {
             this.xMO = (int) Math.abs(this.x - mouseX);
             this.yMO = (int) Math.abs(this.y - mouseY);
             this.isDraggingComponent = true;
@@ -206,7 +206,7 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         int button = event.button();
-        if (button == GLFW.GLFW_MOUSE_BUTTON_1 && this.isDraggingComponent) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && this.isDraggingComponent) {
             this.xMO = this.yMO = 0;
             this.isDraggingComponent = false;
             return true;
@@ -238,7 +238,7 @@ public abstract class AbstractDraggableWidget extends AbstractContainerEventHand
     @Override
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
-        if (Platform.isDevelopmentEnvironment() && KeysUtils.isHolden3ComboButtons() && keyCode == GLFW.GLFW_KEY_F12) {
+        if (Platform.isDevelopmentEnvironment() && KeysUtils.isHolden3ComboButtons() && keyCode == InputConstants.KEY_F12) {
             this.debug ^= true;
             return true;
         }

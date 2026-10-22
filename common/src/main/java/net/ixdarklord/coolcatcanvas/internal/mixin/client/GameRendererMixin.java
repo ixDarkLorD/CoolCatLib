@@ -7,9 +7,9 @@ import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,8 +22,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 // view) and the block the player looks at isn't outlined.
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
+    // The frame's time, from the extraction that runs just before each render (render itself is given none).
+    @Unique
+    private static DeltaTracker coolcatcanvas$deltaTracker = DeltaTracker.ONE;
+
+    @Inject(method = "extract", at = @At("HEAD"))
+    private void coolcatcanvas$keepDeltaTracker(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+        coolcatcanvas$deltaTracker = deltaTracker;
+    }
+
     @Inject(method = "render", at = @At("HEAD"))
-    private void coolcatcanvas$beginFrame(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+    private void coolcatcanvas$beginFrame(CallbackInfo ci) {
+        DeltaTracker deltaTracker = coolcatcanvas$deltaTracker;
         ScreenEffectManager.beginFrame(deltaTracker);
         SkyboxManager.beginFrame(deltaTracker);
         // Scene viewports are drawn to their own textures now, before the level, while nothing else waits to be drawn.
@@ -32,25 +42,24 @@ public abstract class GameRendererMixin {
 
     // Same condition vanilla renders the level under.
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/fog/FogRenderer;endFrame()V"))
-    private void coolcatcanvas$renderWorldScreenEffects(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (advanceGameTime && minecraft.isGameLoadFinished() && minecraft.level != null) {
+    private void coolcatcanvas$renderWorldScreenEffects(CallbackInfo ci) {
+        if (((GameRenderer) (Object) this).gameRenderState().shouldRenderLevel) {
             ScreenEffectManager.render(ScreenEffectScope.WORLD);
         }
     }
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V", shift = At.Shift.AFTER))
-    private void coolcatcanvas$renderWorldVfx(DeltaTracker deltaTracker, CallbackInfo ci) {
-        VfxManager.render(((GameRenderer) (Object) this).getGameRenderState().levelRenderState.cameraRenderState, deltaTracker);
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZZ)V", shift = At.Shift.AFTER))
+    private void coolcatcanvas$renderWorldVfx(CallbackInfo ci) {
+        VfxManager.render(((GameRenderer) (Object) this).gameRenderState().levelRenderState.cameraRenderState, coolcatcanvas$deltaTracker);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;endFrame()V", shift = At.Shift.AFTER))
-    private void coolcatcanvas$renderScreenScreenEffects(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+    private void coolcatcanvas$renderScreenScreenEffects(CallbackInfo ci) {
         ScreenEffectManager.render(ScreenEffectScope.SCREEN);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void coolcatcanvas$endFrame(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+    private void coolcatcanvas$endFrame(CallbackInfo ci) {
         ScreenEffectManager.endFrame();
         SkyboxManager.endFrame();
         VfxManager.endFrame();
@@ -58,7 +67,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "extractOptions", at = @At("TAIL"))
     private void coolcatcanvas$hideHandInCutscenes(CallbackInfo ci) {
-        if (CutsceneManager.hasCamera()) ((GameRenderer) (Object) this).getGameRenderState().optionsRenderState.hideGui = true;
+        if (CutsceneManager.hasCamera()) ((GameRenderer) (Object) this).gameRenderState().guiRenderState.isHudHidden = true;
     }
 
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)

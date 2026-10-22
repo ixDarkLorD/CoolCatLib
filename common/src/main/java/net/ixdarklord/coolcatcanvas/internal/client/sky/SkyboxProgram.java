@@ -1,13 +1,13 @@
 package net.ixdarklord.coolcatcanvas.internal.client.sky;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.AddressMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerDefinition;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerStage;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerType;
@@ -22,7 +22,6 @@ import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Supplier;
 
 // A skybox definition compiled: each layer's pipeline and sampler resolved once, so a frame only fills uniforms.
 final class SkyboxProgram {
@@ -163,13 +162,13 @@ final class SkyboxProgram {
         }
 
         void draw(RenderPass pass, GpuBufferSlice uniform, @Nullable GpuTextureView texture) {
-            pass.setPipeline(this.pipeline);
+            pass.setPipeline(com.mojang.blaze3d.systems.RenderSystem.getCompiledPipeline(this.pipeline));
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform(LayerUniform.BLOCK, uniform);
-            if (texture != null) pass.bindTexture("Sampler0", texture, this.sampler);
-            pass.setVertexBuffer(0, SkyResources.mesh());
-            if (this.definition.type().isSprite()) pass.draw(SkyResources.SPRITE_FIRST_VERTEX, SkyResources.SPRITE_VERTICES);
-            else pass.draw(SkyResources.CUBE_FIRST_VERTEX, SkyResources.CUBE_VERTICES);
+            if (texture != null) pass.setUniform("Sampler0", texture, this.sampler);
+            pass.setVertexBuffer(0, SkyResources.mesh().slice());
+            if (this.definition.type().isSprite()) pass.draw(SkyResources.SPRITE_VERTICES, 1, SkyResources.SPRITE_FIRST_VERTEX, 0);
+            else pass.draw(SkyResources.CUBE_VERTICES, 1, SkyResources.CUBE_FIRST_VERTEX, 0);
         }
     }
 
@@ -199,8 +198,8 @@ final class SkyboxProgram {
             this.size = 0;
         }
 
-        /** Writes every uniform in one go, resolves textures, then draws them all in one render pass. */
-        void drawAll(Supplier<RenderPass> passes) {
+        /** Writes every uniform in one go, resolves textures, then draws them all in the sky's render pass. */
+        void drawAll(RenderPass pass) {
             TextureManager textureManager = Minecraft.getInstance().getTextureManager();
             if (this.uniforms.length != this.size) this.uniforms = new LayerUniform[this.size];
             for (int i = 0; i < this.size; i++) {
@@ -209,16 +208,14 @@ final class SkyboxProgram {
                 // A lookup, unless the texture was released since: it's loaded again here, before the pass opens.
                 this.textureViews[i] = layer.definition.texture().isPresent() ? textureManager.getTexture(layer.definition.texture().get()).getTextureView() : null;
             }
-            GpuBufferSlice[] slices = SkyResources.uniforms().writeUniforms(this.uniforms);
-            try (RenderPass pass = passes.get()) {
-                for (int i = 0; i < this.size; i++) {
-                    CompiledLayer layer = this.layers[i];
-                    if (layer.owner.error() != null) continue;
-                    try {
-                        layer.draw(pass, slices[i], this.textureViews[i]);
-                    } catch (RuntimeException e) {
-                        layer.owner.fail("Failed to draw layer " + layer.definition.name(), e);
-                    }
+            GpuBufferSlice[] slices = SkyResources.uniforms().writeData(this.uniforms);
+            for (int i = 0; i < this.size; i++) {
+                CompiledLayer layer = this.layers[i];
+                if (layer.owner.error() != null) continue;
+                try {
+                    layer.draw(pass, slices[i], this.textureViews[i]);
+                } catch (RuntimeException e) {
+                    layer.owner.fail("Failed to draw layer " + layer.definition.name(), e);
                 }
             }
         }

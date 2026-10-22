@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.client.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.DropdownScreen;
@@ -288,7 +289,7 @@ final class CategoryEntryList extends ContainerObjectSelectionList<CategoryEntry
         // Every constant in a dropdown under the box; picking one sets it.
         private void openDropdown() {
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.setScreen(new DropdownScreen<>(minecraft.screen, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
+            minecraft.gui.setScreen(new DropdownScreen<>(minecraft.gui.screen(), this.getX(), this.getY(), this.getWidth(), this.getHeight(),
                     this.type.constants(), this.session.get(this.value), this.type::displayName, this.type::description, picked -> {
                         this.session.set(this.value, picked);
                         this.refresh();
@@ -297,7 +298,7 @@ final class CategoryEntryList extends ContainerObjectSelectionList<CategoryEntry
 
         @Override
         public void onPress(InputWithModifiers input) {
-            if (input instanceof MouseButtonEvent event && event.button() == 0) {
+            if (input instanceof MouseButtonEvent event && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
                 if (event.x() < this.getX() + ARROW_ZONE) this.step(true);
                 else if (event.x() >= this.getRight() - ARROW_ZONE) this.step(false);
                 else this.openDropdown();
@@ -308,7 +309,7 @@ final class CategoryEntryList extends ContainerObjectSelectionList<CategoryEntry
 
         @Override
         protected boolean isValidClickButton(MouseButtonInfo buttonInfo) {
-            return buttonInfo.button() == 0 || buttonInfo.button() == 1;
+            return buttonInfo.button() == InputConstants.MOUSE_BUTTON_LEFT || buttonInfo.button() == InputConstants.MOUSE_BUTTON_RIGHT;
         }
 
         @Override

@@ -9,11 +9,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// Gradient text colors: TextColors named "coolcatcanvas:rainbow..." or "coolcatcanvas:gradient/..." that carry their
+// Gradient text colors: TextColors named "coolcatlib:rainbow..." or "coolcatlib:gradient/..." that carry their
 // ColorGradient (TextColorMixin), which the font reads per character (FontPreparedTextBuilderMixin). One instance per
 // gradient; parsed names map back to it.
 public final class GradientTextColors {
-    private static final String NAMESPACE = "coolcatcanvas:";
+    private static final String NAMESPACE = "coolcatlib:";
     public static final String RAINBOW = NAMESPACE + "rainbow";
     public static final String RAINBOW_WHOLE = RAINBOW + "_whole";
     public static final String GRADIENT = NAMESPACE + "gradient";

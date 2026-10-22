@@ -27,12 +27,12 @@ import java.util.Optional;
  * {@link #textColor()} make the text animate wherever it's drawn (chat, tooltips, item names, signs, widget labels).
  * The color is saved and sent by name, so it also works in JSON text and commands:
  * <ul>
- *     <li>{@code coolcatcanvas:rainbow} ({@link #RAINBOW}),
- *     {@code coolcatcanvas:rainbow_whole} ({@link #RAINBOW_WHOLE})</li>
- *     <li>{@code coolcatcanvas:rainbow/<speed>/<spread>/<saturation>/<brightness>}, trailing values optional</li>
- *     <li>{@code coolcatcanvas:gradient/<speed>/<spread>/#RRGGBB/#RRGGBB...}</li>
+ *     <li>{@code coolcatlib:rainbow} ({@link #RAINBOW}),
+ *     {@code coolcatlib:rainbow_whole} ({@link #RAINBOW_WHOLE})</li>
+ *     <li>{@code coolcatlib:rainbow/<speed>/<spread>/<saturation>/<brightness>}, trailing values optional</li>
+ *     <li>{@code coolcatlib:gradient/<speed>/<spread>/#RRGGBB/#RRGGBB...}</li>
  * </ul>
- * e.g. {@code /tellraw @a {"text":"Hi","color":"coolcatcanvas:gradient/0.5/0.05/#FF4000/#FFD000"}}. Players
+ * e.g. {@code /tellraw @a {"text":"Hi","color":"coolcatlib:gradient/0.5/0.05/#FF4000/#FFD000"}}. Players
  * without CoolCatLib can't read these colors, so only send them to players who have it.
  * <p>
  * Stop colors are RGB; their alpha is ignored (text and outlines bring their own).

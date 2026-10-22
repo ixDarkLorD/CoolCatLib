@@ -52,6 +52,7 @@ public final class Attachment<T> {
     private final SyncPolicy syncPolicy;
     private final boolean copyOnDeath;
     private final boolean keepOnDrop;
+    private final boolean swapAnimation;
     private final List<Listener<T>> listeners = new CopyOnWriteArrayList<>();
 
     private Attachment(Builder<T> builder) {
@@ -64,6 +65,7 @@ public final class Attachment<T> {
         this.syncPolicy = builder.syncPolicy;
         this.copyOnDeath = builder.copyOnDeath;
         this.keepOnDrop = builder.keepOnDrop;
+        this.swapAnimation = builder.swapAnimation;
         this.listeners.addAll(builder.listeners);
     }
 
@@ -101,6 +103,15 @@ public final class Attachment<T> {
     /** The registry of the mod it belongs to; its values are stored under that mod's id. */
     public AttachmentRegistry registry() {
         return this.registry;
+    }
+
+    /**
+     * Whether a change to its value on a held item shows the item being put away and taken out again, as vanilla does
+     * for most changes to a held stack. Off unless the builder asked for it ({@link Builder#swapAnimation()}): an
+     * attachment's value changing leaves the item where it is in the hand (see {@code HeldItemSwaps}).
+     */
+    public boolean playsSwapAnimation() {
+        return this.swapAnimation;
     }
 
     /** A fresh default value. */
@@ -252,6 +263,7 @@ public final class Attachment<T> {
         private boolean copyOnDeath;
         private boolean keepOnDrop;
         private boolean container;
+        private boolean swapAnimation;
         private final List<Listener<T>> listeners = new CopyOnWriteArrayList<>();
 
         private Builder(AttachmentRegistry registry, String name, Supplier<T> defaultValue) {
@@ -296,6 +308,15 @@ public final class Attachment<T> {
          */
         public Builder<T> keepOnDrop() {
             this.keepOnDrop = true;
+            return this;
+        }
+
+        /**
+         * Shows a held item being put away and taken out again whenever this value changes on it, as vanilla does for
+         * most changes to a held stack. Without it, attachment changes are quiet: the item stays where it is.
+         */
+        public Builder<T> swapAnimation() {
+            this.swapAnimation = true;
             return this;
         }
 

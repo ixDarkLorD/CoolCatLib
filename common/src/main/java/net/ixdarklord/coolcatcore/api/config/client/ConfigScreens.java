@@ -104,8 +104,8 @@ public final class ConfigScreens {
     /** Opens {@link #categoryPopup(Screen, String, String)} over the current screen; nothing without screens. */
     public static void openCategory(String modId, String path) {
         Minecraft minecraft = Minecraft.getInstance();
-        Screen screen = categoryPopup(minecraft.screen, modId, path);
-        if (screen != null) minecraft.setScreen(screen);
+        Screen screen = categoryPopup(minecraft.gui.screen(), modId, path);
+        if (screen != null) minecraft.gui.setScreen(screen);
     }
 
     /** A screen listing every mod's configs, or null without screens. */
@@ -117,8 +117,8 @@ public final class ConfigScreens {
     /** Opens a mod's config screen on top of the current screen; nothing without screens. */
     public static void open(String modId) {
         Minecraft minecraft = Minecraft.getInstance();
-        Screen screen = create(minecraft.screen, modId);
-        if (screen != null) minecraft.setScreen(screen);
+        Screen screen = create(minecraft.gui.screen(), modId);
+        if (screen != null) minecraft.gui.setScreen(screen);
     }
 
     /** A color picker in the screens' style, or null without screens. */
@@ -150,7 +150,7 @@ public final class ConfigScreens {
     /** Puts {@link #unavailableMessage(Config)} in the player's chat. */
     public static void tellUnavailable(Config config) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.gui.getChat().addClientSystemMessage(unavailableMessage(config));
+        minecraft.gui.hud.getChat().addClientSystemMessage(unavailableMessage(config));
     }
 
     // The folder holding the config's file; the game's config folder when it has none here.

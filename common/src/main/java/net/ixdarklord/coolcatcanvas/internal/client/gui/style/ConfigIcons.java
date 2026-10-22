@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
-// The config screens' icons: white 64x64 textures (assets/coolcatcanvas/textures/gui/style/icons/) with linear filtering
+// The config screens' icons: white 64x64 textures (assets/coolcatlib/textures/gui/style/icons/) with linear filtering
 // (their .mcmeta sets "blur"), so they shrink smoothly to the size drawn; tinted as they're drawn. A resource pack can
 // replace any of them.
 public final class ConfigIcons {

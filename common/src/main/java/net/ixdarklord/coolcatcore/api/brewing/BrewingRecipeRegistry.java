@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.ixdarklord.coolcatcore.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * <b>Usage:</b>
  * <ul>
- *   <li>For <b>queries</b>, use the vanilla {@link PotionBrewing} when possible.</li>
+ *   <li>Brewing stands and their menus ask it alongside the game's own (data pack) recipes.</li>
  *   <li>For <b>registration</b>, use {@link RegisterBrewingRecipesEvent}.</li>
  * </ul>
  */

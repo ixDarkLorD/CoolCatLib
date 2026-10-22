@@ -3,8 +3,7 @@ package net.ixdarklord.coolcatcanvas.internal.client.effect;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
-import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.resource.ResourceHandle;
@@ -128,7 +127,7 @@ public final class ScreenEffectManager {
         if (!resourcesLoaded || EFFECTS.isEmpty()) return;
 
         Minecraft minecraft = Minecraft.getInstance();
-        RenderTarget main = minecraft.getMainRenderTarget();
+        RenderTarget main = minecraft.gameRenderer.mainRenderTarget();
         Frame frame = new Frame(minecraft, deltaTracker.getGameTimeDeltaPartialTick(false), time, delta, main.width, main.height);
         Loader loader = new Loader(minecraft.getResourceManager());
         for (ScreenEffectImpl effect : EFFECTS.values()) {
@@ -157,7 +156,7 @@ public final class ScreenEffectManager {
         }
         if (active.isEmpty()) return;
 
-        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
+        RenderTarget main = Minecraft.getInstance().gameRenderer.mainRenderTarget();
         FrameGraphBuilder frame = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> handle = frame.importExternal("main", main);
         for (ScreenEffectImpl effect : active) {
@@ -245,8 +244,8 @@ public final class ScreenEffectManager {
             RenderPipeline cached = PIPELINES.get(key.cacheKey());
             if (cached != null) return cached;
             RenderPipeline pipeline = key.build();
-            CompiledRenderPipeline compiled = RenderSystem.getDevice().precompilePipeline(pipeline);
-            if (!compiled.isValid()) {
+            // Compiled now, so a broken shader fails here rather than mid-frame.
+            if (RenderSystem.getCompiledPipelineNullable(pipeline) == null) {
                 throw new IllegalStateException("Shaders " + key.vertexShader() + " / " + key.fragmentShader() + " failed to compile or link (see the log above)");
             }
             PIPELINES.put(key.cacheKey(), pipeline);

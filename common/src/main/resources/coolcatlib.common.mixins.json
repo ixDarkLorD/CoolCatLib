@@ -5,8 +5,11 @@
   "package": "net.ixdarklord.coolcatcore.internal.mixin",
   "mixins": [
     "BlockEntityMixin",
+    "BrewingStandBlockEntityMixin",
+    "BrewingStandIngredientSlotMixin",
     "ChunkMapAccessor",
     "EntityMixin",
+    "PotionIngredientMixin",
     "PlayerChunkSenderMixin",
     "ServerEntityMixin",
     "ServerPlayerMixin",
@@ -14,6 +17,7 @@
   ],
   "client": [
     "client.GuiGraphicsExtractorMixin",
+    "client.ItemInHandRendererMixin",
     "client.ItemStackMixin"
   ],
   "injectors": {

@@ -144,7 +144,7 @@ public final class CutsceneOverlay {
     private static void extractSkipPrompt(GuiGraphicsExtractor graphics, Font font, PlaybackImpl playback, float partialTick, int width, int height) {
         float shown = playback.skipHeld > 0 ? 1.0F : Mth.clamp((70.0F - playback.age - partialTick) / 15.0F, 0.0F, 1.0F);
         if (shown < 0.05F) return;
-        Component hint = Component.translatableWithFallback("cutscene.coolcatcanvas.skip", "Hold %s to skip", CutsceneManager.skipKeyName());
+        Component hint = Component.translatableWithFallback("cutscene.coolcatlib.skip", "Hold %s to skip", CutsceneManager.skipKeyName());
         int textWidth = font.width(hint);
         int x = width - textWidth - 10;
         int y = height - 20;

@@ -2,7 +2,6 @@ package net.ixdarklord.coolcatcanvas.internal.client.cutscene;
 
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -33,7 +32,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.Reader;
 import java.util.HashMap;
@@ -74,7 +72,7 @@ public final class CutsceneManager {
         if (!Platform.isDevelopmentEnvironment()) return;
         // Merges into CoolCatLib's client command.
         ClientCommandEvents.REGISTER.register((dispatcher, context) -> dispatcher.register(
-                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatcanvas_client")
+                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatlib_client")
                         .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("cutscene")
                                 .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("play")
                                         .then(RequiredArgumentBuilder.<SharedSuggestionProvider, String>argument("id", StringArgumentType.greedyString())
@@ -175,9 +173,9 @@ public final class CutsceneManager {
             };
         }
         // Whatever the player had open would sit over the scene, and keep the mouse.
-        if (minecraft.screen != null) {
+        if (minecraft.gui.screen() != null) {
             if (player.containerMenu != player.inventoryMenu) player.closeContainer();
-            else minecraft.setScreen(null);
+            else minecraft.gui.setScreen(null);
         }
         PlaybackImpl playback = new PlaybackImpl(cutscene, id, origin, yaw, fromServer, false);
         current = playback;
@@ -209,7 +207,7 @@ public final class CutsceneManager {
             cameraWeight = 0.0F;
             if (reason != CutsceneEndReason.REPLACED && reason != CutsceneEndReason.LEFT_WORLD) CutsceneOverlay.leave(playback);
             // Keys held through the cutscene count as down again.
-            if (playback.locksInput() && minecraft.screen == null) KeyMapping.setAll();
+            if (playback.locksInput() && minecraft.gui.screen() == null) KeyMapping.setAll();
         }
         playback.finish(reason);
         if (playback.preview) return;
@@ -239,7 +237,7 @@ public final class CutsceneManager {
     }
 
     private static void startTick(Minecraft minecraft) {
-        if (current != null && current.locksInput() && minecraft.screen == null) KeyMapping.releaseAll();
+        if (current != null && current.locksInput() && minecraft.gui.screen() == null) KeyMapping.releaseAll();
     }
 
     private static void endTick(Minecraft minecraft) {
@@ -254,7 +252,7 @@ public final class CutsceneManager {
         }
         if (minecraft.isPaused()) return;
         if (!playback.preview && playback.cutscene().skippable()) {
-            if (minecraft.screen == null && isSkipKeyDown(minecraft)) {
+            if (minecraft.gui.screen() == null && isSkipKeyDown(minecraft)) {
                 if (++playback.skipHeld >= SKIP_TICKS) {
                     boolean allowed = true;
                     try {
@@ -280,11 +278,10 @@ public final class CutsceneManager {
     private static boolean isSkipKeyDown(Minecraft minecraft) {
         InputConstants.Key key = SKIP.bound();
         if (key.getValue() == InputConstants.UNKNOWN.getValue() || !minecraft.isWindowActive()) return false;
-        Window window = minecraft.getWindow();
         return switch (key.getType()) {
-            case KEYSYM -> InputConstants.isKeyDown(window, key.getValue());
-            case MOUSE -> GLFW.glfwGetMouseButton(window.handle(), key.getValue()) == GLFW.GLFW_PRESS;
-            default -> false;
+            case KEYBOARD -> InputConstants.isKeyDown(key.getValue());
+            // SDL's pressed buttons, one bit each from the left button up.
+            case MOUSE -> (org.lwjgl.sdl.SDLMouse.SDL_GetMouseState((java.nio.FloatBuffer) null, null) & (1 << (key.getValue() - 1))) != 0;
         };
     }
 
@@ -337,7 +334,7 @@ public final class CutsceneManager {
     // A key mapping whose bound key can be read, on every loader.
     private static final class SkipKey extends KeyMapping {
         SkipKey() {
-            super("key.coolcatcanvas.skip_cutscene", GLFW.GLFW_KEY_ENTER, KeyMapping.Category.MISC);
+            super("key.coolcatlib.skip_cutscene", InputConstants.KEY_RETURN, KeyMapping.Category.MISC);
         }
 
         InputConstants.Key bound() {

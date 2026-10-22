@@ -3,7 +3,7 @@ package net.ixdarklord.coolcatcanvas.internal.client.sky;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.JsonOps;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyContext;
@@ -176,7 +176,7 @@ public final class SkyboxManager {
         } else if (state.skybox == DimensionType.Skybox.NONE && anyLayers) {
             forcedSky = true;
             state.skybox = DimensionType.Skybox.OVERWORLD;
-            state.sunriseAndSunsetColor = 0;
+            state.sunriseAndSunsetColor = new org.joml.Vector4f();
             state.rainBrightness = 0.0F;
             state.starBrightness = 0.0F;
             state.shouldRenderDarkDisc = false;
@@ -192,17 +192,17 @@ public final class SkyboxManager {
     }
 
     /** Vanilla's sky color, faded towards the fog color as far as {@link VanillaSky#SKY} is hidden. */
-    public static int skyColor(int skyColor) {
+    public static org.joml.Vector3fc skyColor(org.joml.Vector3fc skyColor) {
         float hidden = hidden(VanillaSky.SKY);
         if (hidden <= 0.0F) return skyColor;
-        Vector4f fog = Minecraft.getInstance().gameRenderer.getGameRenderState().levelRenderState.cameraRenderState.fogData.color;
-        return ARGB.srgbLerp(hidden, skyColor, ARGB.colorFromFloat(ARGB.alphaFloat(skyColor), fog.x(), fog.y(), fog.z()));
+        Vector4f fog = Minecraft.getInstance().gameRenderer.gameRenderState().levelRenderState.cameraRenderState.fogData.color;
+        return new org.joml.Vector3f(skyColor).lerp(new org.joml.Vector3f(fog.x(), fog.y(), fog.z()), hidden);
     }
 
-    /** Draws the visible skyboxes' layers of a stage, inside vanilla's sky pass. */
-    public static void render(SkyLayerStage stage) {
+    /** Draws the visible skyboxes' layers of a stage, inside vanilla's sky pass (open while it draws the sky). */
+    public static void render(SkyLayerStage stage, RenderPass pass) {
         if (!anyLayers) return;
-        Matrix4fc view = RenderSystem.getModelViewMatrix();
+        Matrix4fc view = RenderSystem.getModelViewMatrixCopy();
         try {
             for (SkyboxImpl skybox : ordered()) {
                 SkyboxProgram program = skybox.isVisible() ? skybox.program() : null;
@@ -213,16 +213,10 @@ public final class SkyboxManager {
                     skybox.fail("Failed to prepare its layers", e);
                 }
             }
-            if (!DRAWS.isEmpty()) DRAWS.drawAll(SkyboxManager::openPass);
+            if (!DRAWS.isEmpty()) DRAWS.drawAll(pass);
         } finally {
             DRAWS.clear();
         }
-    }
-
-    private static RenderPass openPass() {
-        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-        return RenderSystem.getDevice().createCommandEncoder()
-                .createRenderPass(() -> "CoolCatLib skyboxes", main.getColorTextureView(), OptionalInt.empty(), main.getDepthTextureView(), OptionalDouble.empty());
     }
 
     // ---- Resources ----

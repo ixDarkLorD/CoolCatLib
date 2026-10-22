@@ -79,7 +79,7 @@ public final class CameraZoomManager {
     /** A notch of the wheel. Returns whether it was taken for zooming. */
     public static boolean onScroll(double amount) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (scrollActive == null || amount == 0.0 || minecraft.screen != null || minecraft.player == null) return false;
+        if (scrollActive == null || amount == 0.0 || minecraft.gui.screen() != null || minecraft.player == null) return false;
         boolean zooming;
         try {
             zooming = scrollActive.getAsBoolean();

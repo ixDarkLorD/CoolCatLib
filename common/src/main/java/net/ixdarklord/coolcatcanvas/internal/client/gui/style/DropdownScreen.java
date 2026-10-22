@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.client.gui.style;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -166,13 +167,13 @@ public final class DropdownScreen<T> extends Screen implements Overlay {
     // widgets while the dropdown was open).
     private void pick(int index) {
         this.onPick.accept(this.values.get(index));
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         int index = this.rowAt(event.x(), event.y());
-        if (index >= 0 && event.button() == 0) {
+        if (index >= 0 && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             this.pick(index);
         } else if (index < 0) {
             this.onClose();
@@ -213,7 +214,7 @@ public final class DropdownScreen<T> extends Screen implements Overlay {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components;
 
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.ixdarklord.coolcatcanvas.api.client.viewport.SceneViewport;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -58,7 +58,7 @@ public class SceneViewportWidget extends AbstractWidget {
         GpuTextureView view = SceneViewportManager.view(viewport);
         // It is drawn at the start of the next frame the first time; and upside down, as every texture drawn to is.
         if (view != null) {
-            graphics.blit(view, com.mojang.blaze3d.systems.RenderSystem.getSamplerCache().getClampToEdge(com.mojang.blaze3d.textures.FilterMode.NEAREST),
+            graphics.blit(view, com.mojang.blaze3d.systems.RenderSystem.getSamplerCache().getClampToEdge(com.mojang.renderpearl.api.textures.FilterMode.NEAREST),
                     getX(), getY(), getRight(), getBottom(), 0.0F, 1.0F, 1.0F, 0.0F);
         }
     }

@@ -178,7 +178,7 @@ final class CategoryPopup extends StyledPopup {
 
     private void save() {
         if (this.session.hasErrors()) return;
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
         this.session.save();
     }
 
@@ -195,14 +195,14 @@ final class CategoryPopup extends StyledPopup {
     @Override
     public void onClose() {
         if (this.session.modifiedCount() == 0 && !this.session.hasErrors()) {
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
             return;
         }
-        this.minecraft.setScreen(new ConfirmPopup(this, this.theme,
+        this.minecraft.gui.setScreen(new ConfirmPopup(this, this.theme,
                 Component.translatableWithFallback("coolcatlib.config.popup.discard.title", "Discard changes?"),
                 Component.translatableWithFallback("coolcatlib.config.popup.discard.message", "%s unsaved changes will be lost.", this.session.modifiedCount()),
                 Component.translatableWithFallback("coolcatlib.config.popup.discard.yes", "Discard"), true,
-                discard -> this.minecraft.setScreen(discard ? this.parent : this)));
+                discard -> this.minecraft.gui.setScreen(discard ? this.parent : this)));
     }
 
     // Coming back from a dropdown or the discard question.

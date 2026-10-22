@@ -2,7 +2,6 @@ package net.ixdarklord.coolcatcore.api.event.v1.server;
 
 import net.ixdarklord.coolcatcore.api.brewing.BrewingBuilder;
 import net.ixdarklord.coolcatcore.api.event.v1.Event;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import org.jetbrains.annotations.ApiStatus;
 
 public class RegisterBrewingRecipesEvent {
@@ -10,8 +9,8 @@ public class RegisterBrewingRecipesEvent {
 
     private final BrewingBuilder builder;
 
-    private RegisterBrewingRecipesEvent(PotionBrewing.Builder builder) {
-        this.builder = new BrewingBuilder(builder);
+    private RegisterBrewingRecipesEvent() {
+        this.builder = new BrewingBuilder();
     }
 
     public BrewingBuilder getBuilder() {
@@ -19,8 +18,8 @@ public class RegisterBrewingRecipesEvent {
     }
 
     @ApiStatus.Internal
-    public static RegisterBrewingRecipesEvent invokeEvent(PotionBrewing.Builder builder) {
-        RegisterBrewingRecipesEvent event = new RegisterBrewingRecipesEvent(builder);
+    public static RegisterBrewingRecipesEvent invokeEvent() {
+        RegisterBrewingRecipesEvent event = new RegisterBrewingRecipesEvent();
         EVENT.invoke(event);
         return event;
     }

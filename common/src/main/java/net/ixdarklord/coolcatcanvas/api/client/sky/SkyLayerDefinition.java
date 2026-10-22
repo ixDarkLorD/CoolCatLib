@@ -41,7 +41,7 @@ import java.util.Optional;
  *                       {@code layer_<index>}
  * @param texture        the full path of the image, {@code <namespace>:textures/<path>.png}
  * @param fragmentShader replaces the type's built-in fragment shader, from
- *                       {@code assets/<namespace>/shaders/<path>.fsh}; see {@code coolcatcanvas:sky.glsl}
+ *                       {@code assets/<namespace>/shaders/<path>.fsh}; see {@code coolcatlib:sky.glsl}
  * @param tint           multiplies the layer's colors, packed ARGB: its alpha is the layer's base opacity
  * @param orientation    a fixed rotation in degrees, applied as yaw ({@code y}), then pitch ({@code x}), then roll
  *                       ({@code z})

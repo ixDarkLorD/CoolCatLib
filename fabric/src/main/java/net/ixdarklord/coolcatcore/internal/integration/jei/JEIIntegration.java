@@ -11,11 +11,11 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.ixdarklord.coolcatcore.api.brewing.BrewingRecipe;
+import net.ixdarklord.coolcatcore.internal.brewing.CustomBrewing;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,8 +34,8 @@ public class JEIIntegration implements IModPlugin {
         ErrorUtil.checkNotNull(level, "minecraft.level");
 
         List<IJeiBrewingRecipe> jeiBrewingRecipes = Lists.newArrayList();
-        PotionBrewing potionBrewing = level.potionBrewing();
-        List<BrewingRecipe> brewingRecipes = potionBrewing.getRecipes().stream()
+        // Recipes made in code; JEI shows the data pack ones by itself.
+        List<BrewingRecipe> brewingRecipes = CustomBrewing.registry().recipes().stream()
                 .peek(recipe -> {
                     if (!(recipe instanceof BrewingRecipe)) {
                         CoolCatCore.LOGGER.warn("Skipping {} in JEI: Not a valid BrewingRecipe subclass.",

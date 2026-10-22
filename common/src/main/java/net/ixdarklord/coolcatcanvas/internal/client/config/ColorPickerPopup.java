@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.client.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledEditBox;
@@ -55,7 +56,7 @@ public final class ColorPickerPopup extends StyledPopup {
         });
         FlatButton done = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, 100, button -> {
             this.onDone.accept(this.color);
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
         }).style(FlatButton.Style.PRIMARY));
         done.setPosition(this.contentLeft() + this.contentWidth() - 100, this.footerButtonY());
     }
@@ -159,7 +160,7 @@ public final class ColorPickerPopup extends StyledPopup {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        int channel = event.button() == 0 ? this.channelAt(event.x(), event.y()) : -1;
+        int channel = event.button() == InputConstants.MOUSE_BUTTON_LEFT ? this.channelAt(event.x(), event.y()) : -1;
         if (channel >= 0) {
             this.dragging = channel;
             this.drag(event.x());

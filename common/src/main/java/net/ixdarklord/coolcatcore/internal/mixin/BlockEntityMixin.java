@@ -7,8 +7,10 @@ import net.ixdarklord.coolcatcore.internal.attachment.AttachmentStore;
 import net.ixdarklord.coolcatcore.internal.attachment.AttachmentStoreAccess;
 import net.ixdarklord.coolcatcore.internal.handler.HandlerCaches;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
@@ -20,11 +22,13 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 // Every block entity's Attachment values: saved with its data, kept in its item for keepOnDrop keys, and invalidating
 // cached handlers at its position when it's removed or comes back.
@@ -40,10 +44,7 @@ public abstract class BlockEntityMixin implements AttachmentStoreAccess {
     private @Nullable AttachmentStore coolcatlib$attachments;
 
     @Shadow
-    protected abstract void collectImplicitComponents(DataComponentMap.Builder components);
-
-    @Shadow
-    protected abstract void applyImplicitComponents(DataComponentGetter components);
+    private DataComponentMap components;
 
     @Override
     public @Nullable AttachmentStore coolcatlib$getAttachments() {
@@ -73,10 +74,9 @@ public abstract class BlockEntityMixin implements AttachmentStoreAccess {
         if (this.level != null) HandlerCaches.invalidate(this.level, this.worldPosition);
     }
 
-    @Redirect(method = "collectComponents", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/block/entity/BlockEntity;collectImplicitComponents(Lnet/minecraft/core/component/DataComponentMap$Builder;)V"))
-    private void coolcatlib$collectData(BlockEntity self, DataComponentMap.Builder components) {
-        this.collectImplicitComponents(components);
+    // Plain injects rather than redirects: the MixinExtras NeoForge ships misreads a compiled @Redirect's target.
+    @Inject(method = "collectComponents", at = @At("RETURN"), cancellable = true)
+    private void coolcatlib$collectData(CallbackInfoReturnable<DataComponentMap> cir) {
         if (this.coolcatlib$attachments == null) return;
         // Each mod's kept values go in that mod's own component.
         Map<AttachmentRegistry, AttachmentBundle> bundles = new HashMap<>();
@@ -84,23 +84,28 @@ public abstract class BlockEntityMixin implements AttachmentStoreAccess {
             if (!key.keepOnDrop()) continue;
             bundles.put(key.registry(), bundles.getOrDefault(key.registry(), AttachmentBundle.EMPTY).with(key, this.coolcatlib$attachments.get(key)));
         }
+        if (bundles.isEmpty()) return;
+        DataComponentMap.Builder components = DataComponentMap.builder().addAll(cir.getReturnValue());
         bundles.forEach((registry, bundle) -> components.set(registry.bundleComponent(), bundle));
+        cir.setReturnValue(components.build());
     }
 
-    @Redirect(method = "applyComponents", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/block/entity/BlockEntity;applyImplicitComponents(Lnet/minecraft/core/component/DataComponentGetter;)V"))
+    @Inject(method = "applyComponents", at = @At("TAIL"))
     @SuppressWarnings("unchecked")
-    private void coolcatlib$applyData(BlockEntity self, DataComponentGetter components) {
-        this.applyImplicitComponents(components);
-        // Reading a component also takes it off the block entity's own components.
+    private void coolcatlib$applyData(DataComponentMap prototype, DataComponentPatch patch, CallbackInfo ci) {
+        DataComponentMap components = PatchedDataComponentMap.fromPatch(prototype, patch);
+        Set<DataComponentType<?>> read = new HashSet<>();
         for (AttachmentRegistry registry : AttachmentRegistry.all()) {
             if (!registry.isRegistered()) continue;
             AttachmentBundle bundle = components.get(registry.bundleComponent());
             if (bundle == null) continue;
+            read.add(registry.bundleComponent());
             AttachmentStore store = this.coolcatlib$getOrCreateAttachments();
             for (Map.Entry<Attachment<?>, Object> entry : bundle.values().entrySet()) {
                 if (entry.getKey().keepOnDrop()) store.set((Attachment<Object>) entry.getKey(), entry.getValue());
             }
         }
+        // What was read doesn't stay among the block entity's own components, as with vanilla's implicit ones.
+        if (!read.isEmpty()) this.components = this.components.filter(type -> !read.contains(type));
     }
 }
