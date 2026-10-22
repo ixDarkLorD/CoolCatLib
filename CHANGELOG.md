@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2001.4.0.1 Release | Unreleased
+## v2001.4.0.1 Release | Oct 22, 2026
 ### 🐛 Bug Fixes
 - Screen effects, skyboxes, world effects and ghost blocks no longer leave the game believing its own shader is still bound. Vanilla skips binding a core or post shader it bound last; after one of CoolCatLib's programs, the next draw with that shader could run with the wrong program (or none) and send its uniforms to it.
 
