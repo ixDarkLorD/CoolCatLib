@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2100.3.0.0 Release | Oct 14, 2026
+## v2100.4.0.0 Release | Oct 22, 2026
 ### ✨ New Features
 - World effects (`api.client.vfx`), as on 26.1.2: glowing shapes drawn in the world, after the whole level and before the hand, lit by nothing. They hide behind solid things and fade softly where they meet them (`VfxMaterial.softness`), so nothing ends in a hard line at a wall or the ground.
   - Materials (`VfxMaterial`): a texture, a blend (`VfxBlend.ADDITIVE` for light, `ALPHA` for smoke, `LUMINOUS` for black-background glow textures against bright skies), a softness, and smooth or pixel-for-pixel sampling (`withSmoothing(false)` keeps block and item textures crisp). Everything of one material in a frame is one draw call.
@@ -23,6 +23,9 @@ This file is for listing all the changes to this project
 - `ExtraModels` (`api.client.registry`): models baked with the game's though no item or block uses them, for drawing in code; named outright or found in the resources as they load.
 ### 🔧 Changes
 - NeoForge: payloads are registered as optional, CoolCatLib's own included, so a client with CoolCatLib (and client-only mods built on it) can join a server without it and the other way round, as on Fabric (NeoForge used to disconnect whichever side lacked a channel). Configuration payloads are only sent to clients that have their channel. `Network.sendToPlayer` skips a player whose client lacks the payload's channel instead of throwing.
+
+## v2100.3.0.0 Release | Oct 14, 2026
+### 🔧 Changes
 - CoolCatLib is one mod again: **CoolCatLib: Core** and **CoolCatLib: Canvas** are merged into **CoolCatLib**, one jar per loader. Screen effects, skyboxes, GUI widgets and the render utilities now ship with the events, networking, registries and configs, so there is one file to install and one version to depend on.
 - The mod id is now `coolcatlib`. With it changed: the Fabric entrypoints (`coolcatlib:common`, `coolcatlib:client`, `coolcatlib:server`, `coolcatlib:datagen`), the commands (`/coolcatlib config ...`, `/coolcatlib_client config ...`), Core's translation keys (`config.coolcatlib.*`, `tooltip.coolcatlib.*`), its payload ids and `ConfigTheme.STARFALL` (`coolcatlib:starfall`). Players and servers need the same version, as with any update.
 - Nothing moved in the code: the packages are still `net.ixdarklord.coolcatcore` and `net.ixdarklord.coolcatcanvas`, and Canvas's classes keep their asset namespace (`coolcatcanvas:...`), command (`/coolcatcanvas_client`) and config files.
