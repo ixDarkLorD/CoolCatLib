@@ -66,13 +66,13 @@ public final class ClientConfigManager {
             if (pendingScreen != null) {
                 Screen screen = pendingScreen.get();
                 pendingScreen = null;
-                if (screen != null) minecraft.setScreen(screen);
+                if (screen != null) minecraft.gui.setScreen(screen);
             }
             if (pendingMismatches != null) {
                 if (mismatchScreen == null) {
                     pendingMismatches = null;
-                } else if (minecraft.screen instanceof DisconnectedScreen disconnected) {
-                    minecraft.setScreen(mismatchScreen.apply(disconnected, pendingMismatches));
+                } else if (minecraft.gui.screen() instanceof DisconnectedScreen disconnected) {
+                    minecraft.gui.setScreen(mismatchScreen.apply(disconnected, pendingMismatches));
                     pendingMismatches = null;
                 } else if (++mismatchTicks > MISMATCH_SCREEN_TIMEOUT) {
                     pendingMismatches = null;
@@ -265,11 +265,11 @@ public final class ClientConfigManager {
      */
     public static void toast(Component title, @Nullable Component message) {
         Minecraft minecraft = Minecraft.getInstance();
-        ToastManager toasts = minecraft.getToastManager();
+        ToastManager toasts = minecraft.gui.toastManager();
         SystemToast.SystemToastId id = SystemToast.SystemToastId.PERIODIC_NOTIFICATION;
         SystemToast.forceHide(toasts, id);
         // Sized to its text, like vanilla's own; only a message too long for one line wraps (in a wider toast).
         boolean fits = message == null || minecraft.font.width(message) <= TOAST_LINE_WIDTH;
-        toasts.addToast(fits ? new SystemToast(id, title, message) : SystemToast.multiline(minecraft, id, title, message));
+        toasts.addToast(new SystemToast(id, title, message));
     }
 }

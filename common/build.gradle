@@ -12,3 +12,9 @@ shadowJar {
 dependencies {
     compileOnly "curse.maven:configured-457570:${configured_file_id}"
 }
+
+// The player animation mod Better Combat uses, for internal.integration.sharedpose: vanilla-model clips step aside on
+// parts it animates. Only touched once it is loaded.
+dependencies {
+    compileOnly("maven.modrinth:player-animation-library:${player_animation_library_version}") { transitive = false }
+}

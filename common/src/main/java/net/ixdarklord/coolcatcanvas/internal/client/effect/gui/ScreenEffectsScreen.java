@@ -60,7 +60,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
     private final List<LayerRow> layerRows = new ArrayList<>();
 
     public ScreenEffectsScreen(@Nullable Screen parent) {
-        super(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.title", "Screen Effects"), ConfigTheme.forMod(CoolCatCore.MOD_ID));
+        super(Component.translatableWithFallback("screen_effect.coolcatlib.screen.title", "Screen Effects"), ConfigTheme.forMod(CoolCatCore.MOD_ID));
         this.parent = parent;
     }
 
@@ -99,9 +99,9 @@ public final class ScreenEffectsScreen extends StyledScreen {
         FlatButton mode = this.addModeToggle(right - 20);
         this.chrome.add(mode);
         int searchWidth = Math.min(160, this.frameWidth() / 3);
-        this.search = this.addRenderableWidget(new StyledEditBox(this.font, searchWidth, 20, Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.search", "Search")));
+        this.search = this.addRenderableWidget(new StyledEditBox(this.font, searchWidth, 20, Component.translatableWithFallback("screen_effect.coolcatlib.screen.search", "Search")));
         this.search.setPosition(right - 24 - searchWidth, barY);
-        this.search.setPlaceholder(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.search", "Search effects…").withStyle(ChatFormatting.GRAY));
+        this.search.setPlaceholder(Component.translatableWithFallback("screen_effect.coolcatlib.screen.search", "Search effects…").withStyle(ChatFormatting.GRAY));
         this.search.setValue(this.filter);
         this.search.setResponder(value -> {
             this.filter = value.toLowerCase(Locale.ROOT);
@@ -111,23 +111,23 @@ public final class ScreenEffectsScreen extends StyledScreen {
 
         int bottomY = this.barWidgetY(this.bottomBarY());
         int x = this.frameLeft() + 4;
-        FlatButton allOff = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.all_off", "Turn All Off"), 90, button -> this.turnAllOff())
+        FlatButton allOff = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("screen_effect.coolcatlib.screen.all_off", "Turn All Off"), 90, button -> this.turnAllOff())
                 .style(FlatButton.Style.DANGER));
         allOff.setPosition(x, bottomY);
         this.chrome.add(allOff);
         x += 94;
-        this.resetOrder = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.reset_order", "Reset Order"), 84, button -> {
+        this.resetOrder = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("screen_effect.coolcatlib.screen.reset_order", "Reset Order"), 84, button -> {
             ScreenEffects.layers().resetOrder();
             ScreenEffectPreferences.setOrder(null);
-        }).withIcon(ConfigIcons.RESET).tooltip(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.reset_order.tooltip", "Sort the layers by the order their mods chose")));
+        }).withIcon(ConfigIcons.RESET).tooltip(Component.translatableWithFallback("screen_effect.coolcatlib.screen.reset_order.tooltip", "Sort the layers by the order their mods chose")));
         this.resetOrder.setPosition(x, bottomY);
         this.chrome.add(this.resetOrder);
 
         FlatButton done = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, 70, button -> this.onClose()).style(FlatButton.Style.PRIMARY));
         done.setPosition(right - 70, bottomY);
         this.chrome.add(done);
-        FlatButton preview = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.preview", "Preview"), 70, button -> this.setPeek(true))
-                .withIcon(ConfigIcons.SEARCH).tooltip(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.preview.tooltip", "Hide this screen to see the effects; click or press Esc to come back")));
+        FlatButton preview = this.addRenderableWidget(FlatButton.of(Component.translatableWithFallback("screen_effect.coolcatlib.screen.preview", "Preview"), 70, button -> this.setPeek(true))
+                .withIcon(ConfigIcons.SEARCH).tooltip(Component.translatableWithFallback("screen_effect.coolcatlib.screen.preview.tooltip", "Hide this screen to see the effects; click or press Esc to come back")));
         preview.setPosition(right - 144, bottomY);
         this.chrome.add(preview);
         this.setPeek(this.peek);
@@ -147,7 +147,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 
     @Override
@@ -211,7 +211,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
         // No blur or dimming in a world: the effects preview live behind the panels.
         if (this.minecraft.level == null) ConfigStyle.background(graphics, this.width, this.height, () -> this.extractPanorama(graphics, a));
         if (this.peek) {
-            Component hint = Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.peek", "Previewing: click or press Esc to come back");
+            Component hint = Component.translatableWithFallback("screen_effect.coolcatlib.screen.peek", "Previewing: click or press Esc to come back");
             int width = this.font.width(hint) + 12;
             ConfigStyle.rect(graphics, (this.width - width) / 2, this.height - 26, width, 16, ConfigStyle.withAlpha(ConfigStyle.colors().bar(), 0xC0));
             ConfigStyle.centeredText(graphics, this.font, hint, this.width / 2, this.height - 22, width, ConfigStyle.colors().textDim());
@@ -246,16 +246,16 @@ public final class ScreenEffectsScreen extends StyledScreen {
         int width = this.libraryWidth();
         List<ScreenEffect> effects = this.library();
         long on = effects.stream().filter(ScreenEffect::isEnabled).count();
-        this.extractPanelTitle(graphics, x, width, Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.library", "Effects"),
-                Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.library.count", "%s of %s on", on, effects.size()));
+        this.extractPanelTitle(graphics, x, width, Component.translatableWithFallback("screen_effect.coolcatlib.screen.library", "Effects"),
+                Component.translatableWithFallback("screen_effect.coolcatlib.screen.library.count", "%s of %s on", on, effects.size()));
 
         int top = this.listTop();
         int bottom = this.listBottom();
         this.libraryScroll = Mth.clamp(this.libraryScroll, 0, Math.max(0, effects.size() * ROW - (bottom - top)));
         if (effects.isEmpty()) {
             Component empty = this.filter.isEmpty()
-                    ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.library.empty", "No screen effects are registered")
-                    : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.library.no_match", "No effect matches the search");
+                    ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.library.empty", "No screen effects are registered")
+                    : Component.translatableWithFallback("screen_effect.coolcatlib.screen.library.no_match", "No effect matches the search");
             ConfigStyle.centeredText(graphics, this.font, empty, x + width / 2, top + 20, width - 16, ConfigStyle.colors().textMuted());
             return;
         }
@@ -289,8 +289,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
         int textWidth = width - (textX - x) - badgeWidth - 10;
         int nameColor = effect.error() != null ? ConfigStyle.colors().error() : ConfigStyle.colors().text();
         ConfigStyle.text(graphics, this.font, effect.displayName(), textX, y + 4, textWidth, nameColor);
-        Component second = effect.error() != null ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.error", "Failed to load")
-                : effect.isAutomatic() ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.automatic", "Automatic: its mod turns it on and off")
+        Component second = effect.error() != null ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.error", "Failed to load")
+                : effect.isAutomatic() ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.automatic", "Automatic: its mod turns it on and off")
                 : effect.description() != null ? effect.description() : Component.literal(effect.id().toString());
         ConfigStyle.text(graphics, this.font, second, textX, y + 15, textWidth, ConfigStyle.colors().textMuted());
         ConfigStyle.badge(graphics, this.font, badge, x + width - badgeWidth - 4, y + (ROW - 11) / 2, scopeColor(effect.scope()));
@@ -304,8 +304,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
     private void extractLayers(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int x = this.layersX();
         int width = this.layersWidth();
-        this.extractPanelTitle(graphics, x, width, Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.layers", "Layers"),
-                Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.layers.hint", "Top draws last"));
+        this.extractPanelTitle(graphics, x, width, Component.translatableWithFallback("screen_effect.coolcatlib.screen.layers", "Layers"),
+                Component.translatableWithFallback("screen_effect.coolcatlib.screen.layers.hint", "Top draws last"));
         this.layerRows.clear();
 
         int top = this.listTop();
@@ -315,7 +315,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
         int content = (screen.isEmpty() ? 0 : HEADER + screen.size() * ROW) + (world.isEmpty() ? 0 : HEADER + world.size() * ROW);
         this.layersScroll = Mth.clamp(this.layersScroll, 0, Math.max(0, content - (bottom - top)));
         if (content == 0) {
-            ConfigStyle.centeredText(graphics, this.font, Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.layers.empty", "Turn effects on to stack them here"),
+            ConfigStyle.centeredText(graphics, this.font, Component.translatableWithFallback("screen_effect.coolcatlib.screen.layers.empty", "Turn effects on to stack them here"),
                     x + width / 2, top + 20, width - 16, ConfigStyle.colors().textMuted());
             return;
         }
@@ -328,7 +328,7 @@ public final class ScreenEffectsScreen extends StyledScreen {
         this.extractScrollbar(graphics, x + width - 4, top, bottom, content, this.layersScroll);
 
         if (this.minecraft.level == null && !world.isEmpty()) {
-            ConfigStyle.text(graphics, this.font, Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.no_world", "World effects show while playing"),
+            ConfigStyle.text(graphics, this.font, Component.translatableWithFallback("screen_effect.coolcatlib.screen.no_world", "World effects show while playing"),
                     x + 8, bottom - 10, width - 16, ConfigStyle.colors().warning());
         }
     }
@@ -336,8 +336,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
     private int extractGroup(GuiGraphicsExtractor graphics, ScreenEffectScope scope, List<ScreenEffect> effects, int x, int y, int width, int mouseX, int mouseY, int top, int bottom) {
         if (effects.isEmpty()) return y;
         Component header = scope == ScreenEffectScope.SCREEN
-                ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.screen.header", "Over HUD and menus")
-                : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.world.header", "Over the world");
+                ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.scope.screen.header", "Over HUD and menus")
+                : Component.translatableWithFallback("screen_effect.coolcatlib.screen.scope.world.header", "Over the world");
         ConfigStyle.rect(graphics, x, y + HEADER / 2, 3, 1, scopeColor(scope));
         ConfigStyle.text(graphics, this.font, header, x + 6, y + 4, width - 8, scopeColor(scope));
         y += HEADER;
@@ -379,8 +379,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
         // First line: the name (dimmed while it fades out), then its state.
         int nameX = x + 16;
         int lineWidth = row.upX() - 4 - nameX;
-        Component state = effect.isAutomatic() ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.auto", "Auto")
-                : !effect.isEnabled() ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.fading", "Fading")
+        Component state = effect.isAutomatic() ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.auto", "Auto")
+                : !effect.isEnabled() ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.fading", "Fading")
                 : Component.literal("#" + (ScreenEffects.layers().indexOf(effect) + 1));
         int stateWidth = this.font.width(state);
         int color = effect.isEnabled() ? ConfigStyle.colors().text() : ConfigStyle.colors().textMuted();
@@ -404,9 +404,9 @@ public final class ScreenEffectsScreen extends StyledScreen {
         this.iconButton(graphics, ConfigIcons.CLOSE, row.removeX(), y, mouseX, mouseY, hovered && !effect.isAutomatic() && effect.isEnabled());
 
         if (hovered && mouseX >= sliderX && mouseX < sliderX + sliderWidth && mouseY >= sliderY - 3) {
-            graphics.setTooltipForNextFrame(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.strength", "Strength: drag to change"), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(Component.translatableWithFallback("screen_effect.coolcatlib.screen.strength", "Strength: drag to change"), mouseX, mouseY);
         } else if (hovered && mouseX < x + 14) {
-            graphics.setTooltipForNextFrame(Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.drag", "Drag to reorder"), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(Component.translatableWithFallback("screen_effect.coolcatlib.screen.drag", "Drag to reorder"), mouseX, mouseY);
         }
     }
 
@@ -428,8 +428,8 @@ public final class ScreenEffectsScreen extends StyledScreen {
 
     private static Component scopeBadge(ScreenEffectScope scope) {
         return scope == ScreenEffectScope.SCREEN
-                ? Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.screen", "SCREEN")
-                : Component.translatableWithFallback("screen_effect.coolcatcanvas.screen.scope.world", "WORLD");
+                ? Component.translatableWithFallback("screen_effect.coolcatlib.screen.scope.screen", "SCREEN")
+                : Component.translatableWithFallback("screen_effect.coolcatlib.screen.scope.world", "WORLD");
     }
 
     private static int scopeColor(ScreenEffectScope scope) {

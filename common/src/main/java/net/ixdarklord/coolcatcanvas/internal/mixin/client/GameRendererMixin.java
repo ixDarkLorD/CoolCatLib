@@ -39,9 +39,9 @@ public abstract class GameRendererMixin {
         }
     }
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V", shift = At.Shift.AFTER))
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V", shift = At.Shift.AFTER))
     private void coolcatcanvas$renderWorldVfx(DeltaTracker deltaTracker, CallbackInfo ci) {
-        VfxManager.render(((GameRenderer) (Object) this).getGameRenderState().levelRenderState.cameraRenderState, deltaTracker);
+        VfxManager.render(((GameRenderer) (Object) this).gameRenderState().levelRenderState.cameraRenderState, deltaTracker);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;endFrame()V", shift = At.Shift.AFTER))
@@ -58,7 +58,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "extractOptions", at = @At("TAIL"))
     private void coolcatcanvas$hideHandInCutscenes(CallbackInfo ci) {
-        if (CutsceneManager.hasCamera()) ((GameRenderer) (Object) this).getGameRenderState().optionsRenderState.hideGui = true;
+        if (CutsceneManager.hasCamera()) ((GameRenderer) (Object) this).gameRenderState().guiRenderState.isHudHidden = true;
     }
 
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)

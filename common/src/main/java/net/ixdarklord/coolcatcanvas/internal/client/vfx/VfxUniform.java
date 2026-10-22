@@ -7,7 +7,7 @@ import org.joml.Matrix4f;
 
 import java.nio.ByteBuffer;
 
-// The VfxInfo block of coolcatcanvas:vfx.glsl, one per batch drawn in a frame. Each batch keeps its own instance:
+// The VfxInfo block of coolcatlib:vfx.glsl, one per batch drawn in a frame. Each batch keeps its own instance:
 // DynamicUniformStorage skips a write equal to the previous one, and these compare by identity.
 final class VfxUniform implements DynamicUniformStorage.DynamicUniform {
     static final String BLOCK = "VfxInfo";

@@ -288,7 +288,7 @@ final class CategoryEntryList extends ContainerObjectSelectionList<CategoryEntry
         // Every constant in a dropdown under the box; picking one sets it.
         private void openDropdown() {
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.setScreen(new DropdownScreen<>(minecraft.screen, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
+            minecraft.gui.setScreen(new DropdownScreen<>(minecraft.gui.screen(), this.getX(), this.getY(), this.getWidth(), this.getHeight(),
                     this.type.constants(), this.session.get(this.value), this.type::displayName, this.type::description, picked -> {
                         this.session.set(this.value, picked);
                         this.refresh();

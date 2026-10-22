@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  *     <li>its {@linkplain #strength(EffectContext.StrengthFunction) strength function}, if it has one.</li>
  * </ul>
  * A strength of 0 skips the effect entirely. Shaders read it as {@code Strength} from
- * {@code #moj_import <coolcatcanvas:screen_effect.glsl>}, and should scale their work by it; {@link #autoBlend} does that
+ * {@code #moj_import <coolcatlib:screen_effect.glsl>}, and should scale their work by it; {@link #autoBlend} does that
  * for shaders that don't.
  * <p>
  * Durations are in ticks of real time (20 per second), so effects keep animating while the game is paused. Only use an

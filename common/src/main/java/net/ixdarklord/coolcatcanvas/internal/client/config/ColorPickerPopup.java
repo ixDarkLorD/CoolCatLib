@@ -55,7 +55,7 @@ public final class ColorPickerPopup extends StyledPopup {
         });
         FlatButton done = this.addRenderableWidget(FlatButton.of(CommonComponents.GUI_DONE, 100, button -> {
             this.onDone.accept(this.color);
-            this.minecraft.setScreen(this.parent);
+            this.minecraft.gui.setScreen(this.parent);
         }).style(FlatButton.Style.PRIMARY));
         done.setPosition(this.contentLeft() + this.contentWidth() - 100, this.footerButtonY());
     }

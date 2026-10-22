@@ -24,6 +24,7 @@ config = "${modid}.common.mixins.json"
 [[mixins]]
 config = "coolcatcanvas.common.mixins.json"
 
+
 [[dependencies.${modid}]]
 modId = "neoforge"
 type = "required"

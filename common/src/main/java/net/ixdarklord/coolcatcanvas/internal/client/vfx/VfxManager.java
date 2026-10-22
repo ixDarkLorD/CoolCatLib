@@ -377,14 +377,14 @@ public final class VfxManager {
         }
         if (DRAWN.isEmpty()) return;
 
-        RenderTarget main = minecraft.getMainRenderTarget();
+        RenderTarget main = minecraft.gameRenderer.mainRenderTarget();
         GpuTextureView depth = main.getDepthTextureView();
         if (depth == null) return;
         if (bytes == null) bytes = new ByteBufferBuilder(DefaultVertexFormat.POSITION_TEX_COLOR.getVertexSize() * 4096);
         if (uniforms == null) uniforms = new DynamicUniformStorage<>("CoolCatLib world effects UBO", VfxUniform.SIZE, 8);
 
         // Everything that touches buffers or textures happens before the pass opens.
-        BufferBuilder builder = new BufferBuilder(bytes, VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder builder = new BufferBuilder(bytes, com.mojang.blaze3d.PrimitiveTopology.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         TextureManager textureManager = minecraft.getTextureManager();
         VfxUniform[] blocks = new VfxUniform[DRAWN.size()];
         GpuTextureView[] textures = new GpuTextureView[DRAWN.size()];
@@ -406,10 +406,11 @@ public final class VfxManager {
         GpuSampler linear = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR);
         GpuSampler nearest = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
         try (MeshData mesh = builder.buildOrThrow()) {
-            GpuBuffer vertexBuffer = DefaultVertexFormat.POSITION_TEX_COLOR.uploadImmediateVertexBuffer(mesh.vertexBuffer());
+            // The frame's vertices in a buffer of their own, let go once drawn.
+            try (GpuBuffer vertexBuffer = RenderSystem.getDevice().createBuffer(() -> "CoolCatLib world effects", GpuBuffer.USAGE_VERTEX, mesh.vertexBuffer())) {
             GpuBufferSlice[] slices = uniforms.writeUniforms(blocks);
             try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
-                    .createRenderPass(() -> "CoolCatLib world effects", main.getColorTextureView(), OptionalInt.empty(), null, OptionalDouble.empty())) {
+                    .createRenderPass(() -> "CoolCatLib world effects", main.getColorTextureView(), java.util.Optional.empty(), null, OptionalDouble.empty())) {
                 for (int i = 0; i < blocks.length; i++) {
                     VfxBatch batch = DRAWN.get(i);
                     pass.setPipeline(pipelines[i]);
@@ -417,9 +418,10 @@ public final class VfxManager {
                     pass.setUniform(VfxUniform.BLOCK, slices[i]);
                     pass.bindTexture("Sampler0", textures[i], batch.material.smooth() ? linear : nearest);
                     pass.bindTexture("DepthSampler", depth, nearest);
-                    pass.setVertexBuffer(0, vertexBuffer);
-                    pass.draw(batch.firstVertex, batch.quads() * VfxBatch.VERTICES_PER_QUAD);
+                    pass.setVertexBuffer(0, vertexBuffer.slice());
+                    pass.draw(batch.quads() * VfxBatch.VERTICES_PER_QUAD, 1, batch.firstVertex, 0);
                 }
+            }
             }
         }
     }
@@ -435,13 +437,13 @@ public final class VfxManager {
                 .withLocation(CoolCatCanvas.rl("pipeline/vfx_" + blend.name().toLowerCase(java.util.Locale.ROOT) + "_" + fragment.getNamespace() + "_" + fragment.getPath().replace('/', '_')))
                 .withVertexShader(SHADER)
                 .withFragmentShader(fragment)
-                .withUniform("Projection", UniformType.UNIFORM_BUFFER)
-                .withUniform(VfxUniform.BLOCK, UniformType.UNIFORM_BUFFER)
-                .withSampler("Sampler0")
-                .withSampler("DepthSampler")
+                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform("Projection", UniformType.UNIFORM_BUFFER).build())
+                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform(VfxUniform.BLOCK, UniformType.UNIFORM_BUFFER).build())
+                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withSampler("Sampler0").build())
+                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withSampler("DepthSampler").build())
                 .withColorTargetState(new ColorTargetState(blend.function()))
                 .withCull(false)
-                .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.TRIANGLES)
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(com.mojang.blaze3d.PrimitiveTopology.TRIANGLES)
                 .build();
         CompiledRenderPipeline compiled = RenderSystem.getDevice().precompilePipeline(pipeline);
         if (!compiled.isValid()) throw new IllegalStateException("The world effects shader " + fragment + " failed to compile or link (see the log above)");

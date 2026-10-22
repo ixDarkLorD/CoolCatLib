@@ -191,8 +191,8 @@ public abstract class StyledScreen extends Screen {
 
     private static Component modeTooltip() {
         return ConfigStyle.mode() == ConfigTheme.Mode.DARK
-                ? Component.translatableWithFallback("coolcatcanvas.style.mode.light", "Light mode")
-                : Component.translatableWithFallback("coolcatcanvas.style.mode.dark", "Dark mode");
+                ? Component.translatableWithFallback("coolcatlib.style.mode.light", "Light mode")
+                : Component.translatableWithFallback("coolcatlib.style.mode.dark", "Dark mode");
     }
 
     /** The title in the top bar, with an accent mark before it; returns where the text ends. */

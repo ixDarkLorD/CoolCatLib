@@ -52,14 +52,14 @@ public final class ScreenEffects {
      * The built-in tint definition: washes the frame in its {@code Color} uniform, a vec4 whose alpha is how far the
      * frame is mixed towards the color (scaled by the effect's strength). See {@link #tint}.
      */
-    public static final Identifier TINT = Identifier.fromNamespaceAndPath("coolcatcanvas", "tint");
+    public static final Identifier TINT = Identifier.fromNamespaceAndPath("coolcatlib", "tint");
     /** The {@link #TINT} definition's color uniform. */
     public static final String TINT_COLOR = "Color";
 
     /**
      * The built-in bloom definition: bright parts of the frame glow into what is around them. See {@link #bloom}.
      */
-    public static final Identifier BLOOM = Identifier.fromNamespaceAndPath("coolcatcanvas", "bloom");
+    public static final Identifier BLOOM = Identifier.fromNamespaceAndPath("coolcatlib", "bloom");
     /** How bright a pixel must be to glow, 0 to 1 (0.72 by default): lower lights up more of the frame. */
     public static final String BLOOM_THRESHOLD = "Threshold";
     /** How strong the glow is (0.9 by default). */
@@ -173,7 +173,7 @@ public final class ScreenEffects {
     /**
      * The effects screen: every {@linkplain ScreenEffect#isSelectable() selectable} effect with a switch, the active
      * ones as reorderable layers with a strength slider each, previewed live over the game. Players' choices there are
-     * remembered across sessions. Also bound to a key (unset by default), and in a development environment {@code /coolcatcanvas_client effects}.
+     * remembered across sessions. Also bound to a key (unset by default), and in a development environment {@code /coolcatlib_client effects}.
      */
     public static Screen createScreen(@Nullable Screen parent) {
         return new ScreenEffectsScreen(parent);
@@ -182,6 +182,6 @@ public final class ScreenEffects {
     /** Opens {@link #createScreen} over the current screen. */
     public static void openScreen() {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.setScreen(createScreen(minecraft.screen));
+        minecraft.gui.setScreen(createScreen(minecraft.gui.screen()));
     }
 }

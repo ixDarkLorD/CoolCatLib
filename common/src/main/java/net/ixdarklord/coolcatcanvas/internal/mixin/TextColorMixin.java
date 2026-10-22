@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-// Gradient text colors: each carries its ColorGradient, and "coolcatcanvas:rainbow..." / "coolcatcanvas:gradient/..."
+// Gradient text colors: each carries its ColorGradient, and "coolcatlib:rainbow..." / "coolcatlib:gradient/..."
 // names parse back to them (JSON text, commands, the network).
 @Mixin(TextColor.class)
 public abstract class TextColorMixin implements GradientTextColors.Holder {

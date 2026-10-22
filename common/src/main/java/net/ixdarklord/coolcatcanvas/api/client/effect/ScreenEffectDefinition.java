@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * pass; {@code minecraft:core/screenquad} is the usual one). Differences from vanilla:
  * <ul>
  *     <li>Every uniform needs a {@code "name"} (vanilla's files all have one), by which the effect sets it.</li>
- *     <li>Every pass also gets an {@code EffectInfo} uniform block (see {@code coolcatcanvas:screen_effect.glsl}),
+ *     <li>Every pass also gets an {@code EffectInfo} uniform block (see {@code coolcatlib:screen_effect.glsl}),
  *     and vanilla's {@code Globals} block.</li>
  *     <li>The only external target is {@code minecraft:main}; its depth can be read with
  *     {@code "use_depth_buffer": true}.</li>

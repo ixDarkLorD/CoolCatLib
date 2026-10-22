@@ -167,9 +167,9 @@ final class SkyboxProgram {
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform(LayerUniform.BLOCK, uniform);
             if (texture != null) pass.bindTexture("Sampler0", texture, this.sampler);
-            pass.setVertexBuffer(0, SkyResources.mesh());
-            if (this.definition.type().isSprite()) pass.draw(SkyResources.SPRITE_FIRST_VERTEX, SkyResources.SPRITE_VERTICES);
-            else pass.draw(SkyResources.CUBE_FIRST_VERTEX, SkyResources.CUBE_VERTICES);
+            pass.setVertexBuffer(0, SkyResources.mesh().slice());
+            if (this.definition.type().isSprite()) pass.draw(SkyResources.SPRITE_VERTICES, 1, SkyResources.SPRITE_FIRST_VERTEX, 0);
+            else pass.draw(SkyResources.CUBE_VERTICES, 1, SkyResources.CUBE_FIRST_VERTEX, 0);
         }
     }
 

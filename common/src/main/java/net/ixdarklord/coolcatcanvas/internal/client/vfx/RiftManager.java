@@ -127,8 +127,9 @@ public final class RiftManager {
             float open = rift.openness(frame.partialTick());
             if (open <= 0.004F) continue;
             RiftSpec spec = rift.spec;
-            // Upright, turned about the vertical to face the camera: a tear has no thin side to be caught from.
-            double dx = camera.x - at.x, dz = camera.z - at.z;
+            // Upright, turned about the vertical to face the camera (a tear has no thin side to be caught from), unless
+            // it is held facing one way.
+            double dx = rift.facing != null ? rift.facing.x : camera.x - at.x, dz = rift.facing != null ? rift.facing.z : camera.z - at.z;
             double flat = Math.sqrt(dx * dx + dz * dz);
             double rx = flat < 1.0E-4 ? 1.0 : -dz / flat, rz = flat < 1.0E-4 ? 0.0 : dx / flat;
             float halfHeight = spec.height() * 0.5F * MARGIN;
@@ -153,6 +154,7 @@ public final class RiftManager {
         final Vec3 position;
         final int holdTicks;
         final float seed;
+        @Nullable Vec3 facing;
         Phase phase = Phase.OPENING;
         int age;
         int phaseAge;
@@ -253,6 +255,12 @@ public final class RiftManager {
         @Override
         public void remove() {
             this.phase = Phase.GONE;
+        }
+
+        @Override
+        public Rift facing(@Nullable Vec3 toward) {
+            this.facing = toward == null || toward.horizontalDistanceSqr() < 1.0E-8 ? null : new Vec3(toward.x, 0.0, toward.z).normalize();
+            return this;
         }
     }
 }

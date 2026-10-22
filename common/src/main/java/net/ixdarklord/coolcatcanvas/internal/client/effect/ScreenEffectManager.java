@@ -128,7 +128,7 @@ public final class ScreenEffectManager {
         if (!resourcesLoaded || EFFECTS.isEmpty()) return;
 
         Minecraft minecraft = Minecraft.getInstance();
-        RenderTarget main = minecraft.getMainRenderTarget();
+        RenderTarget main = minecraft.gameRenderer.mainRenderTarget();
         Frame frame = new Frame(minecraft, deltaTracker.getGameTimeDeltaPartialTick(false), time, delta, main.width, main.height);
         Loader loader = new Loader(minecraft.getResourceManager());
         for (ScreenEffectImpl effect : EFFECTS.values()) {
@@ -157,7 +157,7 @@ public final class ScreenEffectManager {
         }
         if (active.isEmpty()) return;
 
-        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
+        RenderTarget main = Minecraft.getInstance().gameRenderer.mainRenderTarget();
         FrameGraphBuilder frame = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> handle = frame.importExternal("main", main);
         for (ScreenEffectImpl effect : active) {

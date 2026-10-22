@@ -3,6 +3,7 @@ package net.ixdarklord.coolcatcanvas.api.client.viewport;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -50,8 +51,16 @@ public final class SceneViewport implements AutoCloseable {
     public record PlacedItem(ItemStack stack, Vec3 pos, float size) {
     }
 
+    /**
+     * A line of text laid flat on the picture, in the texture's own pixels: its top left at (x, y), each font pixel
+     * {@code scale} texture pixels. Drawn over the scene, unlit and facing out of the picture whatever the camera.
+     */
+    public record PlacedText(FormattedCharSequence text, float x, float y, int color, float scale) {
+    }
+
     private final Identifier texture;
     private final int width, height;
+    private final List<PlacedText> texts = new ArrayList<>();
     private final List<PlacedBlock> blocks = new ArrayList<>();
     private final List<PlacedEntity> entities = new ArrayList<>();
     private final List<PlacedItem> items = new ArrayList<>();
@@ -97,8 +106,32 @@ public final class SceneViewport implements AutoCloseable {
         blocks.clear();
         entities.clear();
         items.clear();
+        texts.clear();
         dirty = true;
         return this;
+    }
+
+    /**
+     * A line of text laid flat on the picture ({@link PlacedText}). A picture of nothing but text is drawn once, as
+     * sharp as its texture is large: so text can be shown as a texture, to be cut, stretched or bent with what it is on.
+     */
+    public SceneViewport text(FormattedCharSequence text, float x, float y, int color, float scale) {
+        texts.add(new PlacedText(text, x, y, color, scale));
+        dirty = true;
+        return this;
+    }
+
+    /** Takes away the text laid on the picture, leaving the scene. */
+    public SceneViewport clearText() {
+        if (!texts.isEmpty()) {
+            texts.clear();
+            dirty = true;
+        }
+        return this;
+    }
+
+    public List<PlacedText> texts() {
+        return Collections.unmodifiableList(texts);
     }
 
     public SceneViewport block(BlockPos pos, BlockState state) {
@@ -187,6 +220,67 @@ public final class SceneViewport implements AutoCloseable {
             box = box == null ? one : box.minmax(one);
         }
         return box == null ? new AABB(0, 0, 0, 1, 1, 1) : box;
+    }
+
+    // ---- The ground ----
+
+    private double groundY = Double.NaN;
+    private int groundCells;
+    private int groundColor;
+    private int groundFloor;
+    private boolean groundShadows;
+
+    /**
+     * A ground under the scene at a height, turning with it: a floor in a colour, as large as the whole blocks the
+     * scene stands over and {@code margin} blocks more each way, a grid of lines on it at the block edges in another
+     * colour (both ARGB, their alpha how strong they are; 0 for none), and, with {@code shadows}, a soft shadow under
+     * each entity, as wide as the entity.
+     */
+    public SceneViewport ground(double y, int margin, int floorArgb, int lineArgb, boolean shadows) {
+        this.groundY = y;
+        this.groundCells = Math.max(0, margin);
+        this.groundFloor = floorArgb;
+        this.groundColor = lineArgb;
+        this.groundShadows = shadows;
+        dirty = true;
+        return this;
+    }
+
+    /** Takes the ground away. */
+    public SceneViewport noGround() {
+        groundY = Double.NaN;
+        dirty = true;
+        return this;
+    }
+
+    @ApiStatus.Internal
+    public boolean hasGround() {
+        return !Double.isNaN(groundY);
+    }
+
+    @ApiStatus.Internal
+    public double groundY() {
+        return groundY;
+    }
+
+    @ApiStatus.Internal
+    public int groundCells() {
+        return groundCells;
+    }
+
+    @ApiStatus.Internal
+    public int groundColor() {
+        return groundColor;
+    }
+
+    @ApiStatus.Internal
+    public int groundFloor() {
+        return groundFloor;
+    }
+
+    @ApiStatus.Internal
+    public boolean groundShadows() {
+        return groundShadows;
     }
 
     // ---- The camera ----

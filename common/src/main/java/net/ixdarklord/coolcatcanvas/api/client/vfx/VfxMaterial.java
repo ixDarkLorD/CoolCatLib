@@ -75,10 +75,10 @@ public record VfxMaterial(Identifier texture, VfxBlend blend, float softness, @N
 
     /**
      * The same material drawn with a fragment shader of the mod's own, for what a texture cannot do: portals, rifts,
-     * heat haze, anything procedural. The shader takes the place of {@code coolcatcanvas:vfx/quad}:
+     * heat haze, anything procedural. The shader takes the place of {@code coolcatlib:vfx/quad}:
      * <pre>{@code
      * #version 330
-     * #moj_import <coolcatcanvas:vfx.glsl>      // VfxTime.x (seconds), vfx_depth_fade(...)
+     * #moj_import <coolcatlib:vfx.glsl>      // VfxTime.x (seconds), vfx_depth_fade(...)
      * uniform sampler2D Sampler0;               // the material's texture
      * uniform sampler2D DepthSampler;           // the scene's depth
      * in vec2 texCoord;                         // the quad's UVs, as given to VfxDraw

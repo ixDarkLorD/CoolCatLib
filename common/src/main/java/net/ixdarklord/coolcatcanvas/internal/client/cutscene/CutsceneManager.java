@@ -74,7 +74,7 @@ public final class CutsceneManager {
         if (!Platform.isDevelopmentEnvironment()) return;
         // Merges into CoolCatLib's client command.
         ClientCommandEvents.REGISTER.register((dispatcher, context) -> dispatcher.register(
-                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatcanvas_client")
+                LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatlib_client")
                         .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("cutscene")
                                 .then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("play")
                                         .then(RequiredArgumentBuilder.<SharedSuggestionProvider, String>argument("id", StringArgumentType.greedyString())
@@ -175,9 +175,9 @@ public final class CutsceneManager {
             };
         }
         // Whatever the player had open would sit over the scene, and keep the mouse.
-        if (minecraft.screen != null) {
+        if (minecraft.gui.screen() != null) {
             if (player.containerMenu != player.inventoryMenu) player.closeContainer();
-            else minecraft.setScreen(null);
+            else minecraft.gui.setScreen(null);
         }
         PlaybackImpl playback = new PlaybackImpl(cutscene, id, origin, yaw, fromServer, false);
         current = playback;
@@ -209,7 +209,7 @@ public final class CutsceneManager {
             cameraWeight = 0.0F;
             if (reason != CutsceneEndReason.REPLACED && reason != CutsceneEndReason.LEFT_WORLD) CutsceneOverlay.leave(playback);
             // Keys held through the cutscene count as down again.
-            if (playback.locksInput() && minecraft.screen == null) KeyMapping.setAll();
+            if (playback.locksInput() && minecraft.gui.screen() == null) KeyMapping.setAll();
         }
         playback.finish(reason);
         if (playback.preview) return;
@@ -239,7 +239,7 @@ public final class CutsceneManager {
     }
 
     private static void startTick(Minecraft minecraft) {
-        if (current != null && current.locksInput() && minecraft.screen == null) KeyMapping.releaseAll();
+        if (current != null && current.locksInput() && minecraft.gui.screen() == null) KeyMapping.releaseAll();
     }
 
     private static void endTick(Minecraft minecraft) {
@@ -254,7 +254,7 @@ public final class CutsceneManager {
         }
         if (minecraft.isPaused()) return;
         if (!playback.preview && playback.cutscene().skippable()) {
-            if (minecraft.screen == null && isSkipKeyDown(minecraft)) {
+            if (minecraft.gui.screen() == null && isSkipKeyDown(minecraft)) {
                 if (++playback.skipHeld >= SKIP_TICKS) {
                     boolean allowed = true;
                     try {
@@ -337,7 +337,7 @@ public final class CutsceneManager {
     // A key mapping whose bound key can be read, on every loader.
     private static final class SkipKey extends KeyMapping {
         SkipKey() {
-            super("key.coolcatcanvas.skip_cutscene", GLFW.GLFW_KEY_ENTER, KeyMapping.Category.MISC);
+            super("key.coolcatlib.skip_cutscene", GLFW.GLFW_KEY_ENTER, KeyMapping.Category.MISC);
         }
 
         InputConstants.Key bound() {

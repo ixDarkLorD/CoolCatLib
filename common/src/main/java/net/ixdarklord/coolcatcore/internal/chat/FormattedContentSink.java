@@ -104,13 +104,21 @@ public class FormattedContentSink implements FormattedText.StyledContentConsumer
         }
     }
 
+    // A named colour's formatting code (getByName went in 26.2): "dark_red" is DARK_RED.
+    private static @org.jspecify.annotations.Nullable ChatFormatting byName(String name) {
+        for (ChatFormatting format : ChatFormatting.values()) {
+            if (format.name().equalsIgnoreCase(name)) return format;
+        }
+        return null;
+    }
+
     public List<ChatFormatting> getFormatFromStyle(Style style) {
 
         List<ChatFormatting> list = new ArrayList<>();
 
         // color must be added before formatting
         if (style.getColor() != null) {
-            ChatFormatting color = ChatFormatting.getByName(style.getColor().serialize());
+            ChatFormatting color = byName(style.getColor().serialize());
             if (color != null) {
                 list.add(color);
             }

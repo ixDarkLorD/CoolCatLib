@@ -195,14 +195,14 @@ public final class SkyboxManager {
     public static int skyColor(int skyColor) {
         float hidden = hidden(VanillaSky.SKY);
         if (hidden <= 0.0F) return skyColor;
-        Vector4f fog = Minecraft.getInstance().gameRenderer.getGameRenderState().levelRenderState.cameraRenderState.fogData.color;
+        Vector4f fog = Minecraft.getInstance().gameRenderer.gameRenderState().levelRenderState.cameraRenderState.fogData.color;
         return ARGB.srgbLerp(hidden, skyColor, ARGB.colorFromFloat(ARGB.alphaFloat(skyColor), fog.x(), fog.y(), fog.z()));
     }
 
     /** Draws the visible skyboxes' layers of a stage, inside vanilla's sky pass. */
     public static void render(SkyLayerStage stage) {
         if (!anyLayers) return;
-        Matrix4fc view = RenderSystem.getModelViewMatrix();
+        Matrix4fc view = RenderSystem.getModelViewMatrixCopy();
         try {
             for (SkyboxImpl skybox : ordered()) {
                 SkyboxProgram program = skybox.isVisible() ? skybox.program() : null;
@@ -220,9 +220,9 @@ public final class SkyboxManager {
     }
 
     private static RenderPass openPass() {
-        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
+        RenderTarget main = Minecraft.getInstance().gameRenderer.mainRenderTarget();
         return RenderSystem.getDevice().createCommandEncoder()
-                .createRenderPass(() -> "CoolCatLib skyboxes", main.getColorTextureView(), OptionalInt.empty(), main.getDepthTextureView(), OptionalDouble.empty());
+                .createRenderPass(() -> "CoolCatLib skyboxes", main.getColorTextureView(), java.util.Optional.empty(), main.getDepthTextureView(), OptionalDouble.empty());
     }
 
     // ---- Resources ----

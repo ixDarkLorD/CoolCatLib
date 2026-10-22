@@ -104,10 +104,13 @@ public abstract class SkyRendererMixin {
         coolcatcanvas$renderEndLayers();
     }
 
-    @ModifyArg(method = "renderEndSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DynamicUniforms;writeTransform(Lorg/joml/Matrix4fc;Lorg/joml/Vector4fc;Lorg/joml/Vector3fc;Lorg/joml/Matrix4fc;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"), index = 1)
-    private Vector4fc coolcatcanvas$fadeEndSky(Vector4fc color) {
+    // The end sky's transforms written again with a colour (26.2 writes none): white, faded as a skybox hides it. An
+    // argument swap rather than a redirect, which the MixinExtras NeoForge ships can't read.
+    @ModifyArg(method = "renderEndSky", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderPass;setUniform(Ljava/lang/String;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"), index = 1)
+    private com.mojang.blaze3d.buffers.GpuBufferSlice coolcatcanvas$fadeEndSky(com.mojang.blaze3d.buffers.GpuBufferSlice transforms) {
         float hidden = SkyboxManager.hidden(VanillaSky.END_SKY);
-        return hidden > 0.0F ? new Vector4f(color.x(), color.y(), color.z(), color.w() * (1.0F - hidden)) : color;
+        if (hidden <= 0.0F) return transforms;
+        return com.mojang.blaze3d.systems.RenderSystem.getDynamicUniforms().writeTransform(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrixCopy(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F - hidden));
     }
 
     @Inject(method = "renderEndFlash", at = @At("HEAD"), cancellable = true)
