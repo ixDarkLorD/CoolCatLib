@@ -85,6 +85,9 @@ public final class CommonServicesImpl implements CommonServices {
 
     @Override
     public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+        // Payloads are optional, so a client without the mod that registered one can be connected: NeoForge throws when
+        // sending it a channel it lacks, so it is skipped.
+        if (!player.connection.hasChannel(payload)) return;
         PacketDistributor.sendToPlayer(player, payload);
     }
 

@@ -17,7 +17,8 @@
     "client.BlockEntityWithoutLevelRendererMixin",
     "client.GuiGraphicsMixin",
     "client.ItemColorsMixin",
-    "client.ItemInHandRendererMixin"
+    "client.ItemInHandRendererMixin",
+    "client.ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

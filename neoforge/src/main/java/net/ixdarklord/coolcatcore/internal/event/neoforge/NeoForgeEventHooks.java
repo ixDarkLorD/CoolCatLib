@@ -142,7 +142,10 @@ public final class NeoForgeEventHooks {
                 NeoForgeRegistrations.SERVER_RELOAD_LISTENERS.values().forEach(event::addListener));
 
         modBus.addListener((RegisterPayloadHandlersEvent event) -> {
-            PayloadRegistrar registrar = event.registrar(NETWORK_VERSION);
+            // Optional, CoolCatLib's own included, so a client with CoolCatLib (and client-only mods built on it) can
+            // join a server without it, and the other way round, as on Fabric: NeoForge otherwise disconnects whichever
+            // side lacks a channel. Senders check canPlayerReceive first.
+            PayloadRegistrar registrar = event.registrar(NETWORK_VERSION).optional();
             NeoForgeRegistrations.PAYLOADS.forEach(registration -> registration.accept(registrar));
             NeoForgeRegistrations.PAYLOADS.clear();
             NeoForgeRegistrations.payloadsRegistered = true;
@@ -153,14 +156,15 @@ public final class NeoForgeEventHooks {
         });
     }
 
-    // Sends the configuration payloads and finishes at once; nothing waits for a reply.
+    // Sends the configuration payloads the client can receive and finishes at once; nothing waits for a reply. A client
+    // without CoolCatLib has none of its (optional) channels and is sent nothing.
     private record ConfigurationPayloadsTask(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
         private static final ConfigurationTask.Type TYPE = new ConfigurationTask.Type(CoolCatCore.rl("configuration_payloads").toString());
 
         @Override
         public void run(Consumer<CustomPacketPayload> sender) {
             for (Supplier<List<CustomPacketPayload>> payloads : NeoForgeRegistrations.CONFIGURATION_PAYLOADS) {
-                payloads.get().forEach(sender);
+                payloads.get().stream().filter(this.listener::hasChannel).forEach(sender);
             }
             this.listener.finishCurrentTask(TYPE);
         }

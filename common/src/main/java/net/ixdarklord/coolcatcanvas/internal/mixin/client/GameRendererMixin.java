@@ -5,6 +5,7 @@ import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.GhostRenderer;
+import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -17,7 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 // Screen effects: updated at the start of the frame, drawn after the world (once vanilla's own post effect has run)
 // and after the GUI. Skyboxes: updated at the start of the frame too (they're drawn from LevelRendererMixin). Both
-// rebuild once the new shaders are in place (not reached if vanilla's own shaders failed).
+// rebuild once the new shaders are in place (not reached if vanilla's own shaders failed). World effects: drawn right
+// after the level, with the projection it was drawn with, before the hand clears its depth.
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
@@ -32,6 +34,16 @@ public abstract class GameRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V", ordinal = 0))
     private void coolcatcanvas$renderWorldScreenEffects(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ScreenEffectManager.render(ScreenEffectScope.WORLD);
+    }
+
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"))
+    private void coolcatcanvas$beginWorldVfx(DeltaTracker deltaTracker, CallbackInfo ci) {
+        VfxManager.beginLevel();
+    }
+
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V", shift = At.Shift.AFTER))
+    private void coolcatcanvas$renderWorldVfx(DeltaTracker deltaTracker, CallbackInfo ci) {
+        VfxManager.render(deltaTracker);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V", shift = At.Shift.AFTER))
@@ -56,6 +68,7 @@ public abstract class GameRendererMixin {
         SkyboxManager.close();
         SceneViewportManager.close();
         GhostRenderer.close();
+        VfxManager.close();
     }
 
     // The provider only holds shaders/; definitions and textures come from the (already swapped) resource manager.
@@ -66,5 +79,6 @@ public abstract class GameRendererMixin {
         SkyboxManager.reload(manager);
         SceneViewportManager.onResourceReload();
         GhostRenderer.close();
+        VfxManager.reload();
     }
 }

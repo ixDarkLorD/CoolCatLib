@@ -9,6 +9,11 @@ import java.util.Objects;
  * highest; listeners in the same phase run in the order they were registered.
  * <p>
  * The built-in phases leave room between them, so a mod can slot its own in with {@link #of(String, int)}.
+ * <p>
+ * Phases also place a listener among other mods' own listeners of the same game event (their NeoForge or Fabric
+ * listeners, which CoolCatLib doesn't run), by {@link #band()}: {@link #FIRST} and earlier run before them,
+ * {@link #LAST} and later after them, and the phases between with them. Only events whose loader hook fires each band
+ * at its own place do this (their documentation says so); for the others every phase runs at once, in order.
  */
 public record EventPhase(@NotNull String name, int order) implements Comparable<EventPhase> {
     public static final EventPhase FIRST = new EventPhase("first", -2000);
@@ -40,6 +45,24 @@ public record EventPhase(@NotNull String name, int order) implements Comparable<
      */
     public EventPhase after() {
         return new EventPhase("after_" + this.name, this.order + 1);
+    }
+
+    /** Where listeners of this phase run among other mods' own listeners of the game event. */
+    public Band band() {
+        if (this.order <= FIRST.order) return Band.FIRST;
+        if (this.order >= LAST.order) return Band.LAST;
+        return Band.MIDDLE;
+    }
+
+    /**
+     * Where a phase's listeners run among other mods' own listeners of the game event: before them (NeoForge's highest
+     * priority, a Fabric phase before the default one), with them, or after them (the lowest priority, a phase after
+     * the default one).
+     */
+    public enum Band {
+        FIRST,
+        MIDDLE,
+        LAST
     }
 
     @Override
