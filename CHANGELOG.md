@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v26.3-7 Release | Oct 23, 2026
+### 🐛 Bug Fixes
+- Screen effects draw again on 26.3. Every effect (the ready-made tint and bloom, and shaders of your own) stopped on its first frame with "Render pass color attachment count must match pipeline color target state count", so none ever showed.
+
 ## v26.3-6 Release | Oct 22, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on Fabric and NeoForge:
