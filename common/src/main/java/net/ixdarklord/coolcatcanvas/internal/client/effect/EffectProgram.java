@@ -169,6 +169,9 @@ final class EffectProgram implements AutoCloseable {
             builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("SamplerInfo", UniformType.UNIFORM_BUFFER).build());
             builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("EffectInfo", UniformType.UNIFORM_BUFFER).build());
             for (String block : this.uniformBlocks) builder.withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform(block, UniformType.UNIFORM_BUFFER).build());
+            // One color target, as the pass draws into the output's color alone (26.3 checks the two agree, as vanilla's
+            // post passes do).
+            builder.withColorTargetState(com.mojang.renderpearl.api.pipeline.ColorTargetState.DEFAULT);
             return builder.build();
         }
     }
