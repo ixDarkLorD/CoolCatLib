@@ -18,6 +18,7 @@
     "MinecraftServerMixin",
     "PlayerChunkSenderMixin",
     "PlayerDataStorageAccessor",
+    "RegistryLoadTaskMixin",
     "ResultSlotMixin",
     "ServerEntityMixin",
     "ServerPlayerMixin",
