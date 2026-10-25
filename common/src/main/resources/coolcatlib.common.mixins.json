@@ -13,6 +13,8 @@
     "EndermanLeaveBlockGoalMixin",
     "EntityMixin",
     "FurnaceResultSlotMixin",
+    "GameTestHelperAccessor",
+    "GameTestRegistryMixin",
     "ItemEntityMixin",
     "LevelMixin",
     "LivingEntityMixin",
