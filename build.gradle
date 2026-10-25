@@ -7,4 +7,4 @@ plugins {
 
 // Every project's Java, jar, resource and publishing setup. The test mods (testmods/testmod.gradle) add their own on top.
 // The shared script also names the Maven artifacts, after the mod id and project: net.ixdarklord.coolcatlib:coolcatlib-<loader>.
-apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4/main.gradle"
+apply from: "${findProperty("shared_scripts_url") ?: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4"}/main.gradle"

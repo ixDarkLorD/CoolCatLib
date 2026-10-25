@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v26.1.2-7 Release | Unreleased
+## v8.0.0 Release | Unreleased
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
   - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
@@ -17,6 +17,9 @@ This file is for listing all the changes to this project
   - Named filters for every sound at once (but the menus' clicks): `SoundFilters.set(id, filter, fadeTicks)` fades one in, `clear(id, fadeTicks)` out again; `isSet(id)`. From the server, `SoundFilterControl.set` and `clear` (`api.sound`) do the same for a player.
   - `SoundFilters.refresh()` filters the sounds already playing again, when a provider's answers change.
   - Through OpenAL's EFX extension (a low-pass filter on each sound, sent to a distortion and a reverb effect); without it, sounds are left as they are.
+
+### 🔧 Changes
+- New version numbers: `<version>+<minecraft>`, this one `8.0.0+26.1.2`, the same for every Minecraft version and loader. They follow on from 26.1.2-7; the part before the `+` is what launchers and loaders compare, the Minecraft version after it is only a label. Depending on CoolCatLib: ask for `>=8.0.0`, and the Maven artifacts are `coolcatlib-<loader>:8.0.0+26.1.2`.
 
 ## v26.1.2-6 Release | Oct 22, 2026
 ### ✨ New Features
