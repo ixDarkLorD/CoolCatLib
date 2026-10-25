@@ -29,9 +29,17 @@ CommandEvents.REGISTER.register((dispatcher, context, selection) ->
 // Order listeners with phases (FIRST, EARLY, DEFAULT, LATE, LAST).
 ServerTickEvents.END.register(EventPhase.LATE, server -> { });
 
+// Stop a player picking up a locked item; it stays on the ground.
+PlayerEvents.PICKUP_ITEM.register((player, item) ->
+        isLocked(player, item.getItem()) ? EventResult.interrupt() : EventResult.pass());
+
 // Events can also be found by their listener type.
 EventInvoker.lookup(ServerTickEvents.End.class).register(server -> { });
 ```
+
+### Phases and other mods
+
+Phases order CoolCatLib's own listeners. Where the loader has the same event, they also reach other mods' listeners of it, by their **band** (`EventPhase.band()`): `FIRST` and earlier run before other mods' Forge, NeoForge or Fabric listeners, `LAST` and later after them, and the phases between with them. Events whose loader hook fires each band at its own place say so; the rest run all their listeners at once.
 
 ## Your own events
 
@@ -68,11 +76,32 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 | | `START_LEVEL`, `END_LEVEL` | `(ServerLevel)` |
 | `PlayerEvents` | `JOIN`, `LEAVE` | `(ServerPlayer)` |
 | | `START_TICK`, `END_TICK` | `(Player)`: both sides; check `player.level().isClientSide()` |
-| `EntityEvents` | `LOAD` | `(Entity, ServerLevel)`: spawned or loaded with a chunk, players included |
+| | `CLONE` | `(ServerPlayer original, ServerPlayer player, boolean died)`: the game made a new player object after death or the End; carry over what it doesn't (attachments kept through death already are) |
+| | `RESPAWN` | `(ServerPlayer player, boolean fromEnd)`: back in the world as the new object |
+| | `TRAVEL_TO_DIMENSION` | `EventResult (ServerPlayer, ResourceKey<Level> from, ResourceKey<Level> to)`: before any move to another dimension (portals, commands, other mods' teleporters); interrupt to stay |
+| | `CHANGE_DIMENSION` | `(ServerPlayer, ResourceKey<Level> from, ResourceKey<Level> to)`: after arriving |
+| | `PICKUP_ITEM` | `EventResult (ServerPlayer, ItemEntity)`: the item may be picked up and fits; interrupt to leave it on the ground |
+| | `CRAFTED`, `SMELTED` | `(Player, ItemStack, Container)`: taken out of a crafting or furnace result slot |
+| `LivingEvents` | `DAMAGE` | `EventResult (LivingEntity, DamageSource, float amount)`: before armor; interrupt and no damage is taken |
+| | `DEATH` | `EventResult (LivingEntity, DamageSource)`: interrupt to keep it alive (give it some health back) |
+| | `EQUIPMENT_CHANGE` | `(LivingEntity, EquipmentSlot, ItemStack from, ItemStack to)`: what it wears or holds changed; it may be taken off again |
+| `EntityEvents` | `LOAD`, `UNLOAD` | `(Entity, ServerLevel)`: spawned or loaded with a chunk, players included; and removed or unloaded |
 | `BlockEvents` | `BREAK` | `EventResult (ServerLevel, BlockPos, BlockState, ServerPlayer)`: interrupt to cancel |
+| | `PLACE` | `EventResult (Level, BlockPos, BlockState, @Nullable Entity placer, ItemStack)`: before any block item places (players, dispensers, machines) or an enderman sets its block down; interrupt and nothing is placed, the item kept |
 | | `PLACED` | `(Level, BlockPos, BlockState, @Nullable Entity placer)` |
+| `InteractionEvents` | `USE_BLOCK` | `InteractionResult (Player, InteractionHand, BlockHitResult)`: before the game uses the block; `PASS` lets it go on, anything else is the result |
+| | `USE_ITEM`, `USE_ENTITY` | `InteractionResult (Player, InteractionHand[, Entity target])`: the same, for the item in hand and for an entity |
+| | `ATTACK_BLOCK` | `EventResult (Player, InteractionHand, BlockPos, Direction)`: interrupt to stop it |
+| | `ATTACK_ENTITY` | `EventResult (Player, Entity target)`: interrupt to stop it |
+| `RecipeEvents` | `CRAFT_RESULT` | `EventResultHolder<ItemStack> (@Nullable Player, RecipeHolder<?>, CraftingInput, ItemStack result)`: a crafting grid's or a crafter's result; interrupt with another stack, or `ItemStack.EMPTY` so nothing can be crafted |
 | `CommandEvents` | `REGISTER` | `(CommandDispatcher<CommandSourceStack>, CommandBuildContext, Commands.CommandSelection)` |
 | `AttachmentEvents` | `CHANGING`, `ADDED`, `CHANGED`, `REMOVED`, `START_TRACKING`, `STOP_TRACKING`, `RECEIVED` | See [Attachments](attachments.md). |
+
+!!! info "Which versions have which"
+    Interaction events, `ItemTooltipEvents.APPEND` and the phase bands: since **26.1.2-6** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1).
+    `LivingEvents.DAMAGE` / `DEATH`, `EntityEvents.UNLOAD`: since **26.1.2-6** (and 26.2, 26.3); not yet on 1.21.1 and 1.20.1.
+    `PlayerEvents.CLONE` / `RESPAWN` / `CHANGE_DIMENSION`: since **26.1.2-6** (and 26.2, 26.3), **2100.5.0.0** and **2001.5.0.0**.
+    `BlockEvents.PLACE`, `PlayerEvents.PICKUP_ITEM` / `TRAVEL_TO_DIMENSION` / `CRAFTED` / `SMELTED`, `LivingEvents.EQUIPMENT_CHANGE` and `RecipeEvents`: coming in **26.1.2-7**, **2100.5.0.0** and **2001.5.0.0**. On 1.20.1, `CRAFT_RESULT` takes `(Player, Recipe<?>, CraftingContainer, ItemStack)`, as that version has no `RecipeHolder` or `CraftingInput`, and there's no crafter.
 
 ### Client (`api.event.v2.client`)
 
@@ -83,6 +112,7 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 | | `LEAVE` | `(@Nullable LocalPlayer)` |
 | `ClientGuiEvents` | `RENDER_HUD` | `(GuiGraphicsExtractor graphics, DeltaTracker delta)`: draws over the vanilla HUD every frame |
 | `ItemTooltipEvents` | `MODIFY` | `(ItemStack, Item.TooltipContext, TooltipFlag, List<Component> lines)`: the finished lines, name included |
+| | `APPEND` | `(ItemStack, Item.TooltipContext, @Nullable Player, TooltipFlag, List<Component> lines)`: after every other mod's lines; what you add comes last |
 | `ClientCommandEvents` | `REGISTER` | `(CommandDispatcher<SharedSuggestionProvider>, CommandBuildContext)`. Reply with `ClientCommandEvents.sendFeedback(component)` or `sendError(component)`. |
 
 ### Elsewhere

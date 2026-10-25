@@ -9,11 +9,11 @@ This guide sets up a multi-loader mod on CoolCatLib. It assumes the usual layout
 
 ## 1. Add the dependency
 
-CoolCatLib is published on the ModResources Maven. Artifacts are named `net.ixdarklord.coolcatlib:coolcatlib-<module>:<minecraft>-<build>`, and one artifact holds everything, the foundation (Core) and the visuals (Canvas).
+CoolCatLib is published on the [ModResources Maven](https://ixdarklord.github.io/ModResources/), free to use with no token; its page lists every version. Artifacts are named `net.ixdarklord.coolcatlib:coolcatlib-<module>:<minecraft>-<build>`, and one artifact holds everything, the foundation (Core) and the visuals (Canvas).
 
 ```groovy title="build.gradle"
 repositories {
-    maven { url = "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/maven/" }
+    maven { url = "https://ixdarklord.github.io/ModResources/maven/" }
 }
 ```
 
@@ -21,7 +21,7 @@ repositories {
 
     ```groovy title="common/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-common:26.1.2-5"
+        api "net.ixdarklord.coolcatlib:coolcatlib-common:26.1.2-6"
     }
     ```
 
@@ -29,7 +29,7 @@ repositories {
 
     ```groovy title="fabric/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-fabric:26.1.2-5"
+        api "net.ixdarklord.coolcatlib:coolcatlib-fabric:26.1.2-6"
     }
     ```
 
@@ -37,7 +37,7 @@ repositories {
 
     ```groovy title="neoforge/build.gradle"
     dependencies {
-        api "net.ixdarklord.coolcatlib:coolcatlib-neoforge:26.1.2-5"
+        api "net.ixdarklord.coolcatlib:coolcatlib-neoforge:26.1.2-6"
     }
     ```
 
@@ -45,14 +45,14 @@ repositories {
 
     ```groovy title="forge/build.gradle"
     dependencies {
-        modApi "net.ixdarklord.coolcatlib:coolcatlib-forge:1.21.1-2100.3.0.0"   // 1.20.1: 1.20.1-2001.3.0.0
+        modApi "net.ixdarklord.coolcatlib:coolcatlib-forge:1.21.1-2100.4.0.0"   // 1.20.1: 1.20.1-2001.4.0.1
     }
     ```
 
 !!! tip "Remapped versions"
     On Minecraft versions that are still remapped (1.21.1 and 1.20.1), use Loom's `modApi` instead of `api`.
 
-Then declare the dependency in your mod's metadata, on the mod id `coolcatlib`. Versions take the form `<minecraft>-<build>` on 26.1.2 and are plain numbers on 1.21.1 (`2100.3.0.0`) and 1.20.1 (`2001.3.0.0`):
+Then declare the dependency in your mod's metadata, on the mod id `coolcatlib`. Versions take the form `<minecraft>-<build>` on 26.1.2 and are plain numbers on 1.21.1 (`2100.4.0.0`) and 1.20.1 (`2001.4.0.1`). 26.2 and 26.3 work the same way (`26.2-6`, `26.3-7`):
 
 === "Fabric"
 

@@ -33,6 +33,12 @@ CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`,
 
     Camera paths with letterbox bars, fades, subtitles and markers, from code, resource packs, the server or an in-game editor.
 
+-   :material-waveform:{ .lg .middle } **[Sound Filters](sound-filters.md)**
+
+    ---
+
+    Muffle, roughen and echo the game's sounds, sound by sound or all at once, from the client or the server.
+
 -   :material-format-color-text:{ .lg .middle } **[Text and Colors](text-and-colors.md)**
 
     ---

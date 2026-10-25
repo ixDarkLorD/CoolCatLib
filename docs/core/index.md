@@ -37,7 +37,7 @@ CoolCatLib's foundation: one common codebase for Fabric, NeoForge and Forge. Pac
 
     ---
 
-    Your data on entities, block entities and item stacks, saved and synced.
+    Your data on entities, block entities, item stacks, levels and the server, saved and synced; offline players' too.
 
 -   :material-package-variant-closed:{ .lg .middle } **[Containers and Menus](containers-and-menus.md)**
 
@@ -50,6 +50,12 @@ CoolCatLib's foundation: one common codebase for Fabric, NeoForge and Forge. Pac
     ---
 
     Custom drawing over an item wherever the game draws it in a GUI.
+
+-   :material-test-tube:{ .lg .middle } **[Game Tests](game-tests.md)**
+
+    ---
+
+    Game tests from common code, run by `/test` and every loader's test server.
 
 -   :material-wrench-outline:{ .lg .middle } **[Platform and Utilities](platform-and-utilities.md)**
 

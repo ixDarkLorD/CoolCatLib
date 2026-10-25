@@ -121,6 +121,7 @@ nav:
       - Attachments: core/attachments.md
       - Containers and Menus: core/containers-and-menus.md
       - Item Decorators: core/item-decorators.md
+      - Game Tests: core/game-tests.md
       - Platform and Utilities: core/platform-and-utilities.md
   - Canvas:
       - canvas/index.md
@@ -128,6 +129,7 @@ nav:
       - Skyboxes: canvas/skyboxes.md
       - World Effects: canvas/world-effects.md
       - Cutscenes: canvas/cutscenes.md
+      - Sound Filters: canvas/sound-filters.md
       - Text and Colors: canvas/text-and-colors.md
       - GUI: canvas/gui.md
   - Reference: reference/api.md

@@ -37,9 +37,12 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 |---|---|
 | `ServerLifecycleEvents` | `STARTING`, `STARTED`, `STOPPING`, `STOPPED`, `SYNC_DATA_PACK_CONTENTS` |
 | `ServerTickEvents` | `START`, `END`, `START_LEVEL`, `END_LEVEL` |
-| `PlayerEvents` | `JOIN`, `LEAVE`, `START_TICK`, `END_TICK` |
-| `EntityEvents` | `LOAD` |
-| `BlockEvents` | `BREAK` (cancellable), `PLACED` |
+| `PlayerEvents` | `JOIN`, `LEAVE`, `START_TICK`, `END_TICK`, `CLONE`, `RESPAWN`, `TRAVEL_TO_DIMENSION` (cancellable), `CHANGE_DIMENSION`, `PICKUP_ITEM` (cancellable), `CRAFTED`, `SMELTED` |
+| `LivingEvents` | `DAMAGE`, `DEATH` (cancellable), `EQUIPMENT_CHANGE` |
+| `EntityEvents` | `LOAD`, `UNLOAD` |
+| `BlockEvents` | `BREAK`, `PLACE` (cancellable), `PLACED` |
+| `InteractionEvents` | `USE_BLOCK`, `USE_ITEM`, `USE_ENTITY` (answer with an `InteractionResult`), `ATTACK_BLOCK`, `ATTACK_ENTITY` (cancellable) |
+| `RecipeEvents` | `CRAFT_RESULT` (change or empty a crafting result) |
 | `CommandEvents` | `REGISTER` |
 | `AttachmentEvents` | `CHANGING`, `ADDED`, `CHANGED`, `REMOVED`, `START_TRACKING`, `STOP_TRACKING`, `RECEIVED` |
 
@@ -49,7 +52,7 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `ClientTickEvents` | `START`, `END` |
 | `ClientPlayerEvents` | `JOIN`, `LEAVE` |
 | `ClientGuiEvents` | `RENDER_HUD` |
-| `ItemTooltipEvents` | `MODIFY` |
+| `ItemTooltipEvents` | `MODIFY`, `APPEND` |
 | `ClientCommandEvents` | `REGISTER`; `sendFeedback`, `sendError` |
 
 ### `event.v1`: legacy events
@@ -116,11 +119,18 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | Class | Functionality |
 |---|---|
 | `AttachmentRegistry` | A mod's attachments: builders and registration. |
-| `Attachment<T>` | One attachment: get, set, update, modify, reset on entities, block entities and stacks. |
+| `Attachment<T>` | One attachment: get, set, update, modify, reset on entities, block entities, stacks, levels and the server; the server's value on either side (`getGlobal`); offline players' (`getOffline`, `setOffline`, `updateOffline`, `resetOffline`). |
 | `Attachment.Builder<T>` | Sync, network codec, copy on death, keep on drop, change listeners. |
 | `AttachmentHolder` | Uniform access to any holder. |
 | `SyncPolicy` | `NONE`, `SELF`, `TRACKING`, `ALL`, or your own. |
 | `Trackable` | Mutable values that report their own changes. |
+
+### `gametest` ([Game Tests](../core/game-tests.md))
+| Class | Functionality |
+|---|---|
+| `GameTests` | Registers game tests from common code: a class's `@GameTest` methods, or one test by hand. |
+| `GameTest` | Marks a method as a game test, with its options. |
+| `GameTestOptions` | How a test runs: structure, time limit, rotation, retries and more; `PLATFORM`, CoolCatLib's test structure. |
 
 ### `container` ([Containers and Menus](../core/containers-and-menus.md))
 | Class | Functionality |
@@ -249,6 +259,14 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `client.vfx.WorldRifts`, `Rift`, `RiftSpec` | Rifts: tears in the air that open, hang and close. |
 | `vfx.VfxControl`, `VfxParams` | Plays a named effect on players' clients from the server. |
 | `vfx.RiftControl` | Opens and closes registered rifts from the server. |
+
+### `client.sound` and `sound` ([Canvas Sound Filters](../canvas/sound-filters.md))
+| Class | Functionality |
+|---|---|
+| `client.sound.SoundFilter` | How a sound comes through: gain, highs, distortion and reverb. |
+| `client.sound.SoundFilters` | Named filters on every sound, fading in and out, and providers asked sound by sound. |
+| `client.sound.SoundFilterProvider`, `SoundContext` | A filter per sound, by where it is, what it is or its category. |
+| `sound.SoundFilterControl` | Sets and clears a player's named filters from the server. |
 
 ### `cutscene`, `client.cutscene` and the cutscene events ([Canvas Cutscenes](../canvas/cutscenes.md))
 | Class | Functionality |

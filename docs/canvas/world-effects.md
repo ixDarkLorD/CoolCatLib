@@ -8,7 +8,7 @@ description: Glowing particles, beams, trails and rifts in the world
 Glowing shapes drawn in the world: particles that swell and fade, beams, flashes, trails and shapes of your own, and rifts that tear open in the air. Package: `net.ixdarklord.coolcatcanvas.api.client.vfx` (client) and `api.vfx` (server).
 
 !!! info "Since"
-    CoolCatLib **26.1.2-5** (Canvas 26.1.2-6 before the merge), on Minecraft 26.1 – 26.1.2. Not in the 1.21.1 and 1.20.1 versions.
+    CoolCatLib **26.1.2-5** (Canvas 26.1.2-6 before the merge), on Minecraft 26.1 – 26.1.2, and in 26.2 and 26.3; **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1). On 1.20.1, shader materials use GLSL 150.
 
 World effects are drawn after the whole level and before the player's hand, lit by nothing. They hide behind solid things and fade softly where they meet them, so a glow never ends in a hard line at a wall or the ground. Everything drawn with the same material in a frame goes out in one draw call.
 

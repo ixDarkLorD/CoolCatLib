@@ -136,11 +136,13 @@ flowchart LR
 
 ## Versions and loaders
 
-| Minecraft | One mod since | NeoForge | Forge | Fabric | Source |
+| Minecraft | Latest | NeoForge | Forge | Fabric | Source |
 |---|---|:-:|:-:|:-:|---|
-| **26.1 – 26.1.2** | `26.1.2-5` | :material-check: | – | :material-check: | [`26.1.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.1.2) |
-| **1.21 – 1.21.1** | `2100.3.0.0` | :material-check: | :material-check: | :material-check: | [`1.21`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.21) |
-| **1.20.1** | `2001.3.0.0` | – | :material-check: | :material-check: | [`1.20.1`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.20.1) |
+| **26.3** | `26.3-7` | :material-check: | – | :material-check: | [`26.3`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.3) |
+| **26.2** | `26.2-6` | :material-check: | – | :material-check: | [`26.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.2) |
+| **26.1 – 26.1.2** | `26.1.2-6` | :material-check: | – | :material-check: | [`26.1.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.1.2) |
+| **1.21 – 1.21.1** | `2100.4.0.0` | :material-check: | :material-check: | :material-check: | [`1.21`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.21) |
+| **1.20.1** | `2001.4.0.1` | – | :material-check: | :material-check: | [`1.20.1`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.20.1) |
 
 !!! note "About these docs"
-    The pages are written against **26.1.2**. The backports share the same API, adjusted for their Minecraft version: `ResourceLocation` instead of `Identifier`, `GuiGraphics` instead of `GuiGraphicsExtractor`, and a Forge entrypoint.
+    The pages are written against **26.1.2**; 26.2 and 26.3 have the same API. Pages say when something is newer than the latest release, or missing from a version. The backports share the same API, adjusted for their Minecraft version: `ResourceLocation` instead of `Identifier`, `GuiGraphics` instead of `GuiGraphicsExtractor`, and a Forge entrypoint.
