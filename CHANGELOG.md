@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.0.0 Release | Unreleased
+### 🔧 Changes
+- New version numbers: `<version>+<minecraft>`, this one `8.0.0+26.2`, the same for every Minecraft version and loader. They follow on from 26.2-6; the part before the `+` is what launchers and loaders compare, the Minecraft version after it is only a label. Depending on CoolCatLib: ask for `>=8.0.0`, and the Maven artifacts are `coolcatlib-<loader>:8.0.0+26.2`.
+
 ## v26.2-6 Release | Oct 22, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on Fabric and NeoForge:
