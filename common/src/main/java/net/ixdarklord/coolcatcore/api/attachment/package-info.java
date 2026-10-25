@@ -1,5 +1,6 @@
 /**
- * Attachments: typed data any entity (players included), block entity or item stack can carry.
+ * Attachments: typed data any entity (players included), block entity, item stack, level or the server itself can carry,
+ * and offline players' saved values.
  * <p>
  * Each mod declares its attachments through its own {@link net.ixdarklord.coolcatcore.api.attachment.AttachmentRegistry},
  * which stores them under the mod's id ({@code <modid>:attachments}). An attachment saves with its holder, syncs by its

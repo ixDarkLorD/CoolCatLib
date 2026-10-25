@@ -35,7 +35,8 @@ import java.util.Set;
 import java.util.UUID;
 
 // Sends Attachment values to the players who see their holder: changed values once per server tick; everything when a
-// player starts tracking an entity, receives a chunk, joins, respawns or changes dimension.
+// player starts tracking an entity, receives a chunk, joins, respawns or changes dimension (their own values, their
+// level's and the server's).
 public final class AttachmentSync {
     // Clientbound custom payloads are capped at 1 MiB.
     private static final int MAX_PAYLOAD_BYTES = 1_000_000;
@@ -82,6 +83,11 @@ public final class AttachmentSync {
             AttachmentStore store = ((AttachmentStoreAccess) player).coolcatlib$getOrCreateAttachments();
             startTracking(store, player);
             sendFull(store, player);
+            // And the values of the level they're in now, and the server's.
+            AttachmentStore level = ((AttachmentStoreAccess) player.level()).coolcatlib$getAttachments();
+            if (level != null) sendFull(level, player);
+            AttachmentStore global = ((AttachmentStoreAccess) server).coolcatlib$getAttachments();
+            if (global != null && seen == null) sendFull(global, player);
         }
         SEEN.keySet().removeIf(id -> server.getPlayerList().getPlayer(id) == null);
 
@@ -164,9 +170,10 @@ public final class AttachmentSync {
             }
             // Clients without CoolCatLib and GameTest mock players have no channel for it (NeoForge throws on send).
             if (!Network.canPlayerReceive(player, AttachmentSyncPayload.TYPE)) continue;
-            Network.sendToPlayer(player, owner instanceof Entity entity
-                    ? AttachmentSyncPayload.entity(entity.getId(), entries)
-                    : AttachmentSyncPayload.block(((BlockEntity) owner).getBlockPos(), entries));
+            Network.sendToPlayer(player, owner instanceof Entity entity ? AttachmentSyncPayload.entity(entity.getId(), entries)
+                    : owner instanceof BlockEntity blockEntity ? AttachmentSyncPayload.block(blockEntity.getBlockPos(), entries)
+                    : owner instanceof Level ? AttachmentSyncPayload.level(entries)
+                    : AttachmentSyncPayload.server(entries));
         }
     }
 
@@ -200,9 +207,12 @@ public final class AttachmentSync {
                 }
             }
             if (entity instanceof ServerPlayer self && !players.contains(self)) players.add(self);
-        } else {
-            BlockEntity blockEntity = (BlockEntity) store.owner();
+        } else if (store.owner() instanceof BlockEntity blockEntity) {
             players.addAll(level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(blockEntity.getBlockPos()), false));
+        } else if (store.owner() instanceof MinecraftServer server) {
+            players.addAll(server.getPlayerList().getPlayers());
+        } else {
+            players.addAll(level.players());
         }
         return players;
     }
@@ -211,9 +221,18 @@ public final class AttachmentSync {
 
     private static void receive(AttachmentSyncPayload payload, Player player) {
         Level level = player.level();
-        Object owner = payload.pos() != null ? level.getBlockEntity(payload.pos()) : level.getEntity(payload.entityId());
-        if (owner == null) return;
-        AttachmentStore store = ((AttachmentStoreAccess) owner).coolcatlib$getOrCreateAttachments();
+        AttachmentStore store;
+        if (payload.target() == AttachmentSyncPayload.Target.SERVER) {
+            store = ServerAttachments.client();
+        } else {
+            Object owner = switch (payload.target()) {
+                case BLOCK -> level.getBlockEntity(payload.pos());
+                case ENTITY -> level.getEntity(payload.entityId());
+                default -> level;
+            };
+            if (owner == null) return;
+            store = ((AttachmentStoreAccess) owner).coolcatlib$getOrCreateAttachments();
+        }
         Set<Attachment<?>> applied = new LinkedHashSet<>();
         for (AttachmentSyncPayload.Entry entry : payload.entries()) {
             Attachment<?> key = AttachmentIndex.get(entry.key());
