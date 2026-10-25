@@ -9,7 +9,8 @@
     "BrewingStandBlockEntityMixin",
     "BrewingStandPotionSlotMixin",
     "BlockItemMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ServerPlayerTravelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,8 @@
 package net.ixdarklord.coolcatcore.internal.event.fabric;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -23,7 +25,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 
 // Fires CoolCatLib's common events from Fabric's. Player ticks and block placing come from mixins (Fabric has no
-// events for them): PlayerMixin, BlockItemMixin.
+// events for them): PlayerMixin, BlockItemMixin; and travel to another dimension from ServerPlayerTravelMixin.
 public final class FabricEventHooks {
     private FabricEventHooks() {}
 
@@ -56,6 +58,12 @@ public final class FabricEventHooks {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.LEAVE.invoker().onLeave(handler.player));
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> EntityEvents.LOAD.invoker().onLoad(entity, level));
+
+        // "alive" is true for a player coming back from the End, false after death.
+        ServerPlayerEvents.COPY_FROM.register((original, player, alive) -> PlayerEvents.CLONE.invoker().onClone(original, player, !alive));
+        ServerPlayerEvents.AFTER_RESPAWN.register((original, player, alive) -> PlayerEvents.RESPAWN.invoker().onRespawn(player, alive));
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, from, to) ->
+                PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, from.dimension(), to.dimension()));
 
         UseBlockCallback.EVENT.register((player, level, hand, hit) -> InteractionEvents.USE_BLOCK.invoker().onUseBlock(player, hand, hit));
         // Fabric's item use answers with the stack held: the same stack, with the event's result.

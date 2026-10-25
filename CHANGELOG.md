@@ -1,6 +1,17 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2001.5.0.0 Release | Unreleased
+### ✨ New Features
+- More common events (`api.event.v2.common`), fired the same on Fabric and Forge:
+  - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
+  - `PlayerEvents.PICKUP_ITEM` (interrupt to leave the item on the ground), `TRAVEL_TO_DIMENSION` (before any teleport to another dimension: portals, commands, other mods' teleporters; interrupt to stay), `CRAFTED` and `SMELTED` (an item taken from a crafting or furnace result slot).
+  - `PlayerEvents.CLONE` (the new player object after death or the End, to carry data over), `RESPAWN` and `CHANGE_DIMENSION`.
+  - `LivingEvents.EQUIPMENT_CHANGE`: what an entity wears or holds in a slot changed.
+  - `RecipeEvents.CRAFT_RESULT`: a crafting recipe's result for a crafting grid; interrupt with another stack, or an empty one so nothing can be crafted. On this version it gets the game's `Recipe` and `CraftingContainer` (there is no crafter block).
+- Attachments on levels and on the server: `get`, `set`, `update`, `modify`, `has` and `reset` take a `Level` or the `MinecraftServer`, saved in the level's data folder (the server's in the overworld's) and synced (`SyncPolicy.ALL`) to the players in the level, or to everyone. `getGlobal(level)` reads the server's values on either side.
+- Offline players' attachments: `getOffline`, `setOffline`, `updateOffline` and `resetOffline` read and write a player's saved values whether or not they're online (an offline player's data file is written at once).
+
 ## v2001.4.0.1 Release | Oct 22, 2026
 ### 🐛 Bug Fixes
 - Screen effects, skyboxes, world effects and ghost blocks no longer leave the game believing its own shader is still bound. Vanilla skips binding a core or post shader it bound last; after one of CoolCatLib's programs, the next draw with that shader could run with the wrong program (or none) and send its uniforms to it.

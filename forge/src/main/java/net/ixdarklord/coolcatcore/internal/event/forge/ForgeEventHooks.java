@@ -68,6 +68,17 @@ public final class ForgeEventHooks {
         bus.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.LEAVE.invoker().onLeave(player);
         });
+        bus.addListener((PlayerEvent.Clone event) -> {
+            if (event.getOriginal() instanceof ServerPlayer original && event.getEntity() instanceof ServerPlayer player) {
+                PlayerEvents.CLONE.invoker().onClone(original, player, event.isWasDeath());
+            }
+        });
+        bus.addListener((PlayerEvent.PlayerRespawnEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.RESPAWN.invoker().onRespawn(player, event.isEndConquered());
+        });
+        bus.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, event.getFrom(), event.getTo());
+        });
         bus.addListener((TickEvent.PlayerTickEvent event) -> {
             if (event.phase == TickEvent.Phase.START) PlayerEvents.START_TICK.invoker().onStartTick(event.player);
             else PlayerEvents.END_TICK.invoker().onEndTick(event.player);

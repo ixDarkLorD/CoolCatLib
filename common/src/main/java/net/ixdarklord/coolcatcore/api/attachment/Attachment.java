@@ -4,25 +4,29 @@ import com.mojang.serialization.Codec;
 import net.ixdarklord.coolcatcore.api.container.ContainerLayout;
 import net.ixdarklord.coolcatcore.api.container.SlotContainer;
 import net.ixdarklord.coolcatcore.internal.attachment.AttachmentIndex;
+import net.ixdarklord.coolcatcore.internal.attachment.OfflineAttachments;
 import net.minecraft.network.FriendlyByteBuf;
 import net.ixdarklord.coolcatcore.api.network.codec.ByteBufCodecs;
 import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * A typed piece of data any entity (players included), block entity or item stack can carry. Attachments come from a
- * mod's {@link AttachmentRegistry}, declared once, statically:
+ * A typed piece of data any entity (players included), block entity, item stack, level or the server itself can carry.
+ * Attachments come from a mod's {@link AttachmentRegistry}, declared once, statically:
  * <pre>{@code
  * public static final AttachmentRegistry ATTACHMENTS = AttachmentRegistry.create(MOD_ID);
  *
@@ -37,8 +41,18 @@ import java.util.function.UnaryOperator;
  * MADNESS.update(player, m -> Math.max(0, m - 1));
  * }</pre>
  * Values should be immutable (numbers, records, immutable lists); a changed value is {@link #set} again. Mutable values
- * are allowed on entities and block entities: change them with {@link #modify}, or make them {@link Trackable}.
- * Item stacks only take immutable, persistent values.
+ * are allowed on entities, block entities, levels and the server: change them with {@link #modify}, or make them
+ * {@link Trackable}. Item stacks only take immutable, persistent values.
+ * <p>
+ * A level's values ({@link #get(Level)}) are saved in its data folder and synced to the players in it; the server's
+ * ({@link #get(MinecraftServer)}) with the overworld's, synced to every player, whom {@link #getGlobal} lets read them.
+ * For both, {@link SyncPolicy#ALL} sends them and {@link SyncPolicy#NONE} keeps them on the server. A player's values
+ * can be read and written while they're offline too ({@link #getOffline}).
+ * <pre>{@code
+ * TEAM_STAGE.set(server, 3);                          // the whole server's, saved with it
+ * int stage = TEAM_STAGE.getGlobal(level);             // on either side: the server's, or the client's synced copy
+ * MADNESS.updateOffline(server, uuid, m -> m + 1);    // a player who isn't online: written to their data file
+ * }</pre>
  *
  * @param <T> the value's type
  */
@@ -241,6 +255,100 @@ public final class Attachment<T> {
 
     public void reset(ItemStack stack) {
         AttachmentHolder.of(stack).reset(this);
+    }
+
+    // --- Levels: a server level's saved in its data folder, a client level's as the server sent them ---
+
+    public T get(Level level) {
+        return AttachmentHolder.of(level).get(this);
+    }
+
+    public void set(Level level, T value) {
+        AttachmentHolder.of(level).set(this, value);
+    }
+
+    public T update(Level level, UnaryOperator<T> function) {
+        return AttachmentHolder.of(level).update(this, function);
+    }
+
+    public void modify(Level level, Consumer<T> mutator) {
+        AttachmentHolder.of(level).modify(this, mutator);
+    }
+
+    public boolean has(Level level) {
+        return AttachmentHolder.of(level).has(this);
+    }
+
+    public void reset(Level level) {
+        AttachmentHolder.of(level).reset(this);
+    }
+
+    // --- The server, saved in the overworld's data folder ---
+
+    public T get(MinecraftServer server) {
+        return AttachmentHolder.of(server).get(this);
+    }
+
+    public void set(MinecraftServer server, T value) {
+        AttachmentHolder.of(server).set(this, value);
+    }
+
+    public T update(MinecraftServer server, UnaryOperator<T> function) {
+        return AttachmentHolder.of(server).update(this, function);
+    }
+
+    public void modify(MinecraftServer server, Consumer<T> mutator) {
+        AttachmentHolder.of(server).modify(this, mutator);
+    }
+
+    public boolean has(MinecraftServer server) {
+        return AttachmentHolder.of(server).has(this);
+    }
+
+    public void reset(MinecraftServer server) {
+        AttachmentHolder.of(server).reset(this);
+    }
+
+    /**
+     * The server's value as this side knows it: on the server, its own ({@link #get(MinecraftServer)}); on a client,
+     * the copy it was sent (the default if this attachment isn't synced).
+     *
+     * @param level any level of the side asking
+     */
+    public T getGlobal(Level level) {
+        return AttachmentHolder.global(level).get(this);
+    }
+
+    // --- Offline players: read from and written to their data file (an online player's are their entity's) ---
+
+    /**
+     * A player's value whether or not they're online: an online player's from their entity, an offline one's from their
+     * data file, or the default for a player who has never played here. Only for saved attachments. On the server
+     * thread.
+     */
+    public T getOffline(MinecraftServer server, UUID player) {
+        return OfflineAttachments.get(server, player, this);
+    }
+
+    /**
+     * Sets a player's value whether or not they're online; an offline player's is written to their data file at once
+     * (no {@code AttachmentEvents} fire for it, and it reaches them when they next join). Only for saved attachments. On
+     * the server thread.
+     *
+     * @return false if the player has never played here, or the file couldn't be written
+     */
+    public boolean setOffline(MinecraftServer server, UUID player, T value) {
+        return OfflineAttachments.set(server, player, this, value);
+    }
+
+    /** Sets a player's value to {@code function}'s result, whether or not they're online (see {@link #setOffline}). */
+    public boolean updateOffline(MinecraftServer server, UUID player, UnaryOperator<T> function) {
+        return OfflineAttachments.update(server, player, this, function);
+    }
+
+    /** Removes a player's value whether or not they're online (see {@link #setOffline}). */
+    public boolean resetOffline(MinecraftServer server, UUID player) {
+        return OfflineAttachments.set(server, player, this, null);
     }
 
     @Override
