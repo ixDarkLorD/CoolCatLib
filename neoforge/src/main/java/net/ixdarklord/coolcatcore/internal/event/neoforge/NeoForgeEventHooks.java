@@ -91,6 +91,18 @@ public final class NeoForgeEventHooks {
             if (event.getLevel() instanceof ServerLevel level) EntityEvents.LOAD.invoker().onLoad(event.getEntity(), level);
         });
 
+        bus.addListener((PlayerEvent.Clone event) -> {
+            if (event.getOriginal() instanceof ServerPlayer original && event.getEntity() instanceof ServerPlayer player) {
+                PlayerEvents.CLONE.invoker().onClone(original, player, event.isWasDeath());
+            }
+        });
+        bus.addListener((PlayerEvent.PlayerRespawnEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.RESPAWN.invoker().onRespawn(player, event.isEndConquered());
+        });
+        bus.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, event.getFrom(), event.getTo());
+        });
+
         bus.addListener((PlayerInteractEvent.RightClickBlock event) -> {
             InteractionResult result = InteractionEvents.USE_BLOCK.invoker().onUseBlock(event.getEntity(), event.getHand(), event.getHitVec());
             if (result != InteractionResult.PASS) {

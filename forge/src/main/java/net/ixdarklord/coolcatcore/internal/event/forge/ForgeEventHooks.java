@@ -87,6 +87,18 @@ public final class ForgeEventHooks {
             if (event.getLevel() instanceof ServerLevel level) EntityEvents.LOAD.invoker().onLoad(event.getEntity(), level);
         });
 
+        listen(bus, PlayerEvent.Clone.class, event -> {
+            if (event.getOriginal() instanceof ServerPlayer original && event.getEntity() instanceof ServerPlayer player) {
+                PlayerEvents.CLONE.invoker().onClone(original, player, event.isWasDeath());
+            }
+        });
+        listen(bus, PlayerEvent.PlayerRespawnEvent.class, event -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.RESPAWN.invoker().onRespawn(player, event.isEndConquered());
+        });
+        listen(bus, PlayerEvent.PlayerChangedDimensionEvent.class, event -> {
+            if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, event.getFrom(), event.getTo());
+        });
+
         listen(bus, PlayerInteractEvent.RightClickBlock.class, event -> {
             InteractionResult result = InteractionEvents.USE_BLOCK.invoker().onUseBlock(event.getEntity(), event.getHand(), event.getHitVec());
             if (result != InteractionResult.PASS) {

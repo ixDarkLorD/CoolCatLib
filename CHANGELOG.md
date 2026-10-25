@@ -1,6 +1,17 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v2100.5.0.0 Release | Unreleased
+### ✨ New Features
+- More common events (`api.event.v2.common`), fired the same on every loader:
+  - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
+  - `PlayerEvents.PICKUP_ITEM` (interrupt to leave the item on the ground), `TRAVEL_TO_DIMENSION` (before any move to another dimension: portals, commands, other mods' teleporters; interrupt to stay), `CRAFTED` and `SMELTED` (an item taken from a crafting or furnace result slot).
+  - `PlayerEvents.CLONE` (a new player object copied from the old one, after death or leaving the End), `RESPAWN` and `CHANGE_DIMENSION` (after arriving), as on 26.1.2.
+  - `LivingEvents.EQUIPMENT_CHANGE`: what an entity wears or holds in a slot changed.
+  - `RecipeEvents.CRAFT_RESULT`: a crafting recipe's result for a crafting grid or a crafter; interrupt with another stack, or an empty one so nothing can be crafted.
+- Attachments on levels and on the server: `get`, `set`, `update`, `modify`, `has` and `reset` take a `Level` or the `MinecraftServer`, saved with the level (the server's in the overworld's data folder) and synced (`SyncPolicy.ALL`) to the players in the level, or to everyone. `getGlobal(level)` reads the server's values on either side.
+- Offline players' attachments: `getOffline`, `setOffline`, `updateOffline` and `resetOffline` read and write a player's saved values whether or not they're online (an offline player's data file is written at once).
+
 ## v2100.4.0.0 Release | Oct 22, 2026
 ### ✨ New Features
 - World effects (`api.client.vfx`), as on 26.1.2: glowing shapes drawn in the world, after the whole level and before the hand, lit by nothing. They hide behind solid things and fade softly where they meet them (`VfxMaterial.softness`), so nothing ends in a hard line at a wall or the ground.
