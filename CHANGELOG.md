@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.0.0 Release | Unreleased
+### 🔧 Changes
+- New version numbers: `<version>+<minecraft>`, this one `8.0.0+26.3`, the same for every Minecraft version and loader. They follow on from 26.3-7; the part before the `+` is what launchers and loaders compare, the Minecraft version after it is only a label. Depending on CoolCatLib: ask for `>=8.0.0`, and the Maven artifacts are `coolcatlib-<loader>:8.0.0+26.3`.
+
 ## v26.3-7 Release | Oct 23, 2026
 ### 🐛 Bug Fixes
 - Screen effects draw again on 26.3. Every effect (the ready-made tint and bloom, and shaders of your own) stopped on its first frame with "Render pass color attachment count must match pipeline color target state count", so none ever showed.
