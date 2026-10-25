@@ -1,6 +1,14 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v26.1.2-7 Release | Unreleased
+### ✨ New Features
+- Sound filters (`api.client.sound`): muffle and roughen the game's sounds, as heard through a wall or under a spell.
+  - `SoundFilters.register(provider)` adds a `SoundFilterProvider`, asked for each sound with a place in the world as it starts and as it moves; music and the menus are never filtered.
+  - A `SoundFilter` is how loud a sound stays, how much of its high end it keeps and how much of it goes through a distortion; filters combine with `then`.
+  - `SoundFilters.refresh()` filters the sounds already playing again, when the providers' answers change.
+  - Through OpenAL's EFX extension (a low-pass filter on each sound, and a distortion effect it is sent to); without it, sounds are left as they are.
+
 ## v26.1.2-6 Release | Oct 22, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on Fabric and NeoForge:
