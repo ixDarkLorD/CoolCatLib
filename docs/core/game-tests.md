@@ -8,7 +8,7 @@ description: Game tests from common code, on every loader
 Game tests from common code, the same on every loader: a test is a function given a `GameTestHelper`, run in a structure built for it, and it passes or fails. CoolCatLib hands your tests to each loader's own test framework, so `/test` and the loaders' game test servers run them. Package: `net.ixdarklord.coolcatcore.api.gametest`.
 
 !!! info "Since"
-    Coming in **26.1.2-7**, **2100.5.0.0** (1.21.1) and **2001.5.0.0** (1.20.1). The API is the same on all three; where the versions differ is [below](#on-1211-and-1201).
+    Coming in **8.0.0**, on 26.1.2, 1.21.1 and 1.20.1. The API is the same on all three; where the versions differ is [below](#on-1211-and-1201).
 
 ## Writing tests
 
