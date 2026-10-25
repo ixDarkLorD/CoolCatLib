@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v2001.5.0.0 Release | Unreleased
+## v8.0.0 Release | Unreleased
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on Fabric and Forge:
   - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
@@ -12,6 +12,9 @@ This file is for listing all the changes to this project
 - Game tests from common code (`api.gametest`), as on 26.1.2 and the same on Fabric and Forge: `GameTests.register(modId, SomeTests.class)` registers every `@GameTest` method (as `<modid>:<class>/<method>`), and `GameTests.register(id, options, helper -> ...)` one test by hand. `GameTestOptions` sets the structure, time limit, setup ticks, rotation, retries and batch (one per mod by default; there are no test environments on this version); without a structure of their own, tests run on CoolCatLib's `coolcatlib:gametest/platform`, an empty 8 × 6 × 8 space on a stone floor. Positions count from the structure's corner, as on newer versions. Tests are added in a development environment or with `-Dcoolcatlib.gametest=true` (or the loader's own game test switch), then run with `/test run <modid>.<class>.<method>`, `/test runall <modid>` or on a game test server.
 - Attachments on levels and on the server: `get`, `set`, `update`, `modify`, `has` and `reset` take a `Level` or the `MinecraftServer`, saved in the level's data folder (the server's in the overworld's) and synced (`SyncPolicy.ALL`) to the players in the level, or to everyone. `getGlobal(level)` reads the server's values on either side.
 - Offline players' attachments: `getOffline`, `setOffline`, `updateOffline` and `resetOffline` read and write a player's saved values whether or not they're online (an offline player's data file is written at once).
+
+### 🔧 Changes
+- New version numbers: `<version>+<minecraft>`, this one `8.0.0+1.20.1`, the same for every Minecraft version and loader. They follow on from 2001.4.0.1; the part before the `+` is what launchers and loaders compare, the Minecraft version after it is only a label. Depending on CoolCatLib: ask for `>=8.0.0`, and the Maven artifacts are `coolcatlib-<loader>:8.0.0+1.20.1`.
 
 ## v2001.4.0.1 Release | Oct 22, 2026
 ### 🐛 Bug Fixes
