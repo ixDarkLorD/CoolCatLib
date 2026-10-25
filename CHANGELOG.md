@@ -3,11 +3,12 @@ This file is for listing all the changes to this project
 
 ## v26.1.2-7 Release | Unreleased
 ### ✨ New Features
-- Sound filters (`api.client.sound`): muffle and roughen the game's sounds, as heard through a wall or under a spell.
-  - `SoundFilters.register(provider)` adds a `SoundFilterProvider`, asked for each sound with a place in the world as it starts and as it moves; music and the menus are never filtered.
-  - A `SoundFilter` is how loud a sound stays, how much of its high end it keeps and how much of it goes through a distortion; filters combine with `then`.
-  - `SoundFilters.refresh()` filters the sounds already playing again, when the providers' answers change.
-  - Through OpenAL's EFX extension (a low-pass filter on each sound, and a distortion effect it is sent to); without it, sounds are left as they are.
+- Sound filters (`api.client.sound`): muffle, roughen and echo the game's sounds, as heard through a wall, under a spell or in a cave.
+  - A `SoundFilter` is how loud a sound stays, how much of its high end it keeps, and how much of it goes through a distortion and into a reverb. `muffled`, `quieter`, `distorted` and `echoing` make the usual ones; `then` combines two and `lerp` goes part of the way, for fades.
+  - `SoundFilters.register(provider)` adds a `SoundFilterProvider`, asked about each sound as it starts and as it moves, with a `SoundContext`: where it plays, which sound event it is, its category and whether it is relative to the listener (music, the menus). `SoundFilterProvider.inWorld` makes one for the sounds in the world only, by their place. `register` gives back a `Registration` to `remove()` it again.
+  - Named filters for every sound at once (but the menus' clicks): `SoundFilters.set(id, filter, fadeTicks)` fades one in, `clear(id, fadeTicks)` out again; `isSet(id)`. From the server, `SoundFilterControl.set` and `clear` (`api.sound`) do the same for a player.
+  - `SoundFilters.refresh()` filters the sounds already playing again, when a provider's answers change.
+  - Through OpenAL's EFX extension (a low-pass filter on each sound, sent to a distortion and a reverb effect); without it, sounds are left as they are.
 
 ## v26.1.2-6 Release | Oct 22, 2026
 ### ✨ New Features

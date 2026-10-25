@@ -6,6 +6,7 @@ import net.ixdarklord.coolcatcanvas.internal.cutscene.CutsceneNetwork;
 import net.ixdarklord.coolcatcanvas.internal.effect.ScreenEffectNetwork;
 import net.ixdarklord.coolcatcanvas.internal.armature.ArmatureNetwork;
 import net.ixdarklord.coolcatcanvas.internal.sky.SkyboxNetwork;
+import net.ixdarklord.coolcatcanvas.internal.sound.SoundFilterNetwork;
 import net.ixdarklord.coolcatcanvas.internal.vfx.VfxNetwork;
 import net.ixdarklord.coolcatcore.api.core.ModConstructor;
 
@@ -19,6 +20,7 @@ public final class CoolCatCanvasConstructor implements ModConstructor {
         CutsceneNetwork.init();
         ArmatureNetwork.init();
         BossBarNetwork.init();
+        SoundFilterNetwork.init();
         EntityBossBars.init();
     }
 }

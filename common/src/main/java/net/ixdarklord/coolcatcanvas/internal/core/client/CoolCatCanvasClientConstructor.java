@@ -10,6 +10,7 @@ import net.ixdarklord.coolcatcanvas.internal.client.camera.CameraShakeManager;
 import net.ixdarklord.coolcatcanvas.internal.client.camera.CameraZoomManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.RiftManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
+import net.ixdarklord.coolcatcanvas.internal.client.sound.SoundFilterManager;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigScreens;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
@@ -31,6 +32,7 @@ public final class CoolCatCanvasClientConstructor implements ClientModConstructo
             CameraShakeManager.tick(minecraft);
             CameraZoomManager.tick(minecraft);
             RiftManager.tick(minecraft);
+            SoundFilterManager.tick(minecraft);
         });
     }
 }

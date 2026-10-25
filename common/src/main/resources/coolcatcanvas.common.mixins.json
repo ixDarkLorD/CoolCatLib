@@ -30,6 +30,7 @@
     "client.BossHealthOverlayMixin",
     "client.ChannelMixin",
     "client.SoundEngineAccessor",
+    "client.SoundEngineMixin",
     "client.SoundManagerAccessor"
   ],
   "injectors": {
