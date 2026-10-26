@@ -22,6 +22,7 @@ import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxBlend;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxDraw;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxEffect;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxFrame;
+import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxLayer;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxMaterial;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxRenderer;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.WorldParticles;
@@ -44,6 +45,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -78,8 +81,16 @@ public final class VfxManager {
 
     // ---- Drawing ----
     private static final VfxCamera CAMERA = new VfxCamera();
-    private static final Map<VfxMaterial, VfxBatch> BATCHES = new HashMap<>();
+    private static final Map<BatchKey, VfxBatch> BATCHES = new HashMap<>();
+    // The batches used this frame, in the order they were first drawn into, and those with quads to draw.
+    private static final List<VfxBatch> USED = new ArrayList<>();
     private static final List<VfxBatch> DRAWN = new ArrayList<>();
+    // The draw calls, in order: a run of vertices of one batch.
+    private static final List<Run> RUNS = new ArrayList<>();
+    // A sorted layer's quads: each one's distance in the high bits and its place in the arrays below in the low ones.
+    private static long[] sortKeys = new long[256];
+    private static VfxBatch[] sortBatches = new VfxBatch[256];
+    private static int[] sortQuads = new int[256];
     private static final Map<VfxMaterial, RenderPipeline> PIPELINES = new HashMap<>();
     private static final FrameImpl FRAME = new FrameImpl();
     private static @Nullable ByteBufferBuilder bytes;
@@ -273,14 +284,25 @@ public final class VfxManager {
         } catch (RuntimeException e) {
             fail("Failed to draw world effects", e);
         } finally {
-            for (VfxBatch batch : BATCHES.values()) batch.clear();
+            for (VfxBatch batch : USED) batch.clear();
+            USED.clear();
             DRAWN.clear();
+            RUNS.clear();
             FRAME.level = null;
         }
     }
 
     private static VfxBatch batch(VfxMaterial material) {
-        return BATCHES.computeIfAbsent(material, key -> new VfxBatch(key, CAMERA));
+        return batch(material, VfxLayer.DEFAULT);
+    }
+
+    private static VfxBatch batch(VfxMaterial material, VfxLayer layer) {
+        VfxBatch batch = BATCHES.computeIfAbsent(new BatchKey(material, layer), key -> new VfxBatch(key.material, key.layer, CAMERA));
+        if (!batch.used) {
+            batch.used = true;
+            USED.add(batch);
+        }
+        return batch;
     }
 
     private static void gatherParticles(float partialTick) {
@@ -364,33 +386,34 @@ public final class VfxManager {
     }
 
     private static void draw(Minecraft minecraft) {
-        // What blends over the scene goes first, what adds light to it last.
-        int vertices = 0;
-        for (int phase = 0; phase < 2; phase++) {
-            for (VfxBatch batch : BATCHES.values()) {
-                if (batch.quads() == 0 || (batch.material.blend() == VfxBlend.ADDITIVE) != (phase == 1)) continue;
-                batch.firstVertex = vertices;
-                vertices += batch.quads() * VfxBatch.VERTICES_PER_QUAD;
-                DRAWN.add(batch);
-            }
-        }
-        if (DRAWN.isEmpty()) return;
-
+        if (USED.stream().allMatch(batch -> batch.quads() == 0)) return;
         RenderTarget main = minecraft.gameRenderer.mainRenderTarget();
         GpuTextureView depth = main.getDepthTextureView();
         if (depth == null) return;
         if (bytes == null) bytes = new ByteBufferBuilder(DefaultVertexFormat.POSITION_TEX_COLOR.getVertexSize() * 4096);
         if (uniforms == null) uniforms = new DynamicGpuDataStorageMapped<>("CoolCatLib world effects UBO", VfxUniform.SIZE, com.mojang.renderpearl.api.buffers.GpuBuffer.USAGE_UNIFORM, 8);
 
-        // Everything that touches buffers or textures happens before the pass opens.
+        // Everything that touches buffers or textures happens before the pass opens. Layers go lowest first (the sort
+        // keeps first-use order within one); in each, what blends over the scene goes first, what adds light to it last.
         BufferBuilder builder = new BufferBuilder(bytes, com.mojang.renderpearl.api.pipeline.PrimitiveTopology.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        USED.sort(Comparator.comparingInt(batch -> batch.layer.order()));
+        int vertices = 0;
+        for (int start = 0; start < USED.size(); ) {
+            int order = USED.get(start).layer.order();
+            int end = start;
+            boolean sorted = false;
+            while (end < USED.size() && USED.get(end).layer.order() == order) sorted |= USED.get(end++).layer.sorted();
+            vertices = sorted ? emitSorted(builder, start, end, vertices) : emitInOrder(builder, start, end, false, vertices);
+            vertices = emitInOrder(builder, start, end, true, vertices);
+            start = end;
+        }
+
         TextureManager textureManager = minecraft.getTextureManager();
         VfxUniform[] blocks = new VfxUniform[DRAWN.size()];
         GpuTextureView[] textures = new GpuTextureView[DRAWN.size()];
         RenderPipeline[] pipelines = new RenderPipeline[DRAWN.size()];
         for (int i = 0; i < blocks.length; i++) {
             VfxBatch batch = DRAWN.get(i);
-            batch.emit(builder);
             VfxUniform uniform = batch.uniform;
             uniform.view.set(CAMERA.view);
             uniform.near = NEAR_PLANE;
@@ -410,7 +433,8 @@ public final class VfxManager {
             GpuBufferSlice[] slices = uniforms.writeData(blocks);
             try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
                     .createRenderPass(() -> "CoolCatLib world effects", main.getColorTextureView(), java.util.Optional.empty(), null, OptionalDouble.empty())) {
-                for (int i = 0; i < blocks.length; i++) {
+                for (Run run : RUNS) {
+                    int i = run.batch;
                     VfxBatch batch = DRAWN.get(i);
                     pass.setPipeline(com.mojang.blaze3d.systems.RenderSystem.getCompiledPipeline(pipelines[i]));
                     RenderSystem.bindDefaultUniforms(pass);
@@ -418,10 +442,85 @@ public final class VfxManager {
                     pass.setUniform("Sampler0", textures[i], batch.material.smooth() ? linear : nearest);
                     pass.setUniform("DepthSampler", depth, nearest);
                     pass.setVertexBuffer(0, vertexBuffer.slice());
-                    pass.draw(batch.quads() * VfxBatch.VERTICES_PER_QUAD, 1, batch.firstVertex, 0);
+                    pass.draw(run.vertices, 1, run.firstVertex, 0);
                 }
             }
             }
+        }
+    }
+
+    // A layer's batches of one kind (additive or not), each whole, in first-use order.
+    private static int emitInOrder(BufferBuilder builder, int start, int end, boolean additive, int vertices) {
+        for (int i = start; i < end; i++) {
+            VfxBatch batch = USED.get(i);
+            if (batch.quads() == 0 || (batch.material.blend() == VfxBlend.ADDITIVE) != additive) continue;
+            batch.emit(builder);
+            int count = batch.quads() * VfxBatch.VERTICES_PER_QUAD;
+            RUNS.add(new Run(drawnIndex(batch), vertices, count));
+            vertices += count;
+        }
+        return vertices;
+    }
+
+    // A sorted layer's painted-over quads, of every batch, from the farthest to the nearest; quads of one batch that end
+    // up next to each other share a draw.
+    private static int emitSorted(BufferBuilder builder, int start, int end, int vertices) {
+        int count = 0;
+        for (int i = start; i < end; i++) {
+            VfxBatch batch = USED.get(i);
+            if (batch.material.blend() == VfxBlend.ADDITIVE) continue;
+            for (int quad = 0; quad < batch.quads(); quad++) {
+                if (count == sortKeys.length) {
+                    sortKeys = Arrays.copyOf(sortKeys, count * 2);
+                    sortBatches = Arrays.copyOf(sortBatches, count * 2);
+                    sortQuads = Arrays.copyOf(sortQuads, count * 2);
+                }
+                // A distance is never negative, so its bits sort as the numbers do.
+                sortKeys[count] = (long) Float.floatToRawIntBits(batch.distanceSquared(quad)) << 32 | count;
+                sortBatches[count] = batch;
+                sortQuads[count] = quad;
+                count++;
+            }
+        }
+        Arrays.sort(sortKeys, 0, count);
+        Run run = null;
+        for (int k = count - 1; k >= 0; k--) {
+            int at = (int) sortKeys[k];
+            VfxBatch batch = sortBatches[at];
+            batch.emit(builder, sortQuads[at]);
+            int index = drawnIndex(batch);
+            if (run != null && run.batch == index) {
+                run.vertices += VfxBatch.VERTICES_PER_QUAD;
+            } else {
+                run = new Run(index, vertices, VfxBatch.VERTICES_PER_QUAD);
+                RUNS.add(run);
+            }
+            vertices += VfxBatch.VERTICES_PER_QUAD;
+        }
+        Arrays.fill(sortBatches, 0, count, null);
+        return vertices;
+    }
+
+    // Where a batch is among those drawn this frame (each has its uniforms, texture and pipeline once).
+    private static int drawnIndex(VfxBatch batch) {
+        if (batch.drawnIndex < 0) {
+            batch.drawnIndex = DRAWN.size();
+            DRAWN.add(batch);
+        }
+        return batch.drawnIndex;
+    }
+
+    private record BatchKey(VfxMaterial material, VfxLayer layer) {}
+
+    private static final class Run {
+        final int batch;
+        final int firstVertex;
+        int vertices;
+
+        Run(int batch, int firstVertex, int vertices) {
+            this.batch = batch;
+            this.firstVertex = firstVertex;
+            this.vertices = vertices;
         }
     }
 
@@ -505,8 +604,8 @@ public final class VfxManager {
         }
 
         @Override
-        public VfxDraw draw(VfxMaterial material) {
-            return batch(material);
+        public VfxDraw draw(VfxMaterial material, VfxLayer layer) {
+            return batch(material, layer);
         }
     }
 }
