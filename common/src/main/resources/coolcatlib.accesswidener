@@ -26,7 +26,7 @@ accessible field net/minecraft/resources/RegistryOps lookupProvider  Lnet/minecr
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
 accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/client/gui/screens/MenuScreens$ScreenConstructor;)V
 
-# FadedItems: the texture a GUI item draws with, to draw it see-through (SeeThroughItems)
+# ItemOpacityRenderer: the texture a GUI item draws with, to draw it see-through (TranslucentItemBuffers)
 accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
 accessible method net/minecraft/client/renderer/RenderType$CompositeRenderType state ()Lnet/minecraft/client/renderer/RenderType$CompositeState;
 accessible class net/minecraft/client/renderer/RenderType$CompositeState

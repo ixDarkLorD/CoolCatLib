@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The see-through items of {@code FadedItems}: while the shader color's alpha is under 1, a GUI item draws into these
- * buffers, which hand it a translucent render type on the same texture in place of a solid or cut-out one, so the
- * alpha shows ({@code GuiGraphicsMixin}; the render type's texture is reached through the access widener).
+ * The see-through items of {@code ItemOpacityRenderer}: while the shader color's alpha is under 1, a GUI item draws
+ * into these buffers, which hand it a translucent render type on the same texture in place of a solid or cut-out one,
+ * so the alpha shows ({@code GuiGraphicsMixin}; the render type's texture is reached through the access widener).
  */
-public final class SeeThroughItems {
+public final class TranslucentItemBuffers {
     // Each render type an item asked for, and what it draws with instead; render types are made once and kept.
     private static final Map<RenderType, RenderType> TRANSLUCENT = new HashMap<>();
 
-    private SeeThroughItems() {}
+    private TranslucentItemBuffers() {}
 
     /** The buffers an item is drawn into: see-through ones while the shader color is faded, else these. */
     public static MultiBufferSource wrap(MultiBufferSource buffers) {
@@ -25,7 +25,7 @@ public final class SeeThroughItems {
     }
 
     private static RenderType translucent(RenderType type) {
-        return TRANSLUCENT.computeIfAbsent(type, SeeThroughItems::find);
+        return TRANSLUCENT.computeIfAbsent(type, TranslucentItemBuffers::find);
     }
 
     // The translucent render type on a type's own texture; glints, and types with no texture, as they are.
