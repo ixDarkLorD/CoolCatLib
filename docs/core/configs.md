@@ -99,20 +99,20 @@ Annotations (in `ConfigEntry`):
 
 ## Editing in game
 
-Core loads, saves, syncs and hot reloads configs, and has commands to read and change them. It has no screens of its own: since **26.1.2-2** the editor is a separate, client-side mod, so players only install it if they want it.
+Core loads, saves, syncs and hot reloads configs, and has commands to read and change them. It has config screens of its own, and [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu), a separate client-side mod, replaces them with its own when it's installed.
 
 | Installed | What players get |
 |---|---|
 | [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu) | Searchable editor screens with sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from its mod list, from `/glazedmenu [mod] [config/category]`, or from your code. |
 | Configured (MrCrayfish) | Configured's own screens, from the NeoForge mod list and from Mod Menu on Fabric. Booleans, numbers, enums and text get its widgets; colors, ids and lists are edited as text. Synced configs are edited on the server by players allowed to. |
-| Neither | No editor. The files and the `/coolcatlib config` commands (`list`, `get`, `set`, `reset`, `reload`, `preset`) still work. |
+| Neither | CoolCatLib's own screens: a card for each config, then the config's screen with its categories, search, sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from Mod Menu and NeoForge's mod list. The files and the `/coolcatlib config` commands (`list`, `get`, `set`, `reset`, `reload`, `preset`) work too. |
 
 With both installed, Glazed Menu's screens show the configs.
 
-!!! note "1.21.1 and 1.20.1"
-    On the backports the screens are still part of Core, and `ConfigScreens` always opens them.
+!!! info "Since"
+    CoolCatLib's own screens are back on 26.x in **8.0.0**, the same as on 1.21.1 and 1.20.1, where they always were. Before it, 26.x had no editor without Glazed Menu.
 
-Open the screens from code through `ConfigScreens`. It is a bridge: with Glazed Menu installed it opens Glazed Menu's screens, and without it every method opens nothing and returns `null`, so check before you use the result:
+Open the screens from code through `ConfigScreens`: with Glazed Menu installed it opens Glazed Menu's screens, and without it CoolCatLib's own. It returns `null` only where there are no screens at all (on a dedicated server, say), so check before you use the result:
 
 ```java
 Screen screen = ConfigScreens.create(parent, MyMod.MOD_ID);         // the mod's configs, or null

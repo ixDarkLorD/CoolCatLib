@@ -108,7 +108,7 @@ WorldVfx.register(MyMod.id("tether"), frame -> {
 WorldVfx.unregister(MyMod.id("tether"));
 ```
 
-`VfxFrame` gives the `level()`, `partialTick()`, `time()` (seconds, stopped while the game is paused), `cameraPosition()`, and `draw(material)`, which returns a `VfxDraw`:
+`VfxFrame` gives the `level()`, `partialTick()`, `time()` (seconds, stopped while the game is paused), `cameraPosition()`, and `draw(material)` (or `draw(material, layer)`, see [draw order](#draw-order-and-layers)), which returns a `VfxDraw`:
 
 | `VfxDraw` method | Draws |
 |---|---|
@@ -136,6 +136,26 @@ frame.draw(VfxMaterial.additive(VfxMaterial.STREAK)).trail(trail, Curve.of(0.3F,
 ```
 
 The width curve runs from the newest point to the oldest.
+
+### Draw order and layers
+
+World effects write no depth of their own: wherever two overlap, the one drawn later covers the other, whichever is nearer. That's no trouble for additive effects, which look the same in any order, but painted-over ones (`ALPHA`, `LUMINOUS`) of different textures can cover each other the wrong way round: a far hand drawn over a near arm. Layers set the order:
+
+```java
+VfxLayer CREATURE = VfxLayer.sorted(10);     // its parts reach in front of each other
+
+frame.draw(HAND, CREATURE).quad(...);
+frame.draw(ARM, CREATURE).quad(...);
+frame.draw(GLOW, VfxLayer.of(20)).billboard(...);  // always over the creature
+```
+
+- Layers are drawn from the lowest `order` to the highest, so a higher layer always covers a lower one. `draw(material)` and every particle and one-liner use `VfxLayer.DEFAULT`, layer 0.
+- In each layer, painted-over shapes are drawn first and additive ones last.
+- In a plain layer (`VfxLayer.of(n)`), each material is drawn where it was first used in the frame, its shapes in the order you drew them. It's the cheapest, and right when one material never needs to cover another.
+- In a sorted layer (`VfxLayer.sorted(n)`), the painted-over shapes of every material are drawn from the farthest from the camera to the nearest, each judged by its middle. It costs a sort of that layer's shapes each frame and a draw call wherever the texture changes along the way, so keep sorted layers to what needs them.
+
+!!! info "Since"
+    Coming in **8.0.0**, on every version. Before it, materials were drawn in no set order.
 
 ## From the server
 
