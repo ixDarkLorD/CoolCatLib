@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// FadedItems: each GUI item remembers the opacity it was drawn at, for GuiRendererMixin to blit it with.
+// ItemOpacityRenderer: each GUI item remembers the opacity it was drawn at, for GuiRendererMixin to blit it with.
 @Mixin(GuiItemRenderState.class)
 public abstract class GuiItemRenderStateMixin implements GuiOpacity.FadedItem {
     @Unique

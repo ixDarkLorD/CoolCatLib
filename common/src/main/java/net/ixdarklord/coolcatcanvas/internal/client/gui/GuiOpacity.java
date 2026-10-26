@@ -1,9 +1,10 @@
 package net.ixdarklord.coolcatcanvas.internal.client.gui;
 
 /**
- * The opacity {@code FadedItems} draws at now: the GUI items made while it is under 1 remember it and are blitted with
- * it ({@code GuiItemRenderStateMixin}, {@code GuiRendererMixin}), and, for its {@code withOpacity}, the text and filled
- * rectangles made then are faded by it ({@code GuiTextRenderStateMixin}, {@code ColoredRectangleRenderStateMixin}).
+ * The opacity {@code ItemOpacityRenderer} draws at now: the GUI items made while it is under 1 remember it and are
+ * blitted with it ({@code GuiItemRenderStateMixin}, {@code GuiRendererMixin}), and, for its {@code withOpacity}, the
+ * text and filled rectangles made then are faded by it ({@code GuiTextRenderStateMixin},
+ * {@code ColoredRectangleRenderStateMixin}).
  * Render thread only.
  */
 public final class GuiOpacity {
@@ -16,14 +17,14 @@ public final class GuiOpacity {
     private GuiOpacity() {}
 
     public static void push(float opacity, boolean itemsOnly) {
-        if (depth >= DEPTH) throw new IllegalStateException("FadedItems: opacity pushed " + DEPTH + " deep without a pop");
+        if (depth >= DEPTH) throw new IllegalStateException("ItemOpacityRenderer: opacity pushed " + DEPTH + " deep without a pop");
         OPACITY[depth] = opacity;
         ITEMS_ONLY[depth] = itemsOnly;
         depth++;
     }
 
     public static void pop() {
-        if (depth == 0) throw new IllegalStateException("FadedItems: opacity popped without a push");
+        if (depth == 0) throw new IllegalStateException("ItemOpacityRenderer: opacity popped without a push");
         depth--;
     }
 

@@ -11,23 +11,23 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Items drawn in a GUI at an opacity, fixed or animated: a HUD card fading in with its icon, a slot greying out.
  * <pre>{@code
- * FadedItems.render(graphics, stack, x, y, 0.5F);                       // half see-through
- * FadedItems.renderWithDecorations(graphics, font, stack, x, y, 0.5F);  // with its count and bar
+ * ItemOpacityRenderer.render(graphics, stack, x, y, 0.5F);                      // half see-through
+ * ItemOpacityRenderer.renderWithDecorations(graphics, font, stack, x, y, 0.5F); // with its count and bar
  *
- * FadedItems.Fade fade = FadedItems.Fade.in(10).start();              // keep it, and draw each frame:
- * FadedItems.render(graphics, stack, x, y, fade);
+ * var fade = ItemOpacityRenderer.OpacityTween.in(10).start(); // keep it, and draw each frame:
+ * ItemOpacityRenderer.render(graphics, stack, x, y, fade);
  *
- * FadedItems.withOpacity(0.5F, () -> graphics.item(stack, x, y));       // anything that draws items
+ * ItemOpacityRenderer.withOpacity(0.5F, () -> graphics.item(stack, x, y));      // anything that draws items
  * }</pre>
  * The game draws GUI items from an atlas at full opacity, with no way to ask for less: each item drawn here remembers
  * the opacity it was asked for, and is blitted from the atlas with it, so solid and flat items fade alike. Inside
  * {@link #withOpacity} the text and filled rectangles drawn (an item's count, its durability bar) fade too.
  */
-public final class FadedItems {
+public final class ItemOpacityRenderer {
     // Below this, nothing would show.
     private static final float HIDDEN = 0.004F;
 
-    private FadedItems() {}
+    private ItemOpacityRenderer() {}
 
     /** Draws an item as {@link GuiGraphicsExtractor#fakeItem} does, at an opacity from 0 to 1. */
     public static void render(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, float opacity) {
@@ -35,7 +35,7 @@ public final class FadedItems {
     }
 
     /** Draws an item at the opacity a fade is at now. */
-    public static void render(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, Fade fade) {
+    public static void render(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, OpacityTween fade) {
         render(graphics, stack, x, y, fade.opacity());
     }
 
@@ -48,7 +48,7 @@ public final class FadedItems {
     }
 
     /** Draws an item with its count and durability bar at the opacity a fade is at now. */
-    public static void renderWithDecorations(GuiGraphicsExtractor graphics, Font font, ItemStack stack, int x, int y, Fade fade) {
+    public static void renderWithDecorations(GuiGraphicsExtractor graphics, Font font, ItemStack stack, int x, int y, OpacityTween fade) {
         renderWithDecorations(graphics, font, stack, x, y, fade.opacity());
     }
 
@@ -88,14 +88,14 @@ public final class FadedItems {
      * item and read each frame ({@link #opacity}); it runs on the clock, so it carries on smoothly whatever the frame
      * rate. Until {@link #start started}, it is at its first value.
      */
-    public static final class Fade {
+    public static final class OpacityTween {
         private final float from;
         private final float to;
         private final long millis;
         private final Easing easing;
         private long startedAt = Long.MIN_VALUE;
 
-        private Fade(float from, float to, int ticks, Easing easing) {
+        private OpacityTween(float from, float to, int ticks, Easing easing) {
             this.from = Mth.clamp(from, 0.0F, 1.0F);
             this.to = Mth.clamp(to, 0.0F, 1.0F);
             this.millis = Math.max(1, ticks) * 50L;
@@ -103,22 +103,22 @@ public final class FadedItems {
         }
 
         /** From unseen to fully shown over so many ticks, easing out. */
-        public static Fade in(int ticks) {
-            return new Fade(0.0F, 1.0F, ticks, Easing.SINE_OUT);
+        public static OpacityTween in(int ticks) {
+            return new OpacityTween(0.0F, 1.0F, ticks, Easing.SINE_OUT);
         }
 
         /** From fully shown to unseen over so many ticks, easing in. */
-        public static Fade out(int ticks) {
-            return new Fade(1.0F, 0.0F, ticks, Easing.SINE_IN);
+        public static OpacityTween out(int ticks) {
+            return new OpacityTween(1.0F, 0.0F, ticks, Easing.SINE_IN);
         }
 
         /** From one opacity to another over so many ticks, on an easing. */
-        public static Fade between(float from, float to, int ticks, Easing easing) {
-            return new Fade(from, to, ticks, easing);
+        public static OpacityTween between(float from, float to, int ticks, Easing easing) {
+            return new OpacityTween(from, to, ticks, easing);
         }
 
         /** Starts it now, from its first value (again, if it had run). Returns itself. */
-        public Fade start() {
+        public OpacityTween start() {
             this.startedAt = Util.getMillis();
             return this;
         }
