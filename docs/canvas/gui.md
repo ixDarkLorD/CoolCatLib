@@ -1,6 +1,6 @@
 ---
 icon: material/dock-window
-description: Windows, panels, pan and zoom, animations
+description: Windows, panels, pan and zoom, animations, items at an opacity
 ---
 
 # GUI
@@ -56,6 +56,52 @@ class MapPanel extends ViewportPanel {
 | `AnimatedComponent` | A timeline in seconds that pauses with the game: `play(reverse[, AnimMode])`, `update()` every frame, `isPlaying()`, `isFinished()`. Modes: `LOOP`, `PING_PONG`, `HOLD_LAST_FRAME`. |
 | `SlideAnimation` | Slides an element in from off-screen, horizontally or vertically, anchored with a `ScreenAnchor`. |
 | `ScreenAnchor` | `TOP_LEFT` … `BOTTOM_RIGHT` and `CENTER`: `getX(screenWidth, width, padding)`, `getY(...)`, `next()`, `previous()`. |
+
+## Items at an opacity
+
+The game draws items in a GUI fully opaque, with no way to ask for less, and solid models (blocks, beds, block entity items) stay bright or turn into black shapes when you try. `ItemOpacityRenderer` (`api.client.gui`) draws them at an opacity, flat and solid items alike: a HUD card fading in with its icon, a slot greyed out.
+
+```java
+ItemOpacityRenderer.render(graphics, stack, x, y, 0.5F);                       // half see-through
+ItemOpacityRenderer.renderWithDecorations(graphics, font, stack, x, y, 0.5F);  // with its count and durability bar
+
+// Anything that draws items, at an opacity:
+ItemOpacityRenderer.withOpacity(0.5F, () -> graphics.item(stack, x, y));      // renderItem on 1.21.1 and 1.20.1
+```
+
+Opacities run from 0 to 1, on top of any opacity already in force; under about 0.004 nothing is drawn. Inside `withOpacity`, the text and filled rectangles drawn fade too, so an item's count and its bar go with it.
+
+### Fades
+
+An `OpacityTween` eases an item's opacity from one value to another over a number of ticks. Keep it with whatever draws the item, and pass it each frame:
+
+```java
+OpacityTween fade = ItemOpacityRenderer.OpacityTween.in(10).start();   // fades in over half a second
+
+// every frame:
+ItemOpacityRenderer.render(graphics, stack, x, y, fade);
+if (fade.finished()) { /* fully shown */ }
+```
+
+| Method | What it does |
+|---|---|
+| `OpacityTween.in(ticks)` | From unseen to fully shown, easing out (`Easing.SINE_OUT`). |
+| `OpacityTween.out(ticks)` | From fully shown to unseen, easing in (`Easing.SINE_IN`). |
+| `OpacityTween.between(from, to, ticks, easing)` | From one opacity to another on any `Easing`. |
+| `start()` | Starts it now (again, if it had run); returns the tween. Until then it sits at its first value. |
+| `opacity()`, `started()`, `finished()` | Where it is now. |
+
+It runs on the clock rather than on ticks, so it stays smooth at any frame rate.
+
+### Only the items
+
+On 26.1.2, 26.2 and 26.3, `pushItemOpacity(opacity)` and `popItemOpacity()` fade just the items drawn between them, for code that fades the rest of what it draws itself, such as a whole HUD faded between two hooks. They nest, and each push needs its pop.
+
+!!! info "Since"
+    Coming in **8.0.0**, on every version. On 1.21.1 and 1.20.1 the methods take a `GuiGraphics`, and there's no `pushItemOpacity`.
+
+!!! note "1.21.1 and 1.20.1"
+    There, items fade with the shader color's alpha: any item drawn while it's under 1 is drawn see-through, including the game's own, such as the hotbar under a HUD you've faded.
 
 ## Drawing helpers
 

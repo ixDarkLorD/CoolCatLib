@@ -295,6 +295,11 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `ColorGradient` | Animated gradients and rainbows for text and outlines. |
 | `Easing` | Easing curves. |
 
+### `client.gui` ([Canvas GUI](../canvas/gui.md#items-at-an-opacity))
+| Class | Functionality |
+|---|---|
+| `ItemOpacityRenderer` | Items drawn in a GUI at a fixed or fading opacity; `OpacityTween` eases one in or out. |
+
 ### `client.gui.components` ([Canvas GUI](../canvas/gui.md), [Canvas Text and Colors](../canvas/text-and-colors.md))
 | Class | Functionality |
 |---|---|
