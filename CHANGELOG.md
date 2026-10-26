@@ -9,6 +9,7 @@ This file is for listing all the changes to this project
   - Named filters for every sound at once (but the menus' clicks): `SoundFilters.set(id, filter, fadeTicks)` fades one in, `clear(id, fadeTicks)` out again; `isSet(id)`. From the server, `SoundFilterControl.set` and `clear` (`api.sound`) do the same for a player.
   - `SoundFilters.refresh()` filters the sounds already playing again, when a provider's answers change.
   - Through OpenAL's EFX extension (a low-pass filter on each sound, sent to a distortion and a reverb effect); without it, sounds are left as they are.
+- Items drawn in a GUI at an opacity (`api.client.gui.ItemOpacityRenderer`), flat and solid ones alike, where the game draws them only fully opaque: `render` and `renderWithDecorations` (with the count and durability bar) at an opacity or an `OpacityTween` (`in`, `out`, `between`, eased over ticks and smooth at any frame rate), and `withOpacity(opacity, draw)` for anything that draws items, fading the text and bars drawn with them too. `pushItemOpacity` and `popItemOpacity` fade just the items drawn between them.
 - World effect layers: `frame.draw(material, VfxLayer.of(n))` draws in a layer, lowest first, so a higher layer always covers a lower one. A `VfxLayer.sorted(n)` layer draws its painted-over shapes of every material back to front, so shapes of different textures cover each other as their distance says. Materials in a layer now draw in the order they were first used each frame, where before they drew in no set order.
 
 ### 🐛 Bug Fixes
