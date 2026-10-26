@@ -3,6 +3,7 @@ package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.cutscene.CutsceneManager;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
+import net.ixdarklord.coolcatcanvas.internal.client.gui.GuiAreaRecorder;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 // World effects: drawn right after the level, while its projection is set and before the hand clears its depth.
 // Cutscenes: while one has the camera, the frame is drawn as with the HUD hidden (no hand, no fire or water over the
 // view) and the block the player looks at isn't outlined.
+// GuiAreas: what the HUD adds is recorded, and once the frame's GUI is gathered it becomes what the areas are.
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
@@ -54,6 +56,23 @@ public abstract class GameRendererMixin {
         ScreenEffectManager.endFrame();
         SkyboxManager.endFrame();
         VfxManager.endFrame();
+    }
+
+    @Inject(method = "extractGui", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+    private void coolcatlib$recordHud(CallbackInfo ci) {
+        GuiAreaRecorder.begin(GuiAreaRecorder.Phase.HUD);
+    }
+
+    @Inject(method = "extractGui", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/Gui;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
+    private void coolcatlib$stopRecordingHud(CallbackInfo ci) {
+        GuiAreaRecorder.end(GuiAreaRecorder.Phase.NONE);
+    }
+
+    @Inject(method = "extractGui", at = @At("TAIL"))
+    private void coolcatlib$gatheredGui(CallbackInfo ci) {
+        GuiAreaRecorder.endFrame();
     }
 
     @Inject(method = "extractOptions", at = @At("TAIL"))
