@@ -25,3 +25,11 @@ accessible field net/minecraft/resources/RegistryOps lookupProvider  Lnet/minecr
 # MenuScreens (Fabric registers menu screens directly; Forge registers them in client setup)
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
 accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/client/gui/screens/MenuScreens$ScreenConstructor;)V
+
+# FadedItems: the texture a GUI item draws with, to draw it see-through (SeeThroughItems)
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible method net/minecraft/client/renderer/RenderType$CompositeRenderType state ()Lnet/minecraft/client/renderer/RenderType$CompositeState;
+accessible class net/minecraft/client/renderer/RenderType$CompositeState
+accessible field net/minecraft/client/renderer/RenderType$CompositeState textureState Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;
+accessible class net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard
+accessible method net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard cutoutTexture ()Ljava/util/Optional;

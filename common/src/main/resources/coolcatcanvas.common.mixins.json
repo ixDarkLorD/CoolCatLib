@@ -13,6 +13,7 @@
     "client.EffectInstanceAccessor",
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
+    "client.GuiGraphicsMixin",
     "client.LevelRendererMixin",
     "client.ShaderInstanceAccessor",
     "client.ChannelMixin",
