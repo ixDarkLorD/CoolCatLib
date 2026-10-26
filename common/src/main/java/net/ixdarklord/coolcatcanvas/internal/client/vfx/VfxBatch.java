@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.Curve;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.Trail;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxDraw;
+import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxLayer;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxMaterial;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -12,25 +13,30 @@ import org.joml.Vector3f;
 
 import java.util.Arrays;
 
-// Everything drawn with one material in a frame: quads gathered as plain floats (positions already relative to the
-// camera), then written out as triangles in one run so the batch is a single draw. Reused across frames; it only grows.
+// Everything drawn with one material in one layer in a frame: quads gathered as plain floats (positions already relative
+// to the camera), then written out as triangles, in one run (a single draw) or quad by quad among a sorted layer's others.
+// Reused across frames; it only grows.
 final class VfxBatch implements VfxDraw {
     // Per quad: four corners of x, y, z, u, v, then four colours (their bits kept in floats).
     private static final int FLOATS_PER_QUAD = 4 * 5 + 4;
     static final int VERTICES_PER_QUAD = 6;
 
     final VfxMaterial material;
+    final VfxLayer layer;
     final VfxUniform uniform = new VfxUniform();
     private final VfxCamera camera;
     private float[] data = new float[FLOATS_PER_QUAD * 64];
     private int quads;
-    int firstVertex;
+    // Whether it has been listed for this frame (in first-use order), and where it is among the batches drawn.
+    boolean used;
+    int drawnIndex = -1;
 
     private final Vector3f side = new Vector3f();
     private final Vector3f tangent = new Vector3f();
 
-    VfxBatch(VfxMaterial material, VfxCamera camera) {
+    VfxBatch(VfxMaterial material, VfxLayer layer, VfxCamera camera) {
         this.material = material;
+        this.layer = layer;
         this.camera = camera;
     }
 
@@ -40,19 +46,33 @@ final class VfxBatch implements VfxDraw {
 
     void clear() {
         this.quads = 0;
+        this.used = false;
+        this.drawnIndex = -1;
     }
 
     /** Writes the batch's quads as triangles. */
     void emit(BufferBuilder builder) {
-        for (int quad = 0; quad < this.quads; quad++) {
-            int base = quad * FLOATS_PER_QUAD;
-            this.vertex(builder, base, 0);
-            this.vertex(builder, base, 1);
-            this.vertex(builder, base, 2);
-            this.vertex(builder, base, 0);
-            this.vertex(builder, base, 2);
-            this.vertex(builder, base, 3);
-        }
+        for (int quad = 0; quad < this.quads; quad++) this.emit(builder, quad);
+    }
+
+    /** Writes one quad as two triangles. */
+    void emit(BufferBuilder builder, int quad) {
+        int base = quad * FLOATS_PER_QUAD;
+        this.vertex(builder, base, 0);
+        this.vertex(builder, base, 1);
+        this.vertex(builder, base, 2);
+        this.vertex(builder, base, 0);
+        this.vertex(builder, base, 2);
+        this.vertex(builder, base, 3);
+    }
+
+    /** How far a quad's middle is from the camera, squared (the camera is at the origin), for sorting back to front. */
+    float distanceSquared(int quad) {
+        int base = quad * FLOATS_PER_QUAD;
+        float x = (this.data[base] + this.data[base + 5] + this.data[base + 10] + this.data[base + 15]) * 0.25F;
+        float y = (this.data[base + 1] + this.data[base + 6] + this.data[base + 11] + this.data[base + 16]) * 0.25F;
+        float z = (this.data[base + 2] + this.data[base + 7] + this.data[base + 12] + this.data[base + 17]) * 0.25F;
+        return x * x + y * y + z * z;
     }
 
     private void vertex(BufferBuilder builder, int base, int corner) {
