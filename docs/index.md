@@ -8,9 +8,11 @@ hide:
 
 <div class="ccl-hero" markdown>
 
-<div class="ccl-hero__logos">
-  <img src="assets/core.png" alt="CoolCatLib">
-</div>
+<div class="ccl-hero__glow" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<div class="ccl-hero__text" markdown>
+
+<p class="ccl-hero__eyebrow"><span class="ccl-hero__pulse"></span>Fabric · NeoForge · Forge · Minecraft 1.20.1 – 26.3</p>
 
 # CoolCatLib { .ccl-hero__title }
 
@@ -18,9 +20,11 @@ hide:
 
 <p class="ccl-hero__lead">The foundation and the visuals for multi-loader Minecraft mods: one common codebase for Fabric, NeoForge and Forge, with no Architectury API needed.</p>
 
+<div class="ccl-hero__actions" markdown>
 [Get started :material-arrow-right:](getting-started.md){ .md-button .md-button--primary }
 [API reference](reference/api.md){ .md-button }
 [:fontawesome-brands-github: Source](https://github.com/ixDarkLorD/CoolCatLib){ .md-button }
+</div>
 
 <p class="ccl-hero__badges">
   <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/fabric.svg" alt="Fabric" height="26">
@@ -32,34 +36,69 @@ hide:
 
 </div>
 
+<div class="ccl-hero__stage">
+  <figure class="ccl-hero__shot" data-ccl-slides>
+    <img src="assets/screen-effects/none.webp" alt="The game with no effect" data-label="No effect" class="is-on">
+    <img src="assets/screen-effects/tint-frost.webp" alt="A blue tint over the world" data-label="Frost tint" loading="lazy">
+    <img src="assets/screen-effects/vignette.webp" alt="Dark corners closing in on the view" data-label="Vignette" loading="lazy">
+    <img src="assets/screen-effects/desaturate.webp" alt="The world drained of color" data-label="Desaturate" loading="lazy">
+    <img src="assets/screen-effects/tint-hurt.webp" alt="A red tint over the world" data-label="Hurt flash" loading="lazy">
+    <img src="assets/screen-effects/invert.webp" alt="The game with its colors inverted" data-label="Invert" loading="lazy">
+    <figcaption><span class="ccl-hero__live">Live</span> Screen effects · <b data-ccl-slide-label>No effect</b></figcaption>
+  </figure>
+  <img class="ccl-hero__logo" src="assets/logo.png" alt="">
+  <span class="ccl-hero__chip ccl-hero__chip--a" aria-hidden="true">Events</span>
+  <span class="ccl-hero__chip ccl-hero__chip--b" aria-hidden="true">Synced configs</span>
+  <span class="ccl-hero__chip ccl-hero__chip--c" aria-hidden="true">Shaders</span>
+</div>
+
+</div>
+
+<div class="ccl-ribbon" aria-hidden="true"><div class="ccl-ribbon__track">
+<span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
+<span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
+</div></div>
+
+<div class="ccl-stats">
+  <div><b>3</b><span>loaders from one <code>common</code> module</span></div>
+  <div><b>5</b><span>Minecraft lines, 1.20.1 to 26.3</span></div>
+  <div><b>1</b><span>jar per loader, Core and Canvas inside</span></div>
+  <div><b>0</b><span>extra APIs to install</span></div>
+</div>
+
 ## One mod, two halves
 
-!!! success "CoolCatLib is one mod"
-    Since **26.1.2-5** (Minecraft 26.1 – 26.1.2), **2100.3.0.0** (1.21.1) and **2001.3.0.0** (1.20.1), CoolCatLib is a single mod with the id `coolcatlib`: one jar per loader holds everything. Before that it was two mods, CoolCatLib: Core (`coolcatcore`) and CoolCatLib: Canvas (`coolcatcanvas`). The code kept its two packages, which these docs call Core and Canvas.
+<div class="ccl-halves" markdown>
 
-<div class="grid cards" markdown>
+<div class="ccl-half ccl-half--core" markdown>
 
--   :material-toolbox-outline:{ .lg .middle } **Core**
+### Core
 
-    ---
+<p class="ccl-half__pkg"><code>net.ixdarklord.coolcatcore</code> · the purr-fect foundation</p>
 
-    `net.ixdarklord.coolcatcore` · the purr-fect foundation. Entrypoints that replace per-loader setup; events, registration and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
+Entrypoints that replace per-loader setup; events, registration and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
 
-    [:octicons-arrow-right-24: Getting started](getting-started.md)
+[Getting started :material-arrow-right:](getting-started.md){ .ccl-half__link }
 
--   :material-palette-outline:{ .lg .middle } **Canvas**
+</div>
 
-    ---
+<div class="ccl-half ccl-half--canvas" markdown>
 
-    `net.ixdarklord.coolcatcanvas` · the cat's whiskers of visuals. Live post-processing shaders, layered skyboxes, gradient and rainbow text, outlines, panels, pan & zoom views and easing curves.
+### Canvas
 
-    [:octicons-arrow-right-24: Screen effects](canvas/screen-effects.md)
+<p class="ccl-half__pkg"><code>net.ixdarklord.coolcatcanvas</code> · the cat's whiskers of visuals</p>
+
+Live post-processing shaders, layered skyboxes, gradient and rainbow text, outlines, panels, pan & zoom views and easing curves.
+
+[Screen effects :material-arrow-right:](canvas/screen-effects.md){ .ccl-half__link }
+
+</div>
 
 </div>
 
 ## Why CoolCatLib
 
-<div class="grid cards" markdown>
+<div class="grid cards ccl-features" markdown>
 
 -   :material-earth:{ .lg .middle } **Truly cross-loader**
 

@@ -1,11 +1,13 @@
 {#-
-  The top bar: the drawer button (narrow screens), the logo and name with a DOCS tag, the Minecraft version switch
-  (javascripts/mc-version.js) and a wide search in the middle, the light/dark switch, GitHub, and the way back to the
-  home page.
+  The top bar, across the whole window: the menu button (the drawer on narrow screens; on wide ones it folds the menu
+  away and back, javascripts/menu.js), the logo and name with a DOCS tag, the Minecraft version switch
+  (javascripts/mc-version.js) and the search centered between them and the rest, the light/dark switch, GitHub, and
+  the way back to the home page. On the home page (which holds .ccl-hero) the bar leaves out what belongs to the docs and leads into them
+  instead; that's done in CSS, since instant navigation keeps this bar as the page under it changes.
 -#}
 <header class="md-header ccl-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
-    <label class="md-header__button md-icon ccl-header__drawer" for="__drawer" title="Pages">
+  <nav class="md-header__inner" aria-label="{{ lang.t('header') }}">
+    <label class="md-header__button md-icon ccl-header__menu" for="__drawer" aria-label="{{ lang.t('nav') }}" title="Show or hide the menu" tabindex="0">
       {% include ".icons/material/menu.svg" %}
     </label>
     <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" class="ccl-brand" title="{{ config.site_name | e }}" aria-label="{{ config.site_name }}" data-md-component="logo">
@@ -13,6 +15,7 @@
       <span class="ccl-brand__name">{{ config.site_name }}</span>
       <span class="ccl-brand__tag">Docs</span>
     </a>
+    <div class="ccl-header__grow"></div>
     <label class="ccl-mc" title="Show what is true for your Minecraft version">
       {% include ".icons/material/minecraft.svg" %}
       <span class="ccl-mc__name">Minecraft</span>
@@ -35,6 +38,7 @@
         {% endif %}
       {% endif %}
     </div>
+    <div class="ccl-header__grow"></div>
     {% if config.theme.palette and not config.theme.palette is mapping %}
       {% include "partials/palette.html" %}
       {% include "partials/javascripts/palette.html" %}
@@ -44,8 +48,11 @@
         {% include ".icons/fontawesome/brands/github.svg" %}
       </a>
     {% endif %}
-    <a class="ccl-header__home" href="{{ nav.homepage.url | url }}" title="What CoolCatLib is, and where to start">
+    <a class="ccl-header__home ccl-header__home--site" href="{{ nav.homepage.url | url }}" title="What CoolCatLib is, and where to start">
       {% include ".icons/material/arrow-left.svg" %}<span>Back to the site</span>
+    </a>
+    <a class="ccl-header__home ccl-header__home--docs" href="{{ 'getting-started/' | url }}" title="Start with the docs">
+      <span>Read the docs</span>{% include ".icons/material/arrow-right.svg" %}
     </a>
   </nav>
 </header>

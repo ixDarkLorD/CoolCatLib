@@ -25,44 +25,145 @@
 }
 
 /* ---- Home hero ---- */
+/* Two columns on wide screens: the words and ways in at the left, a live showcase of the screen effects at the right
+   with the logo and a few floating tags; drifting glows behind both. One centered column on narrow screens. */
 .ccl-hero {
-  text-align: center;
-  padding: 2.5rem 1rem 1.5rem;
-  margin: -1rem -0.8rem 1.5rem;
-  border-radius: 0 0 1.2rem 1.2rem;
-  background:
-    radial-gradient(60rem 20rem at 20% -10%, rgba(224, 112, 58, 0.22), transparent 60%),
-    radial-gradient(60rem 20rem at 80% -10%, rgba(155, 79, 214, 0.22), transparent 60%);
-}
-
-.ccl-hero__logos {
-  display: flex;
-  justify-content: center;
-  gap: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-
-.ccl-hero__logos img {
-  width: 128px;
-  height: 128px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 2.5rem;
+  padding: 3rem 2rem 3.2rem;
+  margin: -0.6rem 0 1.2rem;
+  overflow: hidden;
+  border: 1px solid var(--ccl-rule);
   border-radius: 1.4rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s ease;
+  background: color-mix(in srgb, var(--md-default-fg-color) 2.5%, transparent);
 }
 
-.ccl-hero__logos img:hover {
-  transform: translateY(-4px) rotate(-2deg);
+/* A faint pixel grid, fading out toward the bottom. */
+.ccl-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--ccl-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ccl-rule) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 75%);
+}
+
+.ccl-hero__glow {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  filter: blur(60px);
+}
+
+.ccl-hero__glow span {
+  position: absolute;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: ccl-drift 18s ease-in-out infinite alternate;
+}
+
+.ccl-hero__glow span:nth-child(1) {
+  top: -8rem;
+  left: -4rem;
+  background: var(--ccl-orange);
+}
+
+.ccl-hero__glow span:nth-child(2) {
+  top: -6rem;
+  right: -6rem;
+  background: var(--ccl-purple);
+  animation-delay: -6s;
+  animation-duration: 22s;
+}
+
+.ccl-hero__glow span:nth-child(3) {
+  bottom: -12rem;
+  left: 35%;
+  width: 18rem;
+  height: 18rem;
+  background: #d94f8a;
+  opacity: 0.25;
+  animation-delay: -12s;
+}
+
+@keyframes ccl-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(4rem, 2.5rem) scale(1.15); }
+}
+
+[data-md-color-scheme="default"] .ccl-hero__glow span {
+  opacity: 0.22;
+}
+
+.ccl-hero__text > :first-child {
+  margin-top: 0;
+}
+
+.ccl-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.4rem !important;
+  padding: 0.3rem 0.8rem 0.3rem 0.6rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+  border: 1px solid var(--ccl-rule);
+  border-radius: 999px;
+  background: var(--ccl-panel);
+}
+
+.ccl-hero__pulse {
+  position: relative;
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #4ade80;
+}
+
+.ccl-hero__pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: ccl-ping 2s ease-out infinite;
+}
+
+@keyframes ccl-ping {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(3); opacity: 0; }
 }
 
 .md-typeset .ccl-hero__title {
-  font-size: 3rem;
+  font-size: 3.6rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 0.6rem 0 0.2rem;
-  background: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple));
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0.5rem 0;
+  background: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple), #d94f8a, var(--ccl-orange));
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: ccl-shimmer 10s linear infinite;
+}
+
+@keyframes ccl-shimmer {
+  to { background-position: 300% 0; }
 }
 
 .md-typeset .ccl-hero__title .headerlink {
@@ -70,27 +171,442 @@
 }
 
 .ccl-hero__tagline {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0.2rem 0 0.4rem;
+  font-size: 1.2rem;
+  font-weight: 650;
+  line-height: 1.35;
+  margin: 0 0 0.5rem !important;
+}
+
+.ccl-hero__tagline em {
+  font-style: normal;
+  background: var(--ccl-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .ccl-hero__lead {
-  max-width: 38rem;
-  margin: 0 auto 1.2rem !important;
-  opacity: 0.85;
+  max-width: 34rem;
+  margin: 0 0 1.3rem !important;
+  color: var(--md-default-fg-color--light);
+}
+
+.ccl-hero__actions p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
 }
 
 .ccl-hero .md-button {
-  margin: 0.25rem;
+  margin: 0;
+}
+
+.ccl-hero .md-button--primary svg {
+  transition: transform 0.2s ease;
+}
+
+.ccl-hero .md-button--primary:hover svg {
+  transform: translateX(3px);
 }
 
 .ccl-hero__badges {
-  margin: 1rem 0 0 !important;
+  margin: 1.2rem 0 0 !important;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 0.35rem;
+}
+
+/* The showcase: tilted toward the words, straightening under the pointer. */
+.ccl-hero__stage {
+  position: relative;
+  perspective: 1200px;
+  padding: 1.2rem 0.6rem 1.6rem 1.6rem;
+}
+
+.md-typeset .ccl-hero__shot {
+  position: relative;
+  display: block;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  aspect-ratio: 854 / 480;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--md-accent-fg-color) 35%, transparent);
+  border-radius: 1rem;
+  background: var(--md-code-bg-color);
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.55),
+    0 0 0 6px color-mix(in srgb, var(--md-accent-fg-color) 8%, transparent);
+  transform: rotateY(-9deg) rotateX(3deg);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ccl-hero__stage:hover .ccl-hero__shot {
+  transform: none;
+}
+
+.md-typeset .ccl-hero__shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.9s ease, transform 2.6s ease;
+}
+
+.md-typeset .ccl-hero__shot img.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.md-typeset .ccl-hero__shot figcaption {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  max-width: none;
+  margin: 0;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.6rem;
+  font-style: normal;
+  color: #fff;
+  border-radius: 999px;
+  background: rgba(10, 8, 14, 0.7);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.ccl-hero__live {
+  margin-right: 0.3rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: #e5484d;
+}
+
+.md-typeset .ccl-hero__logo {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 5.2rem;
+  height: 5.2rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.6), 0 0 0 3px var(--md-default-bg-color);
+  animation: ccl-float 6s ease-in-out infinite;
+}
+
+.ccl-hero__chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--md-default-fg-color);
+  border: 1px solid var(--ccl-rule);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--md-default-bg-color) 85%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.5);
+  animation: ccl-float 7s ease-in-out infinite;
+}
+
+.ccl-hero__chip::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.ccl-hero__chip--a {
+  top: 0.1rem;
+  right: 0;
+  color: var(--ccl-orange);
+  animation-delay: -2s;
+}
+
+.ccl-hero__chip--b {
+  top: 48%;
+  right: -0.6rem;
+  color: #4ade80;
+  animation-delay: -4s;
+}
+
+.ccl-hero__chip--c {
+  bottom: 0.3rem;
+  right: 12%;
+  color: var(--md-accent-fg-color);
+  animation-delay: -1s;
+}
+
+@keyframes ccl-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ---- Under the hero: a scrolling ribbon of what's inside, then a few numbers ---- */
+.ccl-ribbon {
+  margin: 0 0 1.4rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.ccl-ribbon__track {
+  display: flex;
+  width: max-content;
+  gap: 0.5rem;
+  animation: ccl-scroll 50s linear infinite;
+}
+
+.ccl-ribbon:hover .ccl-ribbon__track {
+  animation-play-state: paused;
+}
+
+.ccl-ribbon__track span {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--md-default-fg-color--light);
+  border: 1px solid var(--ccl-rule);
+  border-radius: 999px;
+  background: var(--ccl-panel);
+}
+
+.ccl-ribbon__track span:nth-child(3n + 1)::before {
+  content: "◆ ";
+  color: var(--ccl-orange);
+}
+
+.ccl-ribbon__track span:nth-child(3n + 2)::before {
+  content: "◆ ";
+  color: var(--md-accent-fg-color);
+}
+
+@keyframes ccl-scroll {
+  to { transform: translateX(calc(-50% - 0.25rem)); }
+}
+
+.md-typeset .ccl-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+}
+
+.ccl-stats > div {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--ccl-rule);
+  border-radius: 0.9rem;
+  background: var(--ccl-panel);
+}
+
+.ccl-stats b {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  background: var(--ccl-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ccl-stats span {
+  font-size: 0.68rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ---- The two halves, each in its own color ---- */
+.md-typeset .ccl-halves {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1em 0;
+}
+
+.md-typeset .ccl-half {
+  --tint: var(--ccl-orange);
+  position: relative;
+  overflow: hidden;
+  padding: 1.2rem 1.3rem 1rem;
+  border: 1px solid var(--ccl-rule);
+  border-radius: 1rem;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--tint) 14%, transparent), transparent 55%),
+    var(--ccl-panel);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.md-typeset .ccl-half--canvas {
+  --tint: var(--md-accent-fg-color);
+}
+
+.md-typeset .ccl-half:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--tint) 55%, transparent);
+  box-shadow: 0 18px 40px -22px var(--tint);
+}
+
+.md-typeset .ccl-half::before,
+.md-typeset .ccl-features > ul > li::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(18rem circle at var(--x, 50%) var(--y, 50%), color-mix(in srgb, var(--tint, var(--md-accent-fg-color)) 16%, transparent), transparent 70%);
+  transition: opacity 0.25s ease;
+}
+
+.md-typeset .ccl-half:hover::before,
+.md-typeset .ccl-features > ul > li:hover::before {
+  opacity: 1;
+}
+
+.md-typeset .ccl-half > * {
+  position: relative;
+}
+
+.md-typeset .ccl-half h3 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--tint);
+}
+
+.md-typeset .ccl-half h3 .headerlink {
+  display: none;
+}
+
+.md-typeset .ccl-half__pkg {
+  margin: 0.15rem 0 0.6rem;
+  font-size: 0.66rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .ccl-half p {
+  margin-block: 0.4em;
+}
+
+.md-typeset .ccl-half__link {
+  font-weight: 700;
+  color: var(--tint);
+}
+
+.md-typeset .ccl-half__link svg {
+  transition: transform 0.2s ease;
+}
+
+.md-typeset .ccl-half:hover .ccl-half__link svg {
+  transform: translateX(3px);
+}
+
+/* ---- Why: cards with their icon in a tile, lit under the pointer ---- */
+.md-typeset .ccl-features > ul > li {
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset .ccl-features > ul > li > * {
+  position: relative;
+  z-index: 1;
+}
+
+.md-typeset .ccl-features .twemoji.lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.35rem;
+  border-radius: 0.6rem;
+  color: #fff;
+  background: var(--ccl-gradient);
+  box-shadow: 0 8px 18px -8px var(--ccl-purple);
+  transition: transform 0.3s ease;
+}
+
+.md-typeset .ccl-features .twemoji.lg svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.md-typeset .ccl-features > ul > li:hover .twemoji.lg {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+/* Sections rise into view (javascripts/home.js). */
+.ccl-rise {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ccl-rise.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media screen and (max-width: 59.984375em) {
+  .ccl-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding: 2.2rem 1.2rem 2rem;
+    text-align: center;
+  }
+
+  .ccl-hero__actions p,
+  .ccl-hero__badges {
+    justify-content: center;
+  }
+
+  .ccl-hero__lead {
+    margin-inline: auto !important;
+  }
+
+  .md-typeset .ccl-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-typeset .ccl-hero__title {
+    font-size: 2.5rem;
+  }
+
+  .md-typeset .ccl-halves {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ccl-hero__chip--b {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccl-hero__glow span,
+  .ccl-hero__pulse::after,
+  .md-typeset .ccl-hero__title,
+  .md-typeset .ccl-hero__logo,
+  .ccl-hero__chip,
+  .ccl-ribbon__track {
+    animation: none;
+  }
 }
 
 /* Cards: lift on hover. */
@@ -114,11 +630,6 @@
   background: color-mix(in srgb, var(--md-accent-fg-color) 12%, transparent);
 }
 
-@media screen and (max-width: 44.9375em) {
-  .md-typeset .ccl-hero__title { font-size: 2.2rem; }
-  .ccl-hero__logos img { width: 88px; height: 88px; }
-}
-
 /* Buttons: readable outlines in both schemes, and the brand gradient on the primary one. */
 .md-typeset .md-button {
   border-radius: 999px;
@@ -132,6 +643,8 @@
 
 .md-typeset .md-button--primary {
   background: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple));
+  /* Drawn under the border too, so the gradient doesn't repeat into its transparent edge. */
+  background-origin: border-box;
   border-color: transparent;
   color: #fff;
 }
@@ -222,8 +735,7 @@
 }
 
 @media screen and (min-width: 76.25em) {
-  .md-main__inner.md-grid,
-  .md-header__inner.md-grid {
+  .md-main__inner.md-grid {
     padding-inline: 1.2rem;
   }
 }
@@ -244,7 +756,7 @@ body {
 
 @media screen and (min-width: 60em) {
   :root {
-    --ccl-bar-height: 3.2rem;
+    --ccl-bar-height: 60px;
   }
 }
 
@@ -286,7 +798,41 @@ body {
 
 .ccl-header .md-header__inner {
   gap: 0.6rem;
-  padding: 0 0.8rem;
+  max-width: none;
+  margin: 0;
+  padding: 0 0.9rem;
+}
+
+/* The search and the version switch sit in the middle, the room left over split on either side of them. */
+.ccl-header__grow {
+  flex: 1;
+}
+
+/* The menu button stays on wide screens too, folding the menu away (body.ccl-closed, javascripts/menu.js). */
+.ccl-header .ccl-header__menu {
+  display: flex;
+  flex: none;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.ccl-header .ccl-header__menu:hover {
+  color: var(--md-default-fg-color);
+  background: var(--ccl-hover);
+}
+
+.ccl-header .ccl-header__menu svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+@media screen and (min-width: 76.25em) {
+  body.ccl-closed .md-sidebar--primary,
+  body:has(.ccl-hero) .ccl-header .ccl-header__menu {
+    display: none;
+  }
 }
 
 .ccl-header .md-header__button {
@@ -307,7 +853,6 @@ body {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 0.4rem;
-  image-rendering: pixelated;
   box-shadow:
     0 4px 14px color-mix(in srgb, var(--ccl-purple) 45%, transparent),
     0 0 10px -2px color-mix(in srgb, var(--ccl-orange) 45%, transparent);
@@ -417,15 +962,13 @@ body {
 /* The search, in the middle of the bar. */
 .ccl-header__search {
   display: flex;
-  flex: 1;
-  justify-content: flex-start;
+  flex: 0 1 19rem;
   min-width: 0;
 }
 
 @media screen and (min-width: 60em) {
   .ccl-header .md-search {
     flex: 1;
-    max-width: 32rem;
     padding: 0;
   }
 
@@ -567,14 +1110,18 @@ body {
     width: 14rem;
   }
 
+  /* As tall as the window under the bar, so it scrolls only when the menu is longer than that. The rail line is drawn
+     at its outer edge, 2px clear of the scrollbar (which sits inside the transparent border). */
   .md-sidebar--primary .md-sidebar__scrollwrap {
+    max-height: calc(100vh - var(--ccl-bar-height) - 1rem);
     margin: 0;
     padding-right: 0.4rem;
-    border-right: 1px solid var(--ccl-rule);
+    border-right: 3px solid transparent;
+    background: linear-gradient(var(--ccl-rule), var(--ccl-rule)) right / 1px 100% no-repeat border-box;
   }
 
   .md-sidebar--primary .md-sidebar__inner {
-    padding: 0.2rem 0.2rem 2rem 0.1rem;
+    padding: 0.2rem 0.2rem 0.6rem 0.1rem;
   }
 
   /* Groups: an icon and a bold title, opening and closing with the chevron beside it. */
@@ -725,8 +1272,10 @@ body {
     margin: 0 auto;
   }
 
-  .md-content__inner {
-    margin-inline: 1.6rem;
+  /* Room on both sides of the page, between it and the menu and the outline (the theme's own is tighter, beside
+     either column). In pixels, as the theme grows its rems on wide screens. */
+  body[dir]:not(:has(.ccl-hero)) .md-main .md-content > .md-content__inner {
+    margin-inline: 52px;
   }
 }
 
@@ -1028,7 +1577,54 @@ body {
     padding: 0 0.4rem;
   }
 
+  .ccl-header__grow {
+    display: none;
+  }
+
   .ccl-header__home {
     padding: 0.38rem 0.5rem;
   }
+}
+
+/* ---------- On the home page ---------- */
+/* The bar is the site's there, not the docs': no DOCS tag, version switch or search, and a way into the docs instead
+   of back to the home page. */
+.ccl-header__home--docs {
+  display: none;
+}
+
+body:has(.ccl-hero) .ccl-brand__tag,
+body:has(.ccl-hero) .ccl-mc,
+body:has(.ccl-hero) .ccl-header__search,
+body:has(.ccl-hero) .ccl-header__home--site {
+  display: none;
+}
+
+body:has(.ccl-hero) .ccl-header__home--docs {
+  display: flex;
+  padding: 0.38rem 0.6rem 0.38rem 0.8rem;
+  color: #fff;
+  border: 0;
+  background: var(--ccl-gradient);
+  box-shadow: 0 6px 18px -8px var(--ccl-purple);
+}
+
+body:has(.ccl-hero) .ccl-header__home--docs:hover {
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+body:has(.ccl-hero) .ccl-header__home--docs svg {
+  color: #fff;
+}
+
+/* The home page is wider than a docs page, and has nothing to edit. */
+@media screen and (min-width: 76.25em) {
+  body:has(.ccl-hero) .md-content {
+    max-width: 62rem;
+  }
+}
+
+body:has(.ccl-hero) .md-content__button {
+  display: none;
 }
