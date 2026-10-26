@@ -6,6 +6,7 @@ import net.ixdarklord.coolcatcanvas.internal.client.vfx.RiftManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
+import net.ixdarklord.coolcatcanvas.internal.client.sound.SoundFilterManager;
 
 // The client entry point of CoolCatLib's visuals (the coolcatcanvas package).
 public final class CoolCatCanvasClientConstructor implements ClientModConstructor {
@@ -17,6 +18,7 @@ public final class CoolCatCanvasClientConstructor implements ClientModConstructo
         ClientTickEvents.END.register(minecraft -> {
             CameraShakeManager.tick(minecraft);
             RiftManager.tick(minecraft);
+            SoundFilterManager.tick(minecraft);
         });
     }
 }

@@ -12,7 +12,11 @@
     "client.CameraMixin",
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.ChannelMixin",
+    "client.SoundEngineAccessor",
+    "client.SoundEngineMixin",
+    "client.SoundManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
