@@ -248,7 +248,7 @@ public final class ConfigEditSession {
             case NONE -> access == ClientConfigManager.Access.LOCAL
                     ? Component.translatableWithFallback("config.coolcatlib.toast.saved", "Config saved") : null;
         };
-        if (message != null) ClientConfigManager.toast(this.config.title(), message);
+        if (message != null) ClientConfigManager.toast(ConfigNames.withMod(this.config), message);
     }
 
     /** A slot for one of this config's values. */

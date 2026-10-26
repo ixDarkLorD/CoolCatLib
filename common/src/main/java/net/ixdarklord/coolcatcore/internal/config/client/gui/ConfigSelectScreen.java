@@ -450,8 +450,7 @@ public final class ConfigSelectScreen extends StyledScreen {
         Tile(ConfigImpl config) {
             this.config = config;
             this.theme = themeOf(config);
-            this.label = Component.translatableWithFallback("config." + config.modId() + "." + config.name() + ".label",
-                    ConfigNodeImpl.prettify(config.name()));
+            this.label = ConfigNames.name(config);
             this.artwork = artworkOf(config);
         }
 
@@ -464,7 +463,7 @@ public final class ConfigSelectScreen extends StyledScreen {
         List<FormattedCharSequence> tooltip() {
             Font font = ConfigSelectScreen.this.font;
             List<FormattedCharSequence> lines = new ArrayList<>();
-            lines.add(this.config.title().copy().withStyle(style -> style.withBold(true).withColor(ConfigStyle.accentOf(this.theme) & 0xFFFFFF)).getVisualOrderText());
+            lines.add(ConfigNames.withMod(this.config).withStyle(style -> style.withBold(true).withColor(ConfigStyle.accentOf(this.theme) & 0xFFFFFF)).getVisualOrderText());
             lines.addAll(font.split(scopeDescription(this.config).copy().withStyle(ChatFormatting.GRAY), TOOLTIP_WIDTH));
             int settings = 0;
             for (ConfigValueImpl<?> ignored : this.config.allValues()) settings++;
@@ -611,9 +610,9 @@ public final class ConfigSelectScreen extends StyledScreen {
             int y = this.getY() + this.getHeight() - 16;
             int accent = ConfigStyle.accentOf(this.theme);
             ConfigIcons.forScope(this.config.scope()).draw(graphics, x + 2, y - 1, 12, accent);
-            MutableComponent title = this.config.title().copy().withStyle(ChatFormatting.BOLD);
+            MutableComponent title = ConfigNames.name(this.config).copy().withStyle(ChatFormatting.BOLD);
             if (ConfigSelectScreen.this.modId == null) {
-                title = Component.literal(modName(this.config.modId()) + " › ").withStyle(ChatFormatting.GRAY).append(this.config.title().copy().withStyle(ChatFormatting.BOLD));
+                title = Component.literal(modName(this.config.modId()) + " › ").withStyle(ChatFormatting.GRAY).append(ConfigNames.name(this.config).copy().withStyle(ChatFormatting.BOLD));
             }
             Component count = Component.translatableWithFallback("config.coolcatlib.search.count", "%s found", this.count);
             int countWidth = font.width(count);

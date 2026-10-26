@@ -15,6 +15,14 @@ public interface VfxFrame {
 
     Vec3 cameraPosition();
 
-    /** The drawer for a material. Shapes of equal materials are batched, whoever draws them. */
-    VfxDraw draw(VfxMaterial material);
+    /** The drawer for a material, in {@link VfxLayer#DEFAULT}. Shapes of equal materials are batched, whoever draws them. */
+    default VfxDraw draw(VfxMaterial material) {
+        return this.draw(material, VfxLayer.DEFAULT);
+    }
+
+    /**
+     * The drawer for a material in a layer, which sets what the shapes cover and what covers them (see {@link VfxLayer}).
+     * Shapes of equal materials in equal layers are batched, whoever draws them.
+     */
+    VfxDraw draw(VfxMaterial material, VfxLayer layer);
 }
