@@ -12,6 +12,7 @@
     "client.CameraMixin",
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
+    "client.GuiGraphicsMixin",
     "client.LevelRendererMixin",
     "client.ChannelMixin",
     "client.SoundEngineAccessor",
