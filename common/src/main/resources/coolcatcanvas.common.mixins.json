@@ -27,7 +27,11 @@
     "client.SkyRendererMixin",
     "client.SpecialModelRenderersAccessor",
     "client.SpecialModelWrapperMixin",
-    "client.BossHealthOverlayMixin"
+    "client.BossHealthOverlayMixin",
+    "client.ChannelMixin",
+    "client.SoundEngineAccessor",
+    "client.SoundEngineMixin",
+    "client.SoundManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
