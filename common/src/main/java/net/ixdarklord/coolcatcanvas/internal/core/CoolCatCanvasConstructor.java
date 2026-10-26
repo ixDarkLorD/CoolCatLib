@@ -4,6 +4,7 @@ import net.ixdarklord.coolcatcanvas.internal.effect.ScreenEffectNetwork;
 import net.ixdarklord.coolcatcanvas.internal.sky.SkyboxNetwork;
 import net.ixdarklord.coolcatcanvas.internal.vfx.VfxNetwork;
 import net.ixdarklord.coolcatcore.api.core.ModConstructor;
+import net.ixdarklord.coolcatcanvas.internal.sound.SoundFilterNetwork;
 
 // The common entry point of CoolCatLib's visuals (the coolcatcanvas package), constructed right after Core's.
 public final class CoolCatCanvasConstructor implements ModConstructor {
@@ -12,5 +13,6 @@ public final class CoolCatCanvasConstructor implements ModConstructor {
         ScreenEffectNetwork.init();
         SkyboxNetwork.init();
         VfxNetwork.init();
+        SoundFilterNetwork.init();
     }
 }

@@ -14,7 +14,11 @@
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
     "client.LevelRendererMixin",
-    "client.ShaderInstanceAccessor"
+    "client.ShaderInstanceAccessor",
+    "client.ChannelMixin",
+    "client.SoundEngineAccessor",
+    "client.SoundEngineMixin",
+    "client.SoundManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

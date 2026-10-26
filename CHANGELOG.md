@@ -13,6 +13,12 @@ This file is for listing all the changes to this project
 - Attachments on levels and on the server: `get`, `set`, `update`, `modify`, `has` and `reset` take a `Level` or the `MinecraftServer`, saved in the level's data folder (the server's in the overworld's) and synced (`SyncPolicy.ALL`) to the players in the level, or to everyone. `getGlobal(level)` reads the server's values on either side.
 - Offline players' attachments: `getOffline`, `setOffline`, `updateOffline` and `resetOffline` read and write a player's saved values whether or not they're online (an offline player's data file is written at once).
 
+- Sound filters (`api.client.sound`): muffle, roughen and echo the game's sounds, as heard through a wall, under a spell or in a cave.
+  - A `SoundFilter` is how loud a sound stays, how much of its high end it keeps, and how much of it goes through a distortion and into a reverb. `muffled`, `quieter`, `distorted` and `echoing` make the usual ones; `then` combines two and `lerp` goes part of the way, for fades.
+  - `SoundFilters.register(provider)` adds a `SoundFilterProvider`, asked about each sound as it starts and as it moves, with a `SoundContext`: where it plays, which sound event it is, its category and whether it is relative to the listener (music, the menus; the menus' clicks are relative MASTER sounds here, as this version has no UI category). `SoundFilterProvider.inWorld` makes one for the sounds in the world only, by their place. `register` gives back a `Registration` to `remove()` it again.
+  - Named filters for every sound at once (but the menus' clicks): `SoundFilters.set(id, filter, fadeTicks)` fades one in, `clear(id, fadeTicks)` out again; `isSet(id)`. From the server, `SoundFilterControl.set` and `clear` (`api.sound`) do the same for a player.
+  - `SoundFilters.refresh()` filters the sounds already playing again, when a provider's answers change.
+  - Through OpenAL's EFX extension (a low-pass filter on each sound, sent to a distortion and a reverb effect); without it, sounds are left as they are.
 - World effect layers: `frame.draw(material, VfxLayer.of(n))` draws in a layer, lowest first, so a higher layer always covers a lower one. A `VfxLayer.sorted(n)` layer draws its painted-over shapes of every material back to front, so shapes of different textures cover each other as their distance says. Materials in a layer now draw in the order they were first used each frame, where before they drew in no set order.
 
 ### 🔧 Changes
