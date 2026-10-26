@@ -81,7 +81,7 @@ MyAttachments.MADNESS.resetOffline(server, uuid);
 Only persistent attachments (with a codec) can be used this way, on the server thread. No `AttachmentEvents` fire for an offline player's values; they reach the player when they next join.
 
 !!! info "Since"
-    Levels, the server and offline players: coming in **8.0.0** (on 26.1.2, 1.21.1 and 1.20.1).
+    Levels, the server and offline players: coming in **8.0.0**, on every version.
 
 ## Reacting to changes
 

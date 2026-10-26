@@ -8,7 +8,7 @@ description: Game tests from common code, on every loader
 Game tests from common code, the same on every loader: a test is a function given a `GameTestHelper`, run in a structure built for it, and it passes or fails. CoolCatLib hands your tests to each loader's own test framework, so `/test` and the loaders' game test servers run them. Package: `net.ixdarklord.coolcatcore.api.gametest`.
 
 !!! info "Since"
-    Coming in **8.0.0**, on 26.1.2, 1.21.1 and 1.20.1. The API is the same on all three; where the versions differ is [below](#on-1211-and-1201).
+    Coming in **8.0.0**, on every version. The API is the same everywhere; where 1.21.1 and 1.20.1 differ is [below](#on-1211-and-1201).
 
 ## Writing tests
 
@@ -48,7 +48,7 @@ GameTests.register(MyMod.id("crate/keeps_items"), GameTestOptions.DEFAULT.withMa
 
 ## Where tests run
 
-A test runs in a structure, loaded from a data pack: `data/<namespace>/structure/<path>.nbt`, saved with a structure block (or, on 26.1.2, a test block). Without one of its own, it runs on CoolCatLib's **platform** (`GameTestOptions.PLATFORM`, `coolcatlib:gametest/platform`): an empty 8 × 6 × 8 space on a stone floor.
+A test runs in a structure, loaded from a data pack: `data/<namespace>/structure/<path>.nbt`, saved with a structure block (or, on 26.x, a test block). Without one of its own, it runs on CoolCatLib's **platform** (`GameTestOptions.PLATFORM`, `coolcatlib:gametest/platform`): an empty 8 × 6 × 8 space on a stone floor.
 
 Positions in the helper count from the structure's corner, the same on every version: on the platform, `(0, 0, 0)` to `(7, 0, 7)` is the floor, and `y = 1` the first layer above it.
 
@@ -67,13 +67,13 @@ Positions in the helper count from the structure's corner, the same on every ver
 | `maxAttempts`, `requiredSuccesses` (`withAttempts`) | 1, 1 | Try up to `maxAttempts` times; pass once `requiredSuccesses` tries have. For flaky tests. |
 | `skyAccess` (`withSkyAccess()`) | false | Build it with open sky above. |
 | `padding` | 0 | Extra space around the structure, 0 to 128 blocks. |
-| `environment` (`withEnvironment`) | none | The conditions it runs in, such as `new TestEnvironmentDefinition.Weather(Weather.Type.THUNDER)`. 26.1.2 only. |
+| `environment` (`withEnvironment`) | none | The conditions it runs in, such as `new TestEnvironmentDefinition.Weather(Weather.Type.THUNDER)`. 26.x only. |
 
 ## Running them
 
 Tests are only added to the game when it's run to test (`GameTests.isEnabled()`): in a development environment, with `-Dcoolcatlib.gametest=true`, or with the loader's own switch (`-Dfabric-api.gametest`, `-Dneoforge.gameTestServer=true`, `-Dforge.gameTestServer=true`). A normal world or server never has them.
 
-=== "26.1.2"
+=== "26.1.2, 26.2 and 26.3"
 
     - In game: `/test run mymod:*` runs every test of a mod, `/test run mymod:wand_tests/zaps_a_zombie` one, and `/test runfailed` those that failed.
     - A game test server runs them all and exits, failing if a required one did: on Fabric, a dedicated server with `-Dfabric-api.gametest`; on NeoForge, the `gameTestServer` run.
@@ -90,8 +90,8 @@ These versions have the older test framework, and CoolCatLib's tests run in it:
 - No test environments: `withEnvironment` isn't there. Tests run in batches instead, one per mod unless you set `withBatch(name)`.
 - `padding` does nothing, and on 1.20.1 neither does `skyAccess` (tests always have open sky there).
 - On 1.20.1, structures are in `data/<namespace>/structures/` (plural).
-- `/test` exists only in a development environment there (on 26.1.2, it's always there, for operators).
-- Positions count from the structure's corner, as on 26.1.2, though vanilla's own helper counts from one block lower on these versions; CoolCatLib's tests get a helper that agrees with 26.1.2.
+- `/test` exists only in a development environment there (on 26.x, it's always there, for operators).
+- Positions count from the structure's corner, as on 26.x, though vanilla's own helper counts from one block lower on these versions; CoolCatLib's tests get a helper that agrees with 26.1.2.
 
 ## Reference
 
@@ -99,4 +99,4 @@ These versions have the older test framework, and CoolCatLib's tests run in it:
 |---|---|
 | `GameTests` | `register(modId, Class)` (returns the ids), `register(id, test)`, `register(id, options, test)`, `isEnabled()`, `all()`. Register while your mod constructs. |
 | `@GameTest` | `name`, `structure`, `maxTicks`, `setupTicks`, `required`, `rotation` (quarter turns), `manualOnly`, `maxAttempts`, `requiredSuccesses`, `skyAccess`, `padding`. |
-| `GameTestOptions` | `DEFAULT`, `PLATFORM`; `withStructure`, `withMaxTicks`, `withSetupTicks`, `optional`, `withRotation`, `asManualOnly`, `withAttempts`, `withSkyAccess`, `withPadding`, `withEnvironment` (26.1.2) or `withBatch` (1.21.1, 1.20.1); `of(GameTest)`. |
+| `GameTestOptions` | `DEFAULT`, `PLATFORM`; `withStructure`, `withMaxTicks`, `withSetupTicks`, `optional`, `withRotation`, `asManualOnly`, `withAttempts`, `withSkyAccess`, `withPadding`, `withEnvironment` (26.x) or `withBatch` (1.21.1, 1.20.1); `of(GameTest)`. |
