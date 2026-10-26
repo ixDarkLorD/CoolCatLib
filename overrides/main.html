@@ -1,0 +1,12 @@
+{#-
+  The page's footer lives at the end of its own column (partials/page-footer.html), under the article, instead of
+  across the whole window: the side menu runs the full height beside it and never reaches into it.
+-#}
+{% extends "base.html" %}
+
+{% block content %}
+  {{ super() }}
+  {% include "partials/page-footer.html" %}
+{% endblock %}
+
+{% block footer %}{% endblock %}

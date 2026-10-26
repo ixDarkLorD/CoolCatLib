@@ -33,12 +33,11 @@ theme:
         icon: material/weather-night
         name: Switch to light mode
   features:
-    - navigation.sections
+    - navigation.expand
     - navigation.instant
     - navigation.instant.progress
     - navigation.tracking
     - navigation.path
-    - navigation.top
     - navigation.footer
     - navigation.indexes
     - toc.follow
@@ -57,28 +56,22 @@ extra_css:
   - stylesheets/extra.css
 
 extra_javascript:
-  - javascripts/menu.js
+  - javascripts/mc-version.js
 
 extra:
-  # The Menu's icons for pages without one of their own, by title (overrides/partials/header.html). The pages' own
-  # icons and the descriptions shown in the Menu are in their front matter.
-  menu_icons:
-    Home: material/home-outline
-    Getting Started: material/rocket-launch-outline
-    Core: material/toolbox-outline
-    Canvas: material/palette-outline
-    Reference: material/book-open-variant-outline
-    Changelog: material/history
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/ixDarkLorD/CoolCatLib
       name: Source on GitHub
+      label: GitHub
     - icon: simple/curseforge
       link: https://www.curseforge.com/minecraft/mc-mods/coolcatlib
       name: "CoolCatLib on CurseForge"
+      label: CurseForge
     - icon: simple/modrinth
       link: https://modrinth.com/mod/coolcatlib
       name: "CoolCatLib on Modrinth"
+      label: Modrinth
 
 markdown_extensions:
   - abbr
@@ -90,6 +83,7 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      title: On this page
   - pymdownx.details
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji

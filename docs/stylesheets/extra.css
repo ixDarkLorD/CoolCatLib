@@ -24,215 +24,6 @@
   --md-code-bg-color: #211a28;
 }
 
-/* ---- Top bar: one translucent bar, closed by a Core-to-Canvas line ---- */
-.md-header {
-  background: linear-gradient(90deg, rgba(43, 26, 20, 0.92), rgba(42, 31, 51, 0.92) 50%, rgba(58, 36, 86, 0.92));
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  backdrop-filter: blur(14px) saturate(1.4);
-}
-
-.md-header::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple));
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-.md-header__button.md-logo img {
-  border-radius: 0.35rem;
-}
-
-.md-header__topic:first-child {
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.md-search__form {
-  border-radius: 999px;
-}
-
-/* ---- Top bar: the page menu, a button at the bar's left opening a pane of every page ---- */
-.pagemenu {
-  display: block;
-  flex-shrink: 0;
-  order: -1;
-  margin: 0 0.5rem 0 0.2rem;
-}
-
-.pagemenu__button {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  height: 1.8rem;
-  padding: 0 0.8rem 0 0.6rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  font-size: 0.7rem;
-  font-weight: 600;
-  cursor: pointer;
-  list-style: none;
-  user-select: none;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pagemenu__button::-webkit-details-marker {
-  display: none;
-}
-
-.pagemenu__button svg {
-  width: 1rem;
-  height: 1rem;
-  fill: currentColor;
-}
-
-.pagemenu__button:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.pagemenu[open] .pagemenu__button {
-  color: #fff;
-  border-color: transparent;
-  background: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple));
-  box-shadow: 0 4px 14px rgba(155, 79, 214, 0.35);
-}
-
-.pagemenu__button:focus-visible {
-  outline: 2px solid var(--md-accent-fg-color);
-  outline-offset: 2px;
-}
-
-/* The pane hangs under the bar, as wide as the page's content. */
-.pagemenu__panel {
-  position: absolute;
-  top: calc(100% + 0.45rem);
-  left: max(0.8rem, calc(50% - 30.5rem));
-  right: max(0.8rem, calc(50% - 30.5rem));
-  z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  gap: 0.4rem 1rem;
-  padding: 0.8rem 0.9rem 0.9rem;
-  color: var(--md-default-fg-color);
-  background: var(--md-default-bg-color);
-  border: 1px solid var(--md-default-fg-color--lightest);
-  border-radius: 0.8rem;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
-}
-
-.pagemenu__group {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.pagemenu__heading,
-.pagemenu__subheading {
-  padding: 0.2rem 0.5rem 0.3rem;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--md-default-fg-color--lighter);
-}
-
-.pagemenu__subheading {
-  padding-top: 0.55rem;
-}
-
-.pagemenu__link {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 0.5rem;
-  border-radius: 0.55rem;
-  color: inherit;
-  transition: background-color 0.12s ease;
-}
-
-.pagemenu__link:hover,
-.pagemenu__link:focus-visible,
-.pagemenu__link--active {
-  background: color-mix(in srgb, var(--md-accent-fg-color) 12%, transparent);
-}
-
-.pagemenu__icon {
-  display: inline-flex;
-  flex: none;
-  padding: 0.4rem;
-  border-radius: 0.5rem;
-  color: var(--md-accent-fg-color);
-  background: color-mix(in srgb, var(--md-accent-fg-color) 14%, transparent);
-}
-
-.pagemenu__icon svg {
-  width: 1rem;
-  height: 1rem;
-  fill: currentColor;
-}
-
-.pagemenu__link--active .pagemenu__icon {
-  color: #fff;
-  background: linear-gradient(135deg, var(--ccl-orange), var(--ccl-purple));
-}
-
-.pagemenu__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.3;
-}
-
-.pagemenu__title {
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
-.pagemenu__description {
-  font-size: 0.6rem;
-  color: var(--md-default-fg-color--light);
-}
-
-/* Narrow screens: the page menu takes the place of the theme's drawer button, the logo stays as the way home, and
-   the pane scrolls when it's taller than the screen. */
-@media screen and (max-width: 76.2344em) {
-  .md-header__button.md-icon[for="__drawer"] {
-    display: none;
-  }
-
-  .md-header__button.md-logo {
-    display: inline-block;
-  }
-
-  .pagemenu__panel {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-height: calc(100vh - 5rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
-  .pagemenu__description {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 29.9375em) {
-  .pagemenu__button {
-    padding: 0 0.5rem;
-  }
-
-  .pagemenu__button span {
-    display: none;
-  }
-
-  .pagemenu__panel {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 /* ---- Home hero ---- */
 .ccl-hero {
   text-align: center;
@@ -350,236 +141,6 @@
   box-shadow: 0 6px 18px rgba(155, 79, 214, 0.3);
 }
 
-/* ---- Pages: a clear title, sections set apart, and quiet side columns ---- */
-.md-typeset h1 {
-  margin-bottom: 0.7em;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--md-default-fg-color);
-}
-
-.md-typeset h1:not(.ccl-hero__title)::after {
-  content: "";
-  display: block;
-  width: 3.2rem;
-  height: 0.2rem;
-  margin-top: 0.55rem;
-  border-radius: 0.1rem;
-  background: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple));
-}
-
-/* The paragraph under the title introduces the page. */
-.md-typeset h1:not(.ccl-hero__title) + p {
-  font-size: 1.08em;
-  color: var(--md-default-fg-color--light);
-}
-
-.md-typeset h2 {
-  margin-top: 2.2em;
-  padding-top: 1.3em;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  border-top: 1px solid var(--md-default-fg-color--lightest);
-}
-
-.md-typeset h1 + h2,
-.md-typeset .ccl-hero + h2 {
-  margin-top: 1em;
-  padding-top: 0;
-  border-top: 0;
-}
-
-.md-typeset h3 {
-  margin-top: 1.8em;
-  font-weight: 700;
-}
-
-.md-typeset h4 {
-  font-weight: 700;
-}
-
-/* Code blocks and notes: the same rounded frame as the tables. */
-.md-typeset .highlight {
-  border: 1px solid var(--md-default-fg-color--lightest);
-  border-radius: 0.6rem;
-  overflow: hidden;
-}
-
-.md-typeset .highlight > pre,
-.md-typeset .highlight > pre > code,
-.md-typeset .highlight > .filename {
-  margin: 0;
-  border-radius: 0;
-}
-
-.md-typeset .admonition,
-.md-typeset details {
-  border-radius: 0.6rem;
-  overflow: hidden;
-}
-
-/* Breadcrumbs above the title. */
-.md-path {
-  font-size: 0.65rem;
-  opacity: 0.8;
-}
-
-@media screen and (min-width: 76.25em) {
-  /* Left column: the section's pages as rows, the current one filled. */
-  .md-sidebar--primary .md-nav__item .md-nav__link {
-    margin-top: 0.1rem;
-    padding: 0.32rem 0.6rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.12s ease, color 0.12s ease;
-  }
-
-  .md-sidebar--primary .md-nav__item .md-nav__link:hover {
-    background: color-mix(in srgb, var(--md-default-fg-color) 6%, transparent);
-  }
-
-  .md-sidebar--primary .md-nav__item .md-nav__link--active {
-    font-weight: 700;
-    color: var(--md-accent-fg-color);
-    background: color-mix(in srgb, var(--md-accent-fg-color) 13%, transparent);
-  }
-
-  .md-sidebar--primary .md-nav__item--section > .md-nav__link,
-  .md-sidebar--primary .md-nav__item--section > .md-nav__link:hover {
-    padding-bottom: 0.1rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: none;
-    opacity: 0.6;
-  }
-}
-
-/* Right column: the page's sections along a rail, the one being read marked on it. */
-@media screen and (min-width: 60em) {
-  .md-nav--secondary > .md-nav__title {
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.6;
-  }
-
-  .md-nav--secondary .md-nav__list {
-    border-left: 1px solid var(--md-default-fg-color--lightest);
-  }
-
-  .md-nav--secondary .md-nav__list .md-nav__list {
-    border-left: 0;
-  }
-
-  .md-nav--secondary .md-nav__link {
-    margin-left: -1px;
-    padding-left: 0.7rem;
-    border-left: 2px solid transparent;
-  }
-
-  .md-nav--secondary .md-nav__link--active {
-    font-weight: 700;
-    color: var(--md-accent-fg-color);
-    border-left-color: var(--md-accent-fg-color);
-  }
-}
-
-/* ---- Side menu ---- */
-.md-nav--primary .md-nav__link svg {
-  color: var(--md-accent-fg-color);
-}
-
-/* As a drawer (narrow screens): the bar's gradient on top, then rows with a filled current page. */
-@media screen and (max-width: 76.234375em) {
-  .md-nav--primary,
-  .md-nav--primary .md-nav {
-    background: var(--md-default-bg-color);
-  }
-
-  .md-nav--primary .md-nav__title {
-    color: #fff;
-    font-weight: 800;
-    background: linear-gradient(135deg, #2b1a14, #2a1f33 55%, #3a2456);
-  }
-
-  .md-nav--primary .md-nav__title[for="__drawer"] {
-    border-bottom: 2px solid transparent;
-    border-image: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple)) 1;
-  }
-
-  .md-nav--primary .md-nav__title .md-nav__button.md-logo img {
-    border-radius: 0.6rem;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-  }
-
-  /* A section's own title, shown once it's opened: one compact row, the way back beside the name (the theme
-     leaves room above it for a logo it only has at the top level). */
-  .md-nav--primary .md-nav__item .md-nav__title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    height: auto;
-    padding: 0.7rem 0.8rem;
-    line-height: 1.3;
-    white-space: normal;
-    color: var(--md-default-fg-color);
-    background: color-mix(in srgb, var(--md-accent-fg-color) 10%, var(--md-default-bg-color));
-    border-bottom: 1px solid var(--md-default-fg-color--lightest);
-  }
-
-  .md-nav--primary .md-nav__item .md-nav__title .md-nav__icon {
-    position: static;
-    flex: none;
-    margin: 0;
-  }
-
-  .md-nav__source {
-    color: var(--md-default-fg-color);
-    background: transparent;
-    border-bottom: 1px solid var(--md-default-fg-color--lightest);
-  }
-
-  .md-nav--primary .md-nav__list {
-    padding: 0.4rem 0.4rem 0.8rem;
-  }
-
-  .md-nav--primary .md-nav--secondary .md-nav__list,
-  .md-nav--primary .md-nav__list .md-nav__list .md-nav__list {
-    padding: 0;
-  }
-
-  .md-nav--primary .md-nav__item,
-  .md-nav--primary .md-nav__item:last-child {
-    border: 0;
-  }
-
-  .md-nav--primary .md-nav__link {
-    margin: 0.1rem 0;
-    padding: 0.5rem 0.7rem;
-    border-radius: 0.6rem;
-    font-weight: 600;
-    transition: background-color 0.12s ease, color 0.12s ease;
-  }
-
-  .md-nav--primary .md-nav__link:hover,
-  .md-nav--primary .md-nav__link:focus-visible {
-    background: color-mix(in srgb, var(--md-default-fg-color) 7%, transparent);
-  }
-
-  .md-nav--primary .md-nav__link--active,
-  .md-nav--primary .md-nav__item--active > .md-nav__link:not(.md-nav__container),
-  .md-nav--primary .md-nav__item--active > .md-nav__container {
-    color: var(--md-accent-fg-color);
-    background: color-mix(in srgb, var(--md-accent-fg-color) 13%, transparent);
-  }
-
-  /* The current page's sections, listed under it. */
-  .md-nav--primary .md-nav--secondary .md-nav__link {
-    padding: 0.3rem 0.7rem;
-    font-weight: 400;
-  }
-}
-
 /* ---- Screenshots: a row of framed pictures with captions ---- */
 .md-typeset .ccl-shots {
   display: grid;
@@ -625,4 +186,849 @@
   width: auto;
   height: 26px;
   vertical-align: middle;
+}
+
+/* ==================================================================================================================
+   The frame: a top bar with the name, a DOCS tag, the search in the middle and the way to download; a full-height
+   menu on the left that opens and closes by group; the page in the middle, its title under a breadcrumb and its
+   sections marked; the page's outline on the right; and, under the page, the pages before and after it.
+   ================================================================================================================== */
+/* On the element carrying the scheme, so the mixes are made from that scheme's colors. */
+[data-md-color-scheme] {
+  --ccl-gradient: linear-gradient(90deg, var(--ccl-orange), var(--ccl-purple));
+  --ccl-rule: color-mix(in srgb, var(--md-default-fg-color) 9%, transparent);
+  --ccl-panel: color-mix(in srgb, var(--md-default-fg-color) 3.5%, transparent);
+  --ccl-hover: color-mix(in srgb, var(--md-default-fg-color) 6%, transparent);
+  --ccl-selected: color-mix(in srgb, var(--md-accent-fg-color) 14%, transparent);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #141017;
+  --ccl-bar: rgba(20, 16, 23, 0.86);
+  --ccl-glow: rgba(155, 79, 214, 0.14);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #fbf8f4;
+  --md-accent-fg-color: #8a3fcb;
+  --ccl-bar: rgba(251, 248, 244, 0.86);
+  --ccl-glow: rgba(224, 112, 58, 0.1);
+}
+
+/* The whole page widens: the menu at its left, the outline at its right. Measured in pixels, since the theme grows its
+   type (and so every rem) on wide screens; a gutter keeps the frame off the window's edges. */
+.md-grid {
+  max-width: 1480px;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-main__inner.md-grid,
+  .md-header__inner.md-grid {
+    padding-inline: 1.2rem;
+  }
+}
+
+body {
+  background:
+    radial-gradient(60rem 26rem at 18% -6rem, var(--ccl-glow), transparent 70%),
+    var(--md-default-bg-color);
+  background-attachment: fixed;
+}
+
+/* ---------- Top bar ---------- */
+/* Taller than the theme's, for room around the search and the buttons; what sits under it (the sticky side columns,
+   a heading jumped to, the search's results on a phone) moves down with it. */
+:root {
+  --ccl-bar-height: 2.8rem;
+}
+
+@media screen and (min-width: 60em) {
+  :root {
+    --ccl-bar-height: 3.2rem;
+  }
+}
+
+.ccl-header .md-header__inner {
+  height: var(--ccl-bar-height);
+}
+
+.md-sidebar {
+  top: var(--ccl-bar-height);
+}
+
+.md-typeset :target {
+  --md-scroll-margin: calc(var(--ccl-bar-height) + 1.2rem);
+}
+
+@media screen and (max-width: 59.984375em) {
+  .md-search__output {
+    top: var(--ccl-bar-height);
+  }
+}
+
+.md-header.ccl-header {
+  color: var(--md-default-fg-color);
+  background: var(--ccl-bar);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  box-shadow: none;
+}
+
+.md-header.ccl-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--ccl-gradient);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.ccl-header .md-header__inner {
+  gap: 0.6rem;
+  padding: 0 0.8rem;
+}
+
+.ccl-header .md-header__button {
+  margin: 0;
+  color: var(--md-default-fg-color--light);
+}
+
+.ccl-brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--md-default-fg-color);
+}
+
+/* The logo glows softly in the brand colors, and tips its hat on hover. */
+.ccl-brand img {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.4rem;
+  image-rendering: pixelated;
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--ccl-purple) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--ccl-orange) 45%, transparent);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.ccl-brand:hover img {
+  transform: rotate(-6deg) scale(1.08);
+  box-shadow:
+    0 6px 18px color-mix(in srgb, var(--ccl-purple) 60%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--ccl-orange) 60%, transparent);
+}
+
+.ccl-brand__name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ccl-brand__tag {
+  padding: 0.1rem 0.42rem;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--md-accent-fg-color);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--md-accent-fg-color) 14%, transparent);
+}
+
+/* The Minecraft version switch, left of the search: a quiet field like it, the version in the accent. */
+.ccl-mc {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2.1rem;
+  padding: 0 0.55rem;
+  font-size: 0.62rem;
+  color: var(--md-default-fg-color--light);
+  border: 1px solid var(--ccl-rule);
+  border-radius: 0.65rem;
+  background: var(--ccl-panel);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.ccl-mc:hover,
+.ccl-mc:focus-within {
+  border-color: color-mix(in srgb, var(--md-accent-fg-color) 50%, transparent);
+}
+
+.ccl-mc > svg {
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: currentColor;
+}
+
+.ccl-mc > svg:first-child {
+  color: var(--md-accent-fg-color);
+}
+
+.ccl-mc__name {
+  font-weight: 600;
+}
+
+.ccl-mc select {
+  appearance: none;
+  padding: 0 0.1rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--md-accent-fg-color);
+  border: 0;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ccl-mc select option {
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+}
+
+/* The rows of the picked version, in the table of versions. */
+.md-typeset tr.mc-row > td {
+  background: var(--ccl-selected);
+}
+
+.md-typeset tr.mc-row > td:first-child {
+  box-shadow: inset 2px 0 var(--md-accent-fg-color);
+}
+
+@media screen and (max-width: 59.984375em) {
+  .ccl-mc {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 76.234375em) {
+  .ccl-mc__name {
+    display: none;
+  }
+}
+
+/* The search, in the middle of the bar. */
+.ccl-header__search {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+@media screen and (min-width: 60em) {
+  .ccl-header .md-search {
+    flex: 1;
+    max-width: 32rem;
+    padding: 0;
+  }
+
+  .ccl-header .md-search__inner,
+  [data-md-toggle="search"]:checked ~ .md-header .ccl-header__search .md-search__inner {
+    float: none;
+    width: 100%;
+  }
+
+  .ccl-header .md-search__form {
+    height: 2.1rem;
+    border: 1px solid var(--ccl-rule);
+    border-radius: 0.65rem;
+    background: var(--ccl-panel);
+    box-shadow: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .ccl-header .md-search__form:hover {
+    border-color: color-mix(in srgb, var(--md-accent-fg-color) 40%, transparent);
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .ccl-header .md-search__form,
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+    border-color: color-mix(in srgb, var(--md-accent-fg-color) 60%, transparent);
+    border-radius: 0.65rem 0.65rem 0 0;
+    background: var(--md-default-bg-color);
+  }
+
+  .ccl-header .md-search__input {
+    font-size: 0.7rem;
+  }
+
+  .ccl-header .md-search__input::placeholder {
+    color: var(--md-default-fg-color--light);
+  }
+
+  .ccl-header .md-search__icon,
+  .ccl-header .md-search__input {
+    color: var(--md-default-fg-color);
+  }
+
+  /* The key that opens it, at the field's end. */
+  .ccl-header .md-search__form::after {
+    content: "/";
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    padding: 0.05rem 0.38rem;
+    font-size: 0.55rem;
+    font-family: var(--md-code-font-family);
+    color: var(--md-default-fg-color--light);
+    border: 1px solid var(--ccl-rule);
+    border-radius: 0.3rem;
+    pointer-events: none;
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__form::after {
+    display: none;
+  }
+
+  .ccl-header .md-search__output {
+    border-radius: 0 0 0.65rem 0.65rem;
+  }
+}
+
+.ccl-header .md-header__option {
+  flex: none;
+}
+
+.ccl-header__icon {
+  display: flex;
+  flex: none;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  color: var(--md-default-fg-color--light);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.ccl-header__icon:hover {
+  color: var(--md-default-fg-color);
+  background: var(--ccl-hover);
+}
+
+.ccl-header__icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: currentColor;
+}
+
+/* The way back to the home page: an outlined button, its arrow in the brand colors. */
+.ccl-header__home {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.8rem 0.38rem 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  border: 1px solid var(--ccl-rule);
+  border-radius: 0.6rem;
+  background: var(--ccl-panel);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.ccl-header__home:hover {
+  color: var(--md-default-fg-color);
+  border-color: color-mix(in srgb, var(--md-accent-fg-color) 55%, transparent);
+  background: var(--ccl-hover);
+}
+
+.ccl-header__home svg {
+  color: var(--md-accent-fg-color);
+}
+
+.ccl-header__home svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+}
+
+@media screen and (max-width: 44.9375em) {
+  .ccl-header__home span,
+  .ccl-brand__tag {
+    display: none;
+  }
+}
+
+/* ---------- Menu (left) ---------- */
+@media screen and (min-width: 76.25em) {
+  /* The menu's own title is only for the drawer; the top bar names the site. */
+  .md-nav--primary > .md-nav__title {
+    display: none;
+  }
+
+  .md-sidebar--primary {
+    width: 14rem;
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    margin: 0;
+    padding-right: 0.4rem;
+    border-right: 1px solid var(--ccl-rule);
+  }
+
+  .md-sidebar--primary .md-sidebar__inner {
+    padding: 0.2rem 0.2rem 2rem 0.1rem;
+  }
+
+  /* Groups: an icon and a bold title, opening and closing with the chevron beside it. */
+  .md-nav--primary > .md-nav__list > .md-nav__item {
+    margin-top: 0.7rem;
+  }
+
+  .md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
+  .md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__container > .md-nav__link:first-child {
+    font-weight: 700;
+    color: var(--md-default-fg-color);
+  }
+
+  .md-nav--primary .md-nav__link {
+    margin-top: 0.08rem;
+    padding: 0.28rem 0.55rem;
+    border-radius: 0.5rem;
+    color: var(--md-default-fg-color--light);
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  .md-nav--primary .md-nav__container > .md-nav__link {
+    margin-top: 0;
+  }
+
+  .md-nav--primary .md-nav__link:hover,
+  .md-nav--primary .md-nav__container:hover > .md-nav__link {
+    color: var(--md-default-fg-color);
+    background: var(--ccl-hover);
+  }
+
+  .md-nav--primary .md-nav__container:hover > .md-nav__link + .md-nav__link {
+    background: none;
+  }
+
+  /* The pages of a group, along a thin rail. */
+  .md-nav--primary .md-nav[data-md-level="1"] > .md-nav__list {
+    margin: 0.15rem 0 0.2rem 0.85rem;
+    padding-left: 0.35rem;
+    border-left: 1px solid var(--ccl-rule);
+  }
+
+  .md-nav--primary .md-nav__link--active,
+  .md-nav--primary .md-nav__link--active:hover {
+    font-weight: 700;
+    color: var(--md-accent-fg-color);
+    background: var(--ccl-selected);
+  }
+
+  .md-nav--primary .md-nav__link--active::before {
+    content: "";
+    position: absolute;
+    left: -0.42rem;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--ccl-gradient);
+  }
+
+  .md-nav--primary .md-nav__link {
+    position: relative;
+  }
+
+  /* A group's row (its page and its chevron) is one pill: one background and one bar for the whole row, none on its
+     parts, which the theme marks as current both at once. */
+  .md-nav--primary .md-nav__container {
+    padding: 0;
+  }
+
+  .md-nav--primary .md-nav__container > .md-nav__link,
+  .md-nav--primary .md-nav__container > .md-nav__link:hover,
+  .md-nav--primary .md-nav__container > .md-nav__link--active,
+  .md-nav--primary .md-nav__container > .md-nav__link--active:hover {
+    margin: 0;
+    background: none;
+  }
+
+  .md-nav--primary .md-nav__container > .md-nav__link--active::before {
+    content: none;
+  }
+
+  .md-nav--primary .md-nav__container > .md-nav__link + .md-nav__link {
+    padding-inline: 0.4rem;
+  }
+
+  .md-nav--primary .md-nav__container:has(> .md-nav__link--active),
+  .md-nav--primary .md-nav__container:has(> .md-nav__link--active):hover {
+    background: var(--ccl-selected);
+  }
+
+  .md-nav--primary .md-nav__container:has(> .md-nav__link--active) > .md-nav__link {
+    color: var(--md-accent-fg-color);
+  }
+
+  .md-nav--primary .md-nav__container:has(> .md-nav__link--active)::before {
+    content: "";
+    position: absolute;
+    left: -0.42rem;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--ccl-gradient);
+  }
+}
+
+.md-nav--primary .md-nav__link svg {
+  color: var(--md-accent-fg-color);
+}
+
+/* In the drawer (narrow screens). */
+@media screen and (max-width: 76.234375em) {
+  .md-nav--primary,
+  .md-nav--primary .md-nav {
+    background: var(--md-default-bg-color);
+  }
+
+  .md-nav--primary .md-nav__title {
+    color: var(--md-default-fg-color);
+    background: var(--ccl-panel);
+    border-bottom: 1px solid var(--ccl-rule);
+  }
+
+
+  .md-nav--primary .md-nav__link {
+    border-radius: 0.5rem;
+  }
+
+  .md-nav--primary .md-nav__link--active {
+    color: var(--md-accent-fg-color);
+    background: var(--ccl-selected);
+  }
+
+  .md-nav--primary .md-nav__list {
+    padding: 0 0.4rem;
+  }
+
+  .md-nav--primary .md-nav__item {
+    border: 0;
+  }
+}
+
+/* ---------- The page ---------- */
+@media screen and (min-width: 76.25em) {
+  .md-content {
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+
+  .md-content__inner {
+    margin-inline: 1.6rem;
+  }
+}
+
+/* The page starts close under the bar: the theme's own gaps above the columns, the breadcrumb and the menu add up
+   to a lot of nothing. */
+.md-main__inner {
+  margin-top: 0.5rem;
+}
+
+@media screen and (min-width: 60em) {
+  .md-sidebar {
+    padding-top: 0.5rem;
+  }
+}
+
+/* The breadcrumb above the title. */
+.md-path {
+  margin-top: 0;
+  padding-top: 0.6rem;
+  font-size: 0.62rem;
+}
+
+.md-path__item:last-child .md-path__link,
+.md-path__item:not(:first-child)::before {
+  color: var(--md-accent-fg-color);
+}
+
+.md-path__link {
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset h1 {
+  margin: 0.4rem 0 0.6rem;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--md-default-fg-color);
+}
+
+/* The paragraph under the title introduces the page. */
+.md-typeset h1:not(.ccl-hero__title) + p {
+  margin-top: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color--light);
+}
+
+/* Sections, each marked with a small diamond in the brand colors. */
+.md-typeset h2 {
+  position: relative;
+  margin-top: 2.4em;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+}
+
+.md-typeset h2:not(.ccl-hero h2)::before {
+  content: "";
+  position: absolute;
+  left: -1.05rem;
+  top: 0.48em;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 0.1rem;
+  background: var(--ccl-gradient);
+  transform: rotate(45deg);
+}
+
+.md-typeset h3 {
+  margin-top: 1.8em;
+  font-weight: 700;
+}
+
+.md-typeset h4 {
+  font-weight: 700;
+}
+
+/* Code blocks and notes: rounded panels. */
+.md-typeset .highlight,
+.md-typeset .tabbed-set {
+  border: 1px solid var(--ccl-rule);
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+.md-typeset .tabbed-set .highlight {
+  border: 0;
+  border-radius: 0;
+}
+
+.md-typeset .highlight > pre,
+.md-typeset .highlight > pre > code,
+.md-typeset .highlight > .filename {
+  margin: 0;
+  border-radius: 0;
+}
+
+.md-typeset .tabbed-labels {
+  padding: 0 0.4rem;
+  background: var(--ccl-panel);
+  box-shadow: inset 0 -1px var(--ccl-rule);
+}
+
+.md-typeset .tabbed-set > .tabbed-content {
+  margin: 0;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+/* ---------- Outline (right) ---------- */
+@media screen and (min-width: 60em) {
+  .md-sidebar--secondary .md-nav__title {
+    padding-bottom: 0.3rem;
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--md-default-fg-color--light);
+    background: none;
+    box-shadow: none;
+  }
+
+  .md-nav--secondary > .md-nav__list {
+    border-left: 1px solid var(--ccl-rule);
+  }
+
+  .md-nav--secondary .md-nav__list .md-nav__list {
+    border-left: 0;
+  }
+
+  .md-nav--secondary .md-nav__link {
+    margin-left: -1px;
+    padding-left: 0.7rem;
+    border-left: 2px solid transparent;
+    color: var(--md-default-fg-color--light);
+  }
+
+  .md-nav--secondary .md-nav__link:hover {
+    color: var(--md-default-fg-color);
+  }
+
+  .md-nav--secondary .md-nav__link--active {
+    font-weight: 700;
+    color: var(--md-accent-fg-color);
+    border-left-color: var(--md-accent-fg-color);
+  }
+
+  .ccl-totop {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.9rem 0 0 0.7rem;
+    font-size: 0.6rem;
+    color: var(--md-default-fg-color--light);
+  }
+
+  .ccl-totop:hover {
+    color: var(--md-accent-fg-color);
+  }
+
+  .ccl-totop svg {
+    width: 0.7rem;
+    height: 0.7rem;
+    fill: currentColor;
+  }
+}
+
+@media screen and (max-width: 59.984375em) {
+  .ccl-totop {
+    display: none;
+  }
+}
+
+/* ---------- Under the page ---------- */
+.ccl-foot {
+  margin-top: 3.2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--ccl-rule);
+}
+
+.ccl-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.md-typeset .ccl-pager__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  color: var(--md-default-fg-color);
+  border: 1px solid var(--ccl-rule);
+  border-radius: 0.75rem;
+  background: var(--ccl-panel);
+  transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+
+.md-typeset .ccl-pager__link:hover {
+  color: var(--md-default-fg-color);
+  border-color: color-mix(in srgb, var(--md-accent-fg-color) 50%, transparent);
+  background: var(--ccl-hover);
+  transform: translateY(-2px);
+}
+
+.ccl-pager__link--next {
+  grid-column: 2;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.ccl-pager__direction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.ccl-pager__direction svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: currentColor;
+}
+
+.ccl-pager__title {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.ccl-foot__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.2rem;
+  margin: 1.4rem 0 0.4rem;
+  font-size: 0.62rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.ccl-foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.md-typeset .ccl-foot__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .ccl-foot__links a:hover {
+  color: var(--md-accent-fg-color);
+}
+
+.ccl-foot__links svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  fill: currentColor;
+}
+
+@media screen and (max-width: 44.9375em) {
+  .ccl-pager {
+    grid-template-columns: 1fr;
+  }
+
+  .ccl-pager__link--next {
+    grid-column: 1;
+  }
+}
+
+/* ---------- Narrow screens ---------- */
+@media screen and (max-width: 76.234375em) {
+  /* No margin beside the page to hang the diamond in: it sits before the heading's words. */
+  .md-typeset h2:not(.ccl-hero h2)::before {
+    position: static;
+    display: inline-block;
+    margin: 0 0.6rem 0.12em 0.1rem;
+    vertical-align: middle;
+  }
+
+}
+
+@media screen and (max-width: 29.9375em) {
+  /* The logo alone names the site; the bar's room goes to the search and the switches. */
+  .ccl-brand__name {
+    display: none;
+  }
+
+  .ccl-header .md-header__inner {
+    gap: 0.2rem;
+    padding: 0 0.4rem;
+  }
+
+  .ccl-header__home {
+    padding: 0.38rem 0.5rem;
+  }
 }
