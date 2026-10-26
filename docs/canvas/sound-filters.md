@@ -8,7 +8,7 @@ description: Muffle, roughen and echo the game's sounds
 Muffle, roughen and echo the game's sounds: a player hiding in a chest hears the world through its walls, one under a spell hears it from far away, a cave rings. Package: `net.ixdarklord.coolcatcanvas.api.client.sound` (client) and `api.sound` (server).
 
 !!! info "Since"
-    Coming in **8.0.0**, on Minecraft 26.1 – 26.1.2. Not yet on 26.2, 26.3, 1.21.1 and 1.20.1.
+    Coming in **8.0.0**, on every version. On 1.21.1 and 1.20.1, which have no UI sound category, the menus' clicks are the sounds played as `MASTER` relative to the listener, and named filters leave those alone the same way.
 
 Every sound gets the filters below combined: a low-pass filter on it, and as much of it as they say sent, filtered the same, through a distortion and into a reverb. It's done with OpenAL's EFX extension, which the game's own OpenAL has; without it, sounds are left as they are.
 
