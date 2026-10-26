@@ -2,7 +2,15 @@
 This file is for listing all the changes to this project
 
 ## v8.0.0 Release | Unreleased
+### ✨ New Features
+- World effect layers: `frame.draw(material, VfxLayer.of(n))` draws in a layer, lowest first, so a higher layer always covers a lower one. A `VfxLayer.sorted(n)` layer draws its painted-over shapes of every material back to front, so shapes of different textures cover each other as their distance says. Materials in a layer now draw in the order they were first used each frame, where before they drew in no set order.
+
+### 🐛 Bug Fixes
+- Mod Menu and NeoForge's mod list have a config button for CoolCatLib again, and for every mod with a CoolCatLib config. It opens CoolCatLib's own config screens, or Glazed Menu's when it's installed (Glazed Menu then gives the other mods' buttons itself).
+
 ### 🔧 Changes
+- CoolCatLib's own config screens (used when Glazed Menu isn't installed) are the full ones again, the same as on 1.21.1 and 1.20.1: a card for each of a mod's configs (or every mod's), each config's screen with its categories, search, presets, undo and redo, list and color editors, and category popups. Configs go by their own names ("Client", "Server"), after their mod's where it matters ("Testing Mod › Client"), instead of "Testingmod Client"; translate one with `config.<modid>.<name>.label`.
+- Mod Menu no longer marks CoolCatLib as a library, so its list doesn't hide it by default.
 - New version numbers: `<version>+<minecraft>`, this one `8.0.0+26.2`, the same for every Minecraft version and loader. They follow on from 26.2-6; the part before the `+` is what launchers and loaders compare, the Minecraft version after it is only a label. Depending on CoolCatLib: ask for `>=8.0.0`, and the Maven artifacts are `coolcatlib-<loader>:8.0.0+26.2`.
 
 ## v26.2-6 Release | Oct 22, 2026

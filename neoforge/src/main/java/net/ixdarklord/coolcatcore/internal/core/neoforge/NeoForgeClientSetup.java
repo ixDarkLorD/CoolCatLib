@@ -1,14 +1,19 @@
 package net.ixdarklord.coolcatcore.internal.core.neoforge;
 
 import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
+import net.ixdarklord.coolcatcore.api.config.client.ConfigScreens;
 import net.ixdarklord.coolcatcore.api.core.neoforge.NeoForgeModEntrypoint;
 import net.ixdarklord.coolcatcore.internal.core.client.CoolCatCoreClientConstructor;
 import net.ixdarklord.coolcatcore.internal.event.neoforge.NeoForgeClientEventHooks;
 import net.ixdarklord.coolcatcore.api.item.ComponentItem;
+import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
@@ -20,5 +25,23 @@ public class NeoForgeClientSetup extends NeoForgeModEntrypoint {
         NeoForge.EVENT_BUS.addListener(ItemTooltipEvent.class, event -> ComponentItem.onTooltip(event.getItemStack(), event.getToolTip()));
         this.client(() -> CoolCatCoreClientConstructor::new);
         this.client(() -> CoolCatCanvasClientConstructor::new);
+        this.modEventBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(NeoForgeClientSetup::registerConfigScreens));
+    }
+
+    // The mod list's "Config" button: CoolCatLib's own, which lists every mod's configs, and one for every mod with a
+    // CoolCatLib config that set no screen of its own. They open Glazed Menu's screens when it's installed, CoolCatLib's
+    // own otherwise; with Glazed Menu, the other mods' buttons are its to give.
+    private static void registerConfigScreens() {
+        ModList.get().getModContainerById(CoolCatCore.MOD_ID).ifPresent(container -> container.registerExtensionPoint(
+                IConfigScreenFactory.class, (IConfigScreenFactory) (mod, parent) -> ConfigScreens.createModList(parent)));
+        if (ModList.get().isLoaded("glazedmenu")) return;
+        for (String modId : ConfigManager.modIds()) {
+            if (modId.equals(CoolCatCore.MOD_ID)) continue;
+            ModList.get().getModContainerById(modId).ifPresent(container -> {
+                if (container.getCustomExtension(IConfigScreenFactory.class).isEmpty()) {
+                    container.registerExtensionPoint(IConfigScreenFactory.class, (IConfigScreenFactory) (mod, parent) -> ConfigScreens.create(parent, modId));
+                }
+            });
+        }
     }
 }

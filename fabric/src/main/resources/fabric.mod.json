@@ -30,6 +30,9 @@
     ],
     "jei_mod_plugin": [
       "net.ixdarklord.coolcatcore.internal.integration.jei.JEIIntegration"
+    ],
+    "modmenu": [
+      "net.ixdarklord.coolcatcore.internal.integration.modmenu.ModMenuIntegration"
     ]
   },
   "mixins": [
@@ -42,9 +45,6 @@
     "glazedmenu": {
       "library": true,
       "update_json": "${mod_fabric_update_url}"
-    },
-    "modmenu": {
-      "badges": ["library"]
     },
     "configured": {
       "providers": [
