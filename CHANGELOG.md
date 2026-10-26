@@ -3,6 +3,14 @@ This file is for listing all the changes to this project
 
 ## v8.0.0 Release | Unreleased
 ### ✨ New Features
+- More common events (`api.event.v2.common`), fired the same on every loader:
+  - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
+  - `PlayerEvents.PICKUP_ITEM` (interrupt to leave the item on the ground), `TRAVEL_TO_DIMENSION` (before any teleport to another dimension: portals, commands, other mods' teleporters; interrupt to stay), `CRAFTED` and `SMELTED` (an item taken from a crafting or furnace result slot).
+  - `LivingEvents.EQUIPMENT_CHANGE`: what an entity wears or holds in a slot changed.
+  - `RecipeEvents.CRAFT_RESULT`: a crafting recipe's result for a crafting grid or a crafter; interrupt with another stack, or an empty one so nothing can be crafted.
+- Game tests from common code (`api.gametest`), the same on Fabric and NeoForge: `GameTests.register(modId, SomeTests.class)` registers every `@GameTest` method (as `<modid>:<class>/<method>`), and `GameTests.register(id, options, helper -> ...)` one test by hand. `GameTestOptions` sets the structure, time limit, setup ticks, rotation, retries, sky access, padding and environment; without a structure of their own, tests run on CoolCatLib's `coolcatlib:gametest/platform`, an empty 8 × 6 × 8 space on a stone floor. Tests are added in a development environment or with `-Dcoolcatlib.gametest=true` (or the loader's own game test switch), then run with `/test run <modid>:*` or on a game test server.
+- Attachments on levels and on the server: `get`, `set`, `update`, `modify`, `has` and `reset` take a `Level` or the `MinecraftServer`, saved in its data folder and synced (`SyncPolicy.ALL`) to the players in the level, or to everyone. `getGlobal(level)` reads the server's values on either side.
+- Offline players' attachments: `getOffline`, `setOffline`, `updateOffline` and `resetOffline` read and write a player's saved values whether or not they're online (an offline player's data file is written at once).
 - Sound filters (`api.client.sound`): muffle, roughen and echo the game's sounds, as heard through a wall, under a spell or in a cave.
   - A `SoundFilter` is how loud a sound stays, how much of its high end it keeps, and how much of it goes through a distortion and into a reverb. `muffled`, `quieter`, `distorted` and `echoing` make the usual ones; `then` combines two and `lerp` goes part of the way, for fades.
   - `SoundFilters.register(provider)` adds a `SoundFilterProvider`, asked about each sound as it starts and as it moves, with a `SoundContext`: where it plays, which sound event it is, its category and whether it is relative to the listener (music, the menus). `SoundFilterProvider.inWorld` makes one for the sounds in the world only, by their place. `register` gives back a `Registration` to `remove()` it again.

@@ -11,6 +11,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -31,20 +32,28 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-// The attachment values of one entity or block entity. Saved with the owner's other data, each mod's under
-// <modid>:attachments; changed synced
-// keys are queued in AttachmentSync and sent at the end of the server tick.
+// The attachment values of one entity, block entity, level or server (or, on a client, its copy of the server's).
+// Entities and block entities save them with their other data, each mod's under <modid>:attachments; levels and the
+// server in saved data (AttachmentSavedData), told by onDirty. Changed synced keys are queued in AttachmentSync and sent
+// at the end of the server tick.
 public final class AttachmentStore implements AttachmentHolder {
 
     private final Object owner;
     private final Map<Attachment<?>, Object> values = new LinkedHashMap<>();
     private final Set<Attachment<?>> dirty = new LinkedHashSet<>();
+    // What saves a level's or the server's values: their saved data, marked dirty.
+    private @Nullable Runnable onDirty;
 
     public AttachmentStore(Object owner) {
-        if (!(owner instanceof Entity) && !(owner instanceof BlockEntity)) {
-            throw new IllegalArgumentException("Data stores belong to entities or block entities, not " + owner);
+        if (!(owner instanceof Entity) && !(owner instanceof BlockEntity) && !(owner instanceof Level) && !(owner instanceof MinecraftServer)
+                && owner != ServerAttachments.CLIENT_OWNER) {
+            throw new IllegalArgumentException("Data stores belong to entities, block entities, levels or the server, not " + owner);
         }
         this.owner = owner;
+    }
+
+    void onDirty(@Nullable Runnable onDirty) {
+        this.onDirty = onDirty;
     }
 
     @Override
@@ -52,19 +61,27 @@ public final class AttachmentStore implements AttachmentHolder {
         return this.owner;
     }
 
+    /** The owner's level: for the server, its overworld; for a client's copy of the server's values, none. */
     public @Nullable Level level() {
-        return this.owner instanceof Entity entity ? entity.level() : ((BlockEntity) this.owner).getLevel();
+        if (this.owner instanceof Entity entity) return entity.level();
+        if (this.owner instanceof BlockEntity blockEntity) return blockEntity.getLevel();
+        if (this.owner instanceof Level level) return level;
+        if (this.owner instanceof MinecraftServer server) return server.overworld();
+        return null;
     }
 
     @Override
     public boolean isClientSide() {
+        if (this.owner == ServerAttachments.CLIENT_OWNER) return true;
         Level level = this.level();
         return level != null && level.isClientSide();
     }
 
     @Override
     public boolean isValid() {
-        return this.owner instanceof Entity entity ? !entity.isRemoved() : !((BlockEntity) this.owner).isRemoved();
+        if (this.owner instanceof Entity entity) return !entity.isRemoved();
+        if (this.owner instanceof BlockEntity blockEntity) return !blockEntity.isRemoved();
+        return true;
     }
 
     @Override
@@ -131,6 +148,7 @@ public final class AttachmentStore implements AttachmentHolder {
             BlockState state = blockEntity.getBlockState();
             if (!state.isAir()) level.updateNeighbourForOutputSignal(blockEntity.getBlockPos(), state.getBlock());
         }
+        if (this.onDirty != null && key.isPersistent()) this.onDirty.run();
         if (key.isSynced()) AttachmentSync.queue(this, key);
     }
 
