@@ -59,13 +59,6 @@ hide:
 <span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
 </div></div>
 
-<div class="ccl-stats">
-  <div><b>3</b><span>loaders from one <code>common</code> module</span></div>
-  <div><b>5</b><span>Minecraft lines, 1.20.1 to 26.3</span></div>
-  <div><b>1</b><span>jar per loader, Core and Canvas inside</span></div>
-  <div><b>0</b><span>extra APIs to install</span></div>
-</div>
-
 ## One mod, two halves
 
 <div class="ccl-halves" markdown>

@@ -354,7 +354,7 @@
   50% { transform: translateY(-8px); }
 }
 
-/* ---- Under the hero: a scrolling ribbon of what's inside, then a few numbers ---- */
+/* ---- Under the hero: a scrolling ribbon of what's inside ---- */
 .ccl-ribbon {
   margin: 0 0 1.4rem;
   overflow: hidden;
@@ -396,36 +396,6 @@
 
 @keyframes ccl-scroll {
   to { transform: translateX(calc(-50% - 0.25rem)); }
-}
-
-.md-typeset .ccl-stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.6rem;
-  margin: 0 0 1rem;
-}
-
-.ccl-stats > div {
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--ccl-rule);
-  border-radius: 0.9rem;
-  background: var(--ccl-panel);
-}
-
-.ccl-stats b {
-  display: block;
-  font-size: 1.9rem;
-  font-weight: 800;
-  line-height: 1.1;
-  background: var(--ccl-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.ccl-stats span {
-  font-size: 0.68rem;
-  color: var(--md-default-fg-color--light);
 }
 
 /* ---- The two halves, each in its own color ---- */
@@ -577,10 +547,6 @@
 
   .ccl-hero__lead {
     margin-inline: auto !important;
-  }
-
-  .md-typeset .ccl-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

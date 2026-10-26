@@ -25,7 +25,7 @@
   function reveal() {
     if (still.matches || !("IntersectionObserver" in window)) return;
     const parts = document.querySelectorAll(
-      ".md-content__inner > :is(h2, .ccl-stats, .ccl-halves, .grid, .admonition, .highlight, .annotate, .mermaid, table, .md-typeset__scrollwrap)"
+      ".md-content__inner > :is(h2, .ccl-halves, .grid, .admonition, .highlight, .annotate, .mermaid, table, .md-typeset__scrollwrap)"
     );
     watcher = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
