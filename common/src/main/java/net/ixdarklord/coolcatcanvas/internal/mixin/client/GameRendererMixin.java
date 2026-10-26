@@ -2,6 +2,7 @@ package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
+import net.ixdarklord.coolcatcanvas.internal.client.gui.GuiAreaRecorder;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.GhostRenderer;
@@ -19,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 // Screen effects: updated at the start of the frame, drawn after the world (once vanilla's own post effect has run)
 // and after the GUI. Skyboxes: updated at the start of the frame too (they're drawn from LevelRendererMixin). Both
 // rebuild once the new shaders are in place (not reached if vanilla's own shaders failed). World effects: drawn right
-// after the level, with the projection it was drawn with, before the hand clears its depth.
+// after the level, with the projection it was drawn with, before the hand clears its depth. GuiAreas: the HUD is
+// recorded while Gui.render runs, and the frame's areas are published once the whole GUI is drawn.
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
@@ -51,10 +53,23 @@ public abstract class GameRendererMixin {
         ScreenEffectManager.render(ScreenEffectScope.SCREEN);
     }
 
+    @Inject(method = "render", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private void coolcatlib$recordHud(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+        GuiAreaRecorder.begin(GuiAreaRecorder.Phase.HUD);
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
+    private void coolcatlib$stopRecordingHud(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+        GuiAreaRecorder.end(GuiAreaRecorder.Phase.NONE);
+    }
+
     @Inject(method = "render", at = @At("TAIL"))
     private void coolcatcanvas$endFrame(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ScreenEffectManager.endFrame();
         SkyboxManager.endFrame();
+        GuiAreaRecorder.endFrame();
     }
 
     @Inject(method = "resize", at = @At("TAIL"))

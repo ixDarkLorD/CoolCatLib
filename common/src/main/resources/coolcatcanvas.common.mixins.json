@@ -8,12 +8,14 @@
     "TextColorMixin"
   ],
   "client": [
+    "client.AbstractContainerScreenMixin",
     "client.AbstractWidgetMixin",
     "client.CameraMixin",
     "client.FontStringRenderOutputMixin",
     "client.GameRendererMixin",
     "client.GuiGraphicsMixin",
     "client.LevelRendererMixin",
+    "client.ScreenMixin",
     "client.ChannelMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
