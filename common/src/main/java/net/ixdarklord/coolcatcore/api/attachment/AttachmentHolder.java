@@ -2,8 +2,11 @@ package net.ixdarklord.coolcatcore.api.attachment;
 
 import net.ixdarklord.coolcatcore.internal.attachment.AttachmentStoreAccess;
 import net.ixdarklord.coolcatcore.internal.attachment.ItemStackAttachments;
+import net.ixdarklord.coolcatcore.internal.attachment.ServerAttachments;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Set;
@@ -11,12 +14,13 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
- * The {@link Attachment} values of one entity, block entity or item stack. {@link Attachment}'s own methods
+ * The {@link Attachment} values of one entity, block entity, item stack, level or the server. {@link Attachment}'s own methods
  * ({@code MADNESS.get(player)}) are shortcuts for these.
  * <p>
  * Entities and block entities keep their values in memory, save them with their other data and sync them by each
  * attachment's {@link SyncPolicy}. Values set on a client stay on that client until the server's next sync. Item stacks keep
  * theirs in their mod's {@code <modid>:attachments} component, which travels with the stack like any other component.
+ * Levels and the server keep theirs in saved data, in the level's and the server's data folder.
  */
 public interface AttachmentHolder {
     static AttachmentHolder of(Entity entity) {
@@ -27,12 +31,27 @@ public interface AttachmentHolder {
         return ((AttachmentStoreAccess) blockEntity).coolcatlib$getOrCreateAttachments();
     }
 
+    /** A level's values: a server level's saved in its data folder, a client level's as the server sent them. */
+    static AttachmentHolder of(Level level) {
+        return ((AttachmentStoreAccess) level).coolcatlib$getOrCreateAttachments();
+    }
+
+    /** The server's own values, saved in its data folder. */
+    static AttachmentHolder of(MinecraftServer server) {
+        return ((AttachmentStoreAccess) server).coolcatlib$getOrCreateAttachments();
+    }
+
+    /** The server's values as a side knows them: the server's own, or on a client the copy it was sent. */
+    static AttachmentHolder global(Level level) {
+        return ServerAttachments.global(level);
+    }
+
     /** A view of the stack's data; it reads and writes the stack directly, so it's cheap and never out of date. */
     static AttachmentHolder of(ItemStack stack) {
         return new ItemStackAttachments(stack);
     }
 
-    /** The entity, block entity or item stack holding the values. */
+    /** The entity, block entity, item stack, level or server holding the values. */
     Object owner();
 
     /** Whether the holder is on a client. Always {@code false} for item stacks, which have no side. */
