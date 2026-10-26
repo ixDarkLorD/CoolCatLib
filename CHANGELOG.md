@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v8.0.0 Release | Unreleased
+## v8.0.0 Release | Oct 26, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
   - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
