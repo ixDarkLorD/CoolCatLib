@@ -63,7 +63,7 @@ public final class ConfigScreen extends StyledScreen {
     private int statusRight;
 
     private ConfigScreen(@Nullable Screen parent, ConfigEditSession session) {
-        super(session.config().title(), ThemeResources.resolve(session.config().modId(), session.config().theme()));
+        super(ConfigNames.withMod(session.config()), ThemeResources.resolve(session.config().modId(), session.config().theme()));
         this.parent = parent;
         this.session = session;
         ConfigGroupImpl root = session.config().root();

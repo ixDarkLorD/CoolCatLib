@@ -44,7 +44,7 @@ public final class CategoryPopup extends StyledPopup {
     private @Nullable FlatButton resetButton;
 
     private CategoryPopup(@Nullable Screen parent, ConfigEditSession session, ConfigNode node, @Nullable ConfigTheme theme) {
-        super(parent, node.parent() == null ? session.config().title() : node.displayName(),
+        super(parent, node.parent() == null ? ConfigNames.withMod(session.config()) : node.displayName(),
                 ThemeResources.resolve(session.config().modId(), theme != null ? theme : session.config().theme()));
         this.session = session;
         this.node = node;
@@ -119,7 +119,7 @@ public final class CategoryPopup extends StyledPopup {
     // Which config the category belongs to, when it isn't the whole config.
     @Override
     protected @Nullable Component titleNote() {
-        return this.node.parent() == null ? null : this.session.config().title();
+        return this.node.parent() == null ? null : ConfigNames.withMod(this.session.config());
     }
 
     @Override

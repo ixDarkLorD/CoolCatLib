@@ -139,7 +139,7 @@ public final class StartupMismatchScreen extends StyledScreen {
         private final Component server;
 
         Row(StartupMismatch mismatch) {
-            this.name = mismatch.config().title().copy().withStyle(ChatFormatting.GRAY)
+            this.name = ConfigNames.withMod(mismatch.config()).withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(" › ").withStyle(ChatFormatting.DARK_GRAY))
                     .append(mismatch.value().displayName().copy().withStyle(ChatFormatting.WHITE));
             this.yours = Component.translatableWithFallback("config.coolcatlib.startup.yours", "Yours: %s", mismatch.format(mismatch.value().get()));

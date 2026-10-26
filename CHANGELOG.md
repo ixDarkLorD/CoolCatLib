@@ -13,7 +13,10 @@ This file is for listing all the changes to this project
 - Attachments on levels and on the server: `get`, `set`, `update`, `modify`, `has` and `reset` take a `Level` or the `MinecraftServer`, saved with the level (the server's in the overworld's data folder) and synced (`SyncPolicy.ALL`) to the players in the level, or to everyone. `getGlobal(level)` reads the server's values on either side.
 - Offline players' attachments: `getOffline`, `setOffline`, `updateOffline` and `resetOffline` read and write a player's saved values whether or not they're online (an offline player's data file is written at once).
 
+- World effect layers: `frame.draw(material, VfxLayer.of(n))` draws in a layer, lowest first, so a higher layer always covers a lower one. A `VfxLayer.sorted(n)` layer draws its painted-over shapes of every material back to front, so shapes of different textures cover each other as their distance says. Materials in a layer now draw in the order they were first used each frame, where before they drew in no set order.
+
 ### 🔧 Changes
+- Config screens call configs by their own name ("Client", "Server"), after their mod's name where it matters ("Testing Mod › Client"), instead of a title made from the mod id ("Testingmod Client"): in a config's screen, its category popups, the config cards' tooltips and search results, and saved notices. Translate a config's name with `config.<modid>.<name>.label`.
 - New version numbers: `<version>+<minecraft>`, this one `8.0.0+1.21.1`, the same for every Minecraft version and loader. They follow on from 2100.4.0.0; the part before the `+` is what launchers and loaders compare, the Minecraft version after it is only a label. Depending on CoolCatLib: ask for `>=8.0.0`, and the Maven artifacts are `coolcatlib-<loader>:8.0.0+1.21.1`.
 
 ## v2100.4.0.0 Release | Oct 22, 2026
