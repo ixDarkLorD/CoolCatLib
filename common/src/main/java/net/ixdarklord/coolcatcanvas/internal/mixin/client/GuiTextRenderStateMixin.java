@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// FadedItems.withOpacity: text drawn inside it (an item's count) fades with it.
+// ItemOpacityRenderer.withOpacity: text drawn inside it (an item's count) fades with it.
 @Mixin(GuiTextRenderState.class)
 public abstract class GuiTextRenderStateMixin {
     @Shadow @Final @Mutable

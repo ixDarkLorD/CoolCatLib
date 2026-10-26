@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// FadedItems.withOpacity: filled rectangles drawn inside it (an item's durability bar) fade with it.
+// ItemOpacityRenderer.withOpacity: filled rectangles drawn inside it (an item's durability bar) fade with it.
 @Mixin(ColoredRectangleRenderState.class)
 public abstract class ColoredRectangleRenderStateMixin {
     @Shadow @Final @Mutable
