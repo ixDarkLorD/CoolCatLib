@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// FadedItems: a GUI item is blitted from the item atlas at the opacity it was drawn at. The atlas is premultiplied, so
+// ItemOpacityRenderer: a GUI item is blitted from the item atlas at the opacity it was drawn at. The atlas is premultiplied, so
 // the color scales every channel, not only alpha.
 @Mixin(GuiRenderer.class)
 public abstract class GuiRendererMixin {
