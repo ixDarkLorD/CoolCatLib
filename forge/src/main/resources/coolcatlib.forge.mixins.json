@@ -4,6 +4,9 @@
   "compatibilityLevel": "JAVA_17",
   "package": "net.ixdarklord.coolcatcore.internal.mixin.forge",
   "mixins": [
+    "BlockMixin",
+    "NetworkHooksMixin",
+    "ServerPlayerGameModeMixin",
     "ServerPlayerTravelMixin"
   ],
   "injectors": {

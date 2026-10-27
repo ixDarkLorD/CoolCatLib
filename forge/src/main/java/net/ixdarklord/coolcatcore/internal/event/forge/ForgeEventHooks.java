@@ -4,6 +4,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.BlockEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.EntityEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.InteractionEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.LivingEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
@@ -19,6 +20,8 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -67,6 +70,23 @@ public final class ForgeEventHooks {
         });
         bus.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.LEAVE.invoker().onLeave(player);
+        });
+        bus.addListener((LivingAttackEvent event) -> {
+            if (LivingEvents.DAMAGE.invoker().onDamage(event.getEntity(), event.getSource(), event.getAmount()).isInterrupt()) event.setCanceled(true);
+        });
+        bus.addListener((LivingDeathEvent event) -> {
+            if (LivingEvents.DEATH.invoker().onDeath(event.getEntity(), event.getSource()).isInterrupt()) event.setCanceled(true);
+        });
+        bus.addListener((PlayerEvent.BreakSpeed event) -> {
+            if (PlayerEvents.BREAK_SPEED.hasListeners()) {
+                PlayerEvents.BREAK_SPEED.invoker().onBreakSpeed(event.getEntity(), event.getState(), event.getPosition().orElse(null), event.getNewSpeed()).ifInterrupt(event::setNewSpeed);
+            }
+        });
+        // (Forge doesn't say where the block is.)
+        bus.addListener((PlayerEvent.HarvestCheck event) -> {
+            if (PlayerEvents.HARVEST_CHECK.hasListeners()) {
+                PlayerEvents.HARVEST_CHECK.invoker().onHarvestCheck(event.getEntity(), event.getTargetBlock(), null, event.canHarvest()).ifInterrupt(event::setCanHarvest);
+            }
         });
         bus.addListener((PlayerEvent.Clone event) -> {
             if (event.getOriginal() instanceof ServerPlayer original && event.getEntity() instanceof ServerPlayer player) {
