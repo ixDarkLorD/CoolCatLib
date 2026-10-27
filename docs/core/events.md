@@ -82,26 +82,41 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 | | `CHANGE_DIMENSION` | `(ServerPlayer, ResourceKey<Level> from, ResourceKey<Level> to)`: after arriving |
 | | `PICKUP_ITEM` | `EventResult (ServerPlayer, ItemEntity)`: the item may be picked up and fits; interrupt to leave it on the ground |
 | | `CRAFTED`, `SMELTED` | `(Player, ItemStack, Container)`: taken out of a crafting or furnace result slot |
+| | `OPEN_MENU` | `EventResult (ServerPlayer, MenuProvider)`: before any menu opens (a block's, an entity's, an item's, one another mod opens with extra data); interrupt to keep it closed |
+| | `ADVANCEMENT_EARNED` | `(ServerPlayer, AdvancementHolder)`: an advancement was completed |
+| | `BREAK_SPEED` | `EventResultHolder<Float> (Player, BlockState, @Nullable BlockPos, float speed)`: how fast a block breaks, on both sides; interrupt with another speed |
+| | `HARVEST_CHECK` | `EventResultHolder<Boolean> (Player, BlockState, @Nullable BlockPos, boolean canHarvest)`: whether the tool is right for the block (without it, it drops nothing), on both sides |
 | `LivingEvents` | `DAMAGE` | `EventResult (LivingEntity, DamageSource, float amount)`: before armor; interrupt and no damage is taken |
 | | `DEATH` | `EventResult (LivingEntity, DamageSource)`: interrupt to keep it alive (give it some health back) |
 | | `EQUIPMENT_CHANGE` | `(LivingEntity, EquipmentSlot, ItemStack from, ItemStack to)`: what it wears or holds changed; it may be taken off again |
+| | `EFFECT_APPLICABLE` | `EventResult (LivingEntity, MobEffectInstance, @Nullable Entity source)`: an effect is about to be given; interrupt to keep it off |
 | `EntityEvents` | `LOAD`, `UNLOAD` | `(Entity, ServerLevel)`: spawned or loaded with a chunk, players included; and removed or unloaded |
+| | `SPAWN` | `EventResult (Mob, ServerLevelAccessor, EntitySpawnReason)`: a new mob is about to be added, already placed (naturally, with a new chunk, by a spawner, a spawn egg, a command, breeding, a conversion); interrupt to keep it out, with its passengers |
+| | `MOUNT` | `EventResult (Entity rider, Entity vehicle, boolean mounting)`: about to ride (interrupt to keep it off), or got off (can't be stopped) |
 | `BlockEvents` | `BREAK` | `EventResult (ServerLevel, BlockPos, BlockState, ServerPlayer)`: interrupt to cancel |
 | | `PLACE` | `EventResult (Level, BlockPos, BlockState, @Nullable Entity placer, ItemStack)`: before any block item places (players, dispensers, machines) or an enderman sets its block down; interrupt and nothing is placed, the item kept |
 | | `PLACED` | `(Level, BlockPos, BlockState, @Nullable Entity placer)` |
+| | `DROPS` | `(ServerLevel, BlockPos, BlockState, @Nullable Entity breaker, ItemStack tool, List<ItemStack> drops, MutableInt experience)`: a broken block is about to drop its items and experience; change them (not for blocks blown up) |
 | `InteractionEvents` | `USE_BLOCK` | `InteractionResult (Player, InteractionHand, BlockHitResult)`: before the game uses the block; `PASS` lets it go on, anything else is the result |
 | | `USE_ITEM`, `USE_ENTITY` | `InteractionResult (Player, InteractionHand[, Entity target])`: the same, for the item in hand and for an entity |
 | | `ATTACK_BLOCK` | `EventResult (Player, InteractionHand, BlockPos, Direction)`: interrupt to stop it |
 | | `ATTACK_ENTITY` | `EventResult (Player, Entity target)`: interrupt to stop it |
 | `RecipeEvents` | `CRAFT_RESULT` | `EventResultHolder<ItemStack> (@Nullable Player, RecipeHolder<?>, CraftingInput, ItemStack result)`: a crafting grid's or a crafter's result; interrupt with another stack, or `ItemStack.EMPTY` so nothing can be crafted |
+| | `MATCH` | `EventResult (ServerLevel, RecipeHolder<?>, @Nullable BlockEntity, @Nullable Player)`: a recipe matched where the game looks one up (furnaces, campfires, smithing tables, stonecutters, crafting grids, other mods' machines), with who asks; interrupt to pass it over for the next match |
 | `CommandEvents` | `REGISTER` | `(CommandDispatcher<CommandSourceStack>, CommandBuildContext, Commands.CommandSelection)` |
+| | `EXECUTE` | `EventResult (ParseResults<CommandSourceStack>, String command)`: a command is about to run; interrupt to stop it |
+| `MerchantEvents` | `OFFERS` | `(ServerPlayer, Merchant, MerchantOffers)`: the trades a player is shown, as their own list; take trades out to hide them (they can't make them either) |
+| `EnchantEvents` | `TABLE_OPTIONS` | `(Player, ItemStack, int slot, List<EnchantmentInstance>)`: what an enchanting table's offer gives; change the list |
+| | `ANVIL_RESULT` | `EventResultHolder<ItemStack> (Player, ItemStack left, ItemStack right, ItemStack result)`: what an anvil makes; interrupt with another stack, or `ItemStack.EMPTY` |
+| `LootEvents` | `MODIFY` | `(@Nullable ResourceKey<LootTable>, LootContext, List<ItemStack> loot)`: any loot table rolled (chests, block drops, mobs, fishing); change the list |
 | `AttachmentEvents` | `CHANGING`, `ADDED`, `CHANGED`, `REMOVED`, `START_TRACKING`, `STOP_TRACKING`, `RECEIVED` | See [Attachments](attachments.md). |
 
 !!! info "Which versions have which"
     Interaction events, `ItemTooltipEvents.APPEND` and the phase bands: since **26.1.2-6** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1).
-    `LivingEvents.DAMAGE` / `DEATH`, `EntityEvents.UNLOAD`: since **26.1.2-6** (and 26.2, 26.3); not yet on 1.21.1 and 1.20.1.
+    `LivingEvents.DAMAGE` / `DEATH`: since **26.1.2-6** (and 26.2, 26.3), **8.0.0** on 1.21.1 and 1.20.1. `EntityEvents.UNLOAD`: since **26.1.2-6** (and 26.2, 26.3); not yet on 1.21.1 and 1.20.1.
     `PlayerEvents.CLONE` / `RESPAWN` / `CHANGE_DIMENSION`: since **26.1.2-6** (and 26.2, 26.3), **8.0.0** on 1.21.1 and 1.20.1.
     `BlockEvents.PLACE`, `PlayerEvents.PICKUP_ITEM` / `TRAVEL_TO_DIMENSION` / `CRAFTED` / `SMELTED`, `LivingEvents.EQUIPMENT_CHANGE` and `RecipeEvents`: coming in **8.0.0**, on every version. On 1.20.1, `CRAFT_RESULT` takes `(Player, Recipe<?>, CraftingContainer, ItemStack)`, as that version has no `RecipeHolder` or `CraftingInput`, and there's no crafter.
+    `EntityEvents.SPAWN` / `MOUNT`, `PlayerEvents.OPEN_MENU` / `ADVANCEMENT_EARNED` / `BREAK_SPEED` / `HARVEST_CHECK`, `LivingEvents.EFFECT_APPLICABLE`, `BlockEvents.DROPS`, `RecipeEvents.MATCH`, `CommandEvents.EXECUTE`, `MerchantEvents`, `EnchantEvents` and `LootEvents`: coming in **8.0.0**, on every version. On 1.21.1 and 1.20.1, `SPAWN` gives a `MobSpawnType`, null when the game doesn't say (a mob summoned or spawned with data). On 1.20.1, `MATCH` gives a `Recipe<?>`, `ADVANCEMENT_EARNED` an `Advancement`, and `LootEvents.MODIFY` the table's `ResourceLocation`. On Forge, `HARVEST_CHECK` isn't told where the block is.
 
 ### Client (`api.event.v2.client`)
 
@@ -118,6 +133,7 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 ### Elsewhere
 
 - Config events (`ConfigEvents`): see [Configs](configs.md).
+- Blocks that look like other blocks to some players (`api.block.BlockViews`, 8.0.0): `BlockViews.register(id, view)` with a `BlockView` that groups players by a key and says what a block looks like to them; chunks, block changes and block entities are sent that way, while the server keeps the real block. `BlockViews.refresh(player)` re-sends their chunks when what they should see changes.
 - Screen effect events (`ScreenEffectEvents`, in Canvas): see [Canvas Screen Effects](../canvas/screen-effects.md).
 - Brewing recipes: `api.event.v1.server.RegisterBrewingRecipesEvent.EVENT.register(event -> event.getBuilder().addRecipe(input, ingredient, output))`, from the older `event.v1` API.
 
