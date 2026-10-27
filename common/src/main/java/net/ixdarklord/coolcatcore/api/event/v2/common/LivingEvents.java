@@ -3,12 +3,15 @@ package net.ixdarklord.coolcatcore.api.event.v2.common;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventInvoker;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Living entities (players too) being hurt, dying and changing what they wear or hold, on the server.
+ * Living entities (players too) being hurt, dying, given effects and changing what they wear or hold, on the server.
  */
 public final class LivingEvents {
     public static final EventInvoker<Damage> DAMAGE = EventInvoker.create(Damage.class, listeners -> (entity, source, amount) -> {
@@ -28,6 +31,14 @@ public final class LivingEvents {
 
     public static final EventInvoker<EquipmentChange> EQUIPMENT_CHANGE = EventInvoker.create(EquipmentChange.class, listeners -> (entity, slot, from, to) -> {
         for (EquipmentChange listener : listeners) listener.onEquipmentChange(entity, slot, from, to);
+    });
+
+    public static final EventInvoker<EffectApplicable> EFFECT_APPLICABLE = EventInvoker.create(EffectApplicable.class, listeners -> (entity, effect, source) -> {
+        for (EffectApplicable listener : listeners) {
+            EventResult result = listener.onEffectApplicable(entity, effect, source);
+            if (result.isInterrupt()) return result;
+        }
+        return EventResult.PASS;
     });
 
     private LivingEvents() {}
@@ -60,5 +71,16 @@ public final class LivingEvents {
     @FunctionalInterface
     public interface EquipmentChange {
         void onEquipmentChange(LivingEntity entity, EquipmentSlot slot, ItemStack from, ItemStack to);
+    }
+
+    /**
+     * An effect is about to be given to an entity, on the server: from a potion, a beacon, a mob's attack, a command,
+     * another mod. Interrupting keeps it off (a stronger or longer one it already has isn't changed either).
+     *
+     * @param source who gave it, when the game says
+     */
+    @FunctionalInterface
+    public interface EffectApplicable {
+        EventResult onEffectApplicable(LivingEntity entity, MobEffectInstance effect, @Nullable Entity source);
     }
 }
