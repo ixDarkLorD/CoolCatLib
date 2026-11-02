@@ -1,6 +1,8 @@
 package net.ixdarklord.coolcatcanvas.internal.client.sky;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -84,7 +86,7 @@ final class SkyResources {
     private static GpuBuffer buildMesh() {
         VertexFormat format = DefaultVertexFormat.POSITION;
         try (ByteBufferBuilder bytes = ByteBufferBuilder.exactlySized((CUBE_VERTICES + SPRITE_VERTICES) * format.getVertexSize())) {
-            BufferBuilder builder = new BufferBuilder(bytes, com.mojang.blaze3d.PrimitiveTopology.TRIANGLES, format);
+            BufferBuilder builder = new BufferBuilder(bytes, PrimitiveTopology.TRIANGLES, format);
             // Six faces of [-1, 1]^3; winding is irrelevant, the pipelines don't cull.
             for (int axis = 0; axis < 3; axis++) {
                 for (int side = -1; side <= 1; side += 2) {
@@ -119,14 +121,14 @@ final class SkyResources {
                     .withVertexShader(VERTEX_SHADER)
                     .withFragmentShader(this.fragmentShader)
                     .withShaderDefine("SKY_BLEND_" + this.blend.name())
-                    .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform("Projection", UniformType.UNIFORM_BUFFER).build())
-                    .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform("Fog", UniformType.UNIFORM_BUFFER).build())
-                    .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform("Globals", UniformType.UNIFORM_BUFFER).build())
-                    .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform(LayerUniform.BLOCK, UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(BindGroupLayout.builder().withUniform("Projection", UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(BindGroupLayout.builder().withUniform("Fog", UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(BindGroupLayout.builder().withUniform("Globals", UniformType.UNIFORM_BUFFER).build())
+                    .withBindGroupLayout(BindGroupLayout.builder().withUniform(LayerUniform.BLOCK, UniformType.UNIFORM_BUFFER).build())
                     .withColorTargetState(new ColorTargetState(this.blend.function()))
                     .withCull(false)
-                    .withVertexBinding(0, DefaultVertexFormat.POSITION).withPrimitiveTopology(com.mojang.blaze3d.PrimitiveTopology.TRIANGLES);
-            if (this.textured) builder.withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withSampler("Sampler0").build());
+                    .withVertexBinding(0, DefaultVertexFormat.POSITION).withPrimitiveTopology(PrimitiveTopology.TRIANGLES);
+            if (this.textured) builder.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").build());
             return builder.build();
         }
     }

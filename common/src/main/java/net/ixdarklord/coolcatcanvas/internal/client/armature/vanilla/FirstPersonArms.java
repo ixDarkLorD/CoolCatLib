@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.HumanoidArm;
 
 /**
@@ -34,7 +34,7 @@ public final class FirstPersonArms {
 
     /** Draws the arms if they should be; true when they were, and vanilla's hands should not be. */
     public static boolean draw(float partialTick, PoseStack poseStack, SubmitNodeCollector collector, LocalPlayer player, int light) {
-        VanillaModel model = VanillaModels.find(net.minecraft.world.entity.EntityTypes.PLAYER);
+        VanillaModel model = VanillaModels.find(EntityTypes.PLAYER);
         if (model == null || player.isInvisible() || player.isSpectator() || !model.test(player)) return false;
         Animator animator = VanillaArmatures.animator(player);
         if (animator == null || !model.showsFirstPersonArms(animator)) return false;

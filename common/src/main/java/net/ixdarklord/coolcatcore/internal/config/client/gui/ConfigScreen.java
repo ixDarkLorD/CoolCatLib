@@ -1,12 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.api.config.Config;
-import net.ixdarklord.coolcatcore.api.config.ConfigNode;
-import net.ixdarklord.coolcatcore.api.config.ConfigScope;
-import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
-import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
-import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
-import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfirmPopup;
@@ -14,6 +7,13 @@ import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledEditBox;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledScreen;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ThemeResources;
+import net.ixdarklord.coolcatcore.api.config.Config;
+import net.ixdarklord.coolcatcore.api.config.ConfigNode;
+import net.ixdarklord.coolcatcore.api.config.ConfigScope;
+import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
+import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
+import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
+import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

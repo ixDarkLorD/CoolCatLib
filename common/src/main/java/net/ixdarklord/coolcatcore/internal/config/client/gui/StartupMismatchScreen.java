@@ -1,16 +1,15 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
-import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
-import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
-import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
-import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager.StartupMismatch;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledScreen;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ThemeResources;
-import org.jetbrains.annotations.Nullable;
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
+import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
+import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
+import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
+import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager.StartupMismatch;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -21,6 +20,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

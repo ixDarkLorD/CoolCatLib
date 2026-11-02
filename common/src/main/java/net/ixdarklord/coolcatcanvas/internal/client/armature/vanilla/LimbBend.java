@@ -2,8 +2,10 @@ package net.ixdarklord.coolcatcanvas.internal.client.armature.vanilla;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.ModelPartAccessor;
 import net.minecraft.client.model.geom.ModelPart;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -186,7 +188,7 @@ public final class LimbBend {
         poseStack.translate(origin.x / 16.0F, origin.y / 16.0F, origin.z / 16.0F);
         // Turning by the angle round the axis across the limb (Y x direction) carries Y toward the direction.
         Vector3f axis = new Vector3f(0.0F, 1.0F, 0.0F).cross(dx, 0.0F, dz).normalize();
-        poseStack.mulPose(new org.joml.Quaternionf().rotationAxis(amount, axis));
+        poseStack.mulPose(new Quaternionf().rotationAxis(amount, axis));
         poseStack.translate(0.0F, -b / 16.0F, 0.0F);
     }
 
@@ -194,7 +196,7 @@ public final class LimbBend {
     public static void bendTree(ModelPart part, float amount, float direction, float start, float end, List<ModelPart> touched) {
         BendablePart.of(part).coolcatlib$setBend(amount, direction, start, end);
         touched.add(part);
-        for (ModelPart child : ((net.ixdarklord.coolcatcanvas.internal.mixin.client.ModelPartAccessor) (Object) part).coolcatlib$children().values()) {
+        for (ModelPart child : ((ModelPartAccessor) (Object) part).coolcatlib$children().values()) {
             bendTree(child, amount, direction, start, end, touched);
         }
     }

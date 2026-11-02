@@ -4,7 +4,6 @@ import net.ixdarklord.coolcatcanvas.api.client.bossbar.BossBarRenderer;
 import net.ixdarklord.coolcatcanvas.api.client.bossbar.BossBarView;
 import net.ixdarklord.coolcatcanvas.internal.bossbar.BossBarStylePayload;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
-import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;

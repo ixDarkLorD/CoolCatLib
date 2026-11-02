@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.api.event.v2.common;
 
+import net.ixdarklord.coolcatcore.api.attachment.Attachment;
+import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventInvoker;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventResultHolder;
-import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
-import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 

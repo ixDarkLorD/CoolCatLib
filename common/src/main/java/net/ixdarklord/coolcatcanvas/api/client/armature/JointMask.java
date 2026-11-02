@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.api.client.armature;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +46,7 @@ public final class JointMask {
 
     /** This mask without these joints and what is below them. */
     public JointMask except(String... joints) {
-        List<String> excluded = new java.util.ArrayList<>(this.excluded);
+        List<String> excluded = new ArrayList<>(this.excluded);
         excluded.addAll(Arrays.asList(joints));
         return new JointMask(this.roots, this.exact, List.copyOf(excluded));
     }

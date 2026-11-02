@@ -1,8 +1,11 @@
 package net.ixdarklord.coolcatcanvas.internal.client.vfx;
 
+import com.mojang.blaze3d.GpuFormat;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.Std140Builder;
+import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -14,9 +17,7 @@ import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.GhostBlocks;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.Optional;
 
 // Draws GhostBlocks: the blocks opaque, with the level's camera, into a screen-sized target with its own depth; then
 // that picture laid over the world at one opacity, where the world's depth lets it show (shaders core/ghost: GHOST_MODE
@@ -81,7 +82,7 @@ public final class GhostRenderer {
 
     // The blocks, opaque, with the camera the level was drawn with.
     private static void drawBlocks(Minecraft minecraft, TextureTarget ghosts, Collection<GhostBlocks.Placed> blocks, float size, boolean shaded) {
-        RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(ghosts.getColorTexture(), new org.joml.Vector4f(0), ghosts.getDepthTexture(), 0.0);
+        RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(ghosts.getColorTexture(), new Vector4f(0), ghosts.getDepthTexture(), 0.0);
         CameraRenderState camera = minecraft.gameRenderer.gameRenderState().levelRenderState.cameraRenderState;
         // The level has popped its view from the model-view stack by now: it goes back on for these blocks.
         Matrix4fStack modelView = RenderSystem.getModelViewStack();
@@ -142,12 +143,12 @@ public final class GhostRenderer {
                 .withVertexShader("core/screenquad")
                 .withFragmentShader(CoolCatCanvas.rl("core/ghost"))
                 .withShaderDefine("GHOST_MODE", mode.ordinal())
-                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER).build())
-                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withSampler("GhostSampler").build())
-                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withSampler("GhostDepthSampler").build())
-                .withBindGroupLayout(com.mojang.blaze3d.pipeline.BindGroupLayout.builder().withSampler("DepthSampler").build())
+                .withBindGroupLayout(BindGroupLayout.builder().withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER).build())
+                .withBindGroupLayout(BindGroupLayout.builder().withSampler("GhostSampler").build())
+                .withBindGroupLayout(BindGroupLayout.builder().withSampler("GhostDepthSampler").build())
+                .withBindGroupLayout(BindGroupLayout.builder().withSampler("DepthSampler").build())
                 .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-                .withPrimitiveTopology(com.mojang.blaze3d.PrimitiveTopology.TRIANGLES)
+                .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
                 .build());
     }
 
@@ -157,7 +158,7 @@ public final class GhostRenderer {
         var transforms = RenderSystem.getDynamicUniforms().writeTransform(new Matrix4f(), modulator, new Vector3f(), new Matrix4f());
         GpuSampler nearest = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
         try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
-                .createRenderPass(() -> "CoolCatLib ghosts", main.getColorTextureView(), java.util.Optional.empty())) {
+                .createRenderPass(() -> "CoolCatLib ghosts", main.getColorTextureView(), Optional.empty())) {
             pass.setPipeline(composite(show));
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform("DynamicTransforms", transforms);
@@ -170,7 +171,7 @@ public final class GhostRenderer {
 
     private static TextureTarget target(RenderTarget main) {
         if (target == null) {
-            target = new TextureTarget("CoolCatLib ghosts", main.width, main.height, true, com.mojang.blaze3d.GpuFormat.RGBA8_UNORM);
+            target = new TextureTarget("CoolCatLib ghosts", main.width, main.height, true, GpuFormat.RGBA8_UNORM);
         } else if (target.width != main.width || target.height != main.height) {
             target.resize(main.width, main.height);
         }

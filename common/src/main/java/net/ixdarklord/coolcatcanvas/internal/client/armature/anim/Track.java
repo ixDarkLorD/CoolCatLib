@@ -4,6 +4,7 @@ import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureContext;
 import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +29,7 @@ public final class Track {
      * all three axes) is the amount alone, bending forward.
      */
     public Track bendShaped() {
-        List<Key> keys = new java.util.ArrayList<>(this.keys.length);
+        List<Key> keys = new ArrayList<>(this.keys.length);
         for (Key key : this.keys) {
             keys.add(new Key(key.time, bend(key.pre), bend(key.post), key.interp, key.bezierLeftTime, key.bezierLeftValue, key.bezierRightTime, key.bezierRightValue));
         }

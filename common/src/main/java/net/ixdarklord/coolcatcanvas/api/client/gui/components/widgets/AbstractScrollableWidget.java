@@ -1,9 +1,7 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets;
 
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
+import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatcore.api.utils.ColorUtils;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -11,6 +9,8 @@ import net.minecraft.client.gui.navigation.ScreenAxis;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;

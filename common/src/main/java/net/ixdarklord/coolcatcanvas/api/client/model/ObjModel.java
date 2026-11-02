@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -286,14 +287,14 @@ public final class ObjModel {
 
         void add(float[] corner) {
             if (this.size + corner.length > this.values.length) {
-                this.values = java.util.Arrays.copyOf(this.values, this.values.length * 2);
+                this.values = Arrays.copyOf(this.values, this.values.length * 2);
             }
             System.arraycopy(corner, 0, this.values, this.size, corner.length);
             this.size += corner.length;
         }
 
         float[] toArray() {
-            return java.util.Arrays.copyOf(this.values, this.size);
+            return Arrays.copyOf(this.values, this.size);
         }
     }
 }
