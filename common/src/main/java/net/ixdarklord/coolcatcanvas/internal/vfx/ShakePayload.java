@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcanvas.internal.vfx;
 
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
-import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 
 /** The server shaking a client's camera. A radius of 0 means the shake has no place: it is felt in full. */

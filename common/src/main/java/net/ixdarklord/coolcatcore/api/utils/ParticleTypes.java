@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -12,7 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 

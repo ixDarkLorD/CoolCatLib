@@ -2,6 +2,7 @@ package net.ixdarklord.coolcatcanvas.api.client.utils;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import net.ixdarklord.coolcatcore.api.utils.ARGB;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,7 +11,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.ixdarklord.coolcatcore.api.utils.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;

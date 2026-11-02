@@ -2,12 +2,12 @@ package net.ixdarklord.coolcatcore.internal.attachment;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
 import net.ixdarklord.coolcatcore.api.attachment.AttachmentRegistry;
-import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.attachment.Trackable;
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.api.utils.CodecUtils;
+import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;

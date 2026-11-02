@@ -1,13 +1,13 @@
 package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.GuiAreaRecorder;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
-import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.GhostRenderer;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceProvider;

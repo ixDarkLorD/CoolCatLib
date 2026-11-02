@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcore.internal.core;
 
 import net.ixdarklord.coolcatcore.api.core.ModConstructor;
-import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.attachment.AttachmentSync;
+import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.menu.StorageMenuValuesPayload;
 
 // CoolCatLib's own common entry point; the loaders hook up their events first, then construct it.

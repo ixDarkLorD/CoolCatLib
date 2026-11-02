@@ -1,12 +1,12 @@
 package net.ixdarklord.coolcatcore.internal.attachment;
 
 
+import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
 import net.ixdarklord.coolcatcore.api.network.codec.ByteBufCodecs;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
-import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 

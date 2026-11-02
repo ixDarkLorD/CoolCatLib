@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.api.network;
 
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.internal.platform.ClientServices;
 import net.ixdarklord.coolcatcore.internal.platform.CommonServices;
 import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.lang.reflect.Field;

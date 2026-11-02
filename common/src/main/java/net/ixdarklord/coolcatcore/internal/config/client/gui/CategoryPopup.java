@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.api.config.Config;
 import net.ixdarklord.coolcatcore.api.config.ConfigNode;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigManager;

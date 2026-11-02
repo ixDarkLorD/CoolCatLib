@@ -1,7 +1,6 @@
 package net.ixdarklord.coolcatcore.api.menu;
 
 
-import net.ixdarklord.coolcatcore.api.network.codec.ByteBufCodecs;
 import io.netty.buffer.Unpooled;
 import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
@@ -10,12 +9,13 @@ import net.ixdarklord.coolcatcore.api.container.ContainerItem;
 import net.ixdarklord.coolcatcore.api.container.ContainerLayout;
 import net.ixdarklord.coolcatcore.api.container.SlotContainer;
 import net.ixdarklord.coolcatcore.api.network.Network;
+import net.ixdarklord.coolcatcore.api.network.codec.ByteBufCodecs;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.internal.menu.StorageMenuValuesPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;

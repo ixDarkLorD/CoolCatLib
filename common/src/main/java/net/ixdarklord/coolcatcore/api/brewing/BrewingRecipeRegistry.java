@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.api.brewing;
 
-import java.util.List;
-
 import net.ixdarklord.coolcatcore.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
 
 /**
  * Internal registry for custom brewing recipes.

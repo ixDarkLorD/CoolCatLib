@@ -2,8 +2,8 @@ package net.ixdarklord.coolcatcore.internal.core.fabric;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.ixdarklord.coolcatcore.api.brewing.fabric.FabricBrewingRecipes;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
+import net.ixdarklord.coolcatcore.api.brewing.fabric.FabricBrewingRecipes;
 import net.ixdarklord.coolcatcore.api.core.DataGenerationConstructor;
 import net.ixdarklord.coolcatcore.api.core.ModConstructor;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;

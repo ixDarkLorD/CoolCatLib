@@ -10,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 // Gradient text colors: each carries its ColorGradient, and "coolcatcanvas:rainbow..." / "coolcatcanvas:gradient/..."
 // names parse back to them (JSON text, commands, the network).
 @Mixin(TextColor.class)
@@ -34,7 +36,7 @@ public abstract class TextColorMixin implements GradientTextColors.Holder {
         if (this == object || !(object instanceof TextColor other)) return;
         ColorGradient otherGradient = GradientTextColors.get(other);
         if (this.coolcatcanvas$gradient != null || otherGradient != null) {
-            cir.setReturnValue(java.util.Objects.equals(this.coolcatcanvas$gradient, otherGradient));
+            cir.setReturnValue(Objects.equals(this.coolcatcanvas$gradient, otherGradient));
         }
     }
 

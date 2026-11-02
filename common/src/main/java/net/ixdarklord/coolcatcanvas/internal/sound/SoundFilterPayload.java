@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcanvas.internal.sound;
 
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
-import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 /**

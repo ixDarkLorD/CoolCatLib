@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcore.internal.core.forge;
 
+import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
 import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.brewing.forge.ForgeBrewingRecipe;
-import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
 import net.ixdarklord.coolcatcore.api.core.forge.ForgeModEntrypoint;
 import net.ixdarklord.coolcatcore.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;

@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.core.forge;
 
+import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigScreens;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
 import net.ixdarklord.coolcatcore.api.item.ComponentItem;
 import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
-import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
 import net.ixdarklord.coolcatcore.internal.core.client.CoolCatCoreClientConstructor;
 import net.ixdarklord.coolcatcore.internal.event.forge.ForgeClientEventHooks;
 import net.minecraftforge.client.ConfigScreenHandler;

@@ -2,10 +2,10 @@ package net.ixdarklord.coolcatcanvas.internal.client.gui.style;
 
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.FieldGraphics;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 

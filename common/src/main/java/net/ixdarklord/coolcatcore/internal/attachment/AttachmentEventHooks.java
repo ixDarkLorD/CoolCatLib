@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.attachment;
 
+import net.ixdarklord.coolcatcore.api.attachment.Attachment;
+import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
 import net.ixdarklord.coolcatcore.api.event.v2.common.AttachmentEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventResultHolder;
-import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
-import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import org.jetbrains.annotations.Nullable;
 
 // Fires AttachmentEvents (and the key's own listeners) for the holders.

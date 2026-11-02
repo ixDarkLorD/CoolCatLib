@@ -1,17 +1,17 @@
 package net.ixdarklord.coolcatcore.internal.attachment;
 
 import io.netty.buffer.Unpooled;
+import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.event.v2.common.AttachmentEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
-import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.network.Network;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.internal.mixin.ChunkMapAccessor;
 import net.ixdarklord.coolcatcore.internal.mixin.TrackedEntityAccessor;
 import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

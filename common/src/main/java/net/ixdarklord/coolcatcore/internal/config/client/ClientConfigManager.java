@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -9,8 +10,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.ixdarklord.coolcatcore.api.config.ConfigEvents;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
 import net.ixdarklord.coolcatcore.api.config.StartupSync;
-import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigScreens;
+import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientCommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
@@ -25,8 +26,8 @@ import net.ixdarklord.coolcatcore.internal.config.client.gui.StartupMismatchScre
 import net.ixdarklord.coolcatcore.internal.config.client.gui.style.ThemeEffects;
 import net.ixdarklord.coolcatcore.internal.config.network.ConfigNetwork;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
-import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.Toast;
@@ -35,11 +36,9 @@ import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-
-import com.google.gson.JsonElement;
-import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

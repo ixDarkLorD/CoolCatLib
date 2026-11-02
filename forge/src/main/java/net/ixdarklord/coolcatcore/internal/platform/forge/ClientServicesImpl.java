@@ -1,16 +1,21 @@
 package net.ixdarklord.coolcatcore.internal.platform.forge;
 
 import net.ixdarklord.coolcatcore.api.client.registry.MenuScreenRegistry;
+import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
 import net.ixdarklord.coolcatcore.internal.platform.ClientServices;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -18,7 +23,9 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,7 +49,7 @@ public final class ClientServicesImpl implements ClientServices {
     public static void register(IEventBus modBus) {
         modBus.addListener(EventPriority.NORMAL, false, RegisterKeyMappingsEvent.class, ClientServicesImpl::onRegisterKeyMappings);
         modBus.addListener(EventPriority.NORMAL, false, RegisterClientTooltipComponentFactoriesEvent.class, ClientServicesImpl::onRegisterTooltipComponents);
-        modBus.addListener(EventPriority.NORMAL, false, net.minecraftforge.client.event.ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
+        modBus.addListener(EventPriority.NORMAL, false, ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
         modBus.addListener(EventPriority.NORMAL, false, FMLClientSetupEvent.class, event -> event.enqueueWork(ClientServicesImpl::registerMenuScreens));
     }
 
@@ -100,21 +107,21 @@ public final class ClientServicesImpl implements ClientServices {
         }
     }
     // Extra models wait for the model event, which loads each from its id.
-    private static final java.util.List<java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>>> EXTRA_MODELS = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private static final List<Function<ResourceManager, Collection<ResourceLocation>>> EXTRA_MODELS = new CopyOnWriteArrayList<>();
 
     @Override
-    public void registerExtraModels(java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>> provider) {
+    public void registerExtraModels(Function<ResourceManager, Collection<ResourceLocation>> provider) {
         EXTRA_MODELS.add(provider);
     }
 
     @Override
-    public net.minecraft.client.resources.model.BakedModel getExtraModel(net.minecraft.resources.ResourceLocation model) {
-        return net.minecraft.client.Minecraft.getInstance().getModelManager().getModel(model);
+    public BakedModel getExtraModel(ResourceLocation model) {
+        return Minecraft.getInstance().getModelManager().getModel(model);
     }
 
-    public static void onRegisterAdditionalModels(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event) {
+    public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
         // The packs being loaded are the game's by now: a reload puts them in place before its listeners run.
-        net.minecraft.server.packs.resources.ResourceManager resources = net.minecraft.client.Minecraft.getInstance().getResourceManager();
+        ResourceManager resources = Minecraft.getInstance().getResourceManager();
         EXTRA_MODELS.forEach(source -> source.apply(resources).forEach(model -> event.register(model)));
     }
 }

@@ -2,12 +2,12 @@ package net.ixdarklord.coolcatcanvas.api.client.gui.components;
 
 import net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets.WidgetSprites;
 import net.ixdarklord.coolcatcore.api.utils.ARGB;
-import java.awt.*;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+
+import java.awt.*;
 
 /**
  * An image button drawn from {@link WidgetSprites} (one texture per state), optionally tinted with a color.

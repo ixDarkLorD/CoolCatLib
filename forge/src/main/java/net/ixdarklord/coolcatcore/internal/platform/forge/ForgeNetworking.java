@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -202,7 +203,7 @@ public final class ForgeNetworking {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends CustomPacketPayload> void receiveLogin(LoginEntry<T> entry, CustomPacketPayload payload, java.util.function.Consumer<Component> disconnect) {
+    private static <T extends CustomPacketPayload> void receiveLogin(LoginEntry<T> entry, CustomPacketPayload payload, Consumer<Component> disconnect) {
         entry.receiver.receive((T) payload, disconnect);
     }
 

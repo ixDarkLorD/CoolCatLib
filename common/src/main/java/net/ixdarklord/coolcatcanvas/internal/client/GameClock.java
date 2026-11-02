@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.internal.client;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 
 /**
  * The time world effects, skyboxes and screen effects animate by: real seconds, smooth from frame to frame, that

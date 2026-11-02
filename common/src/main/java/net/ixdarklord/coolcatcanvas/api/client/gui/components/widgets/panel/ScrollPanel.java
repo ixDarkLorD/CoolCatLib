@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets.panel;
 
+import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.ApiStatus;
 

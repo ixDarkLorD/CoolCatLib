@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Predicate;
 
 /**
  * When the item in a player's hand is shown being put away and taken out again. Vanilla plays that swap whenever the
@@ -58,7 +59,7 @@ public final class HeldItemSwaps {
     }
 
     /** The same item and count, and the same NBT but for the keys ignored. */
-    public static boolean sameIgnoring(ItemStack shown, ItemStack next, java.util.function.Predicate<String> ignored) {
+    public static boolean sameIgnoring(ItemStack shown, ItemStack next, Predicate<String> ignored) {
         if (!shown.is(next.getItem()) || shown.getCount() != next.getCount()) return false;
         CompoundTag before = shown.getTag();
         CompoundTag after = next.getTag();

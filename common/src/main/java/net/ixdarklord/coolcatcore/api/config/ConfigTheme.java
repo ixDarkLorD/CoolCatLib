@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcore.api.config;
 
-import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

@@ -2,11 +2,11 @@ package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets.panel;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
+import net.ixdarklord.coolcatcore.api.utils.ARGB;
+import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.ixdarklord.coolcatcore.api.utils.ARGB;
 import net.minecraft.util.Mth;
-import net.minecraft.Util;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 

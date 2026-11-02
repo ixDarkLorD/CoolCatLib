@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.menu;
 
 import net.ixdarklord.coolcatcore.api.menu.StorageMenu;
+import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
 import net.ixdarklord.coolcatcore.api.network.Network;
+import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.network.FriendlyByteBuf;
-import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
-import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
 
 import java.util.ArrayList;
 import java.util.List;

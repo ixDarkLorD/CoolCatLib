@@ -1,6 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.config.client;
 
-import net.minecraft.util.Mth;
 import net.ixdarklord.coolcatcore.api.config.Config;
 import net.ixdarklord.coolcatcore.api.config.ConfigBuilder;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
@@ -9,6 +8,7 @@ import net.ixdarklord.coolcatcore.api.config.ConfigValue;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 // CoolCatLib's own client config: the player's choices for every mod's config screens.

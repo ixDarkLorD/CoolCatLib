@@ -2,11 +2,11 @@ package net.ixdarklord.coolcatcore.api.container;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
 import io.netty.buffer.ByteBuf;
 import net.ixdarklord.coolcatcore.api.network.codec.ByteBufCodecs;
 import net.ixdarklord.coolcatcore.api.network.codec.StreamCodec;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 

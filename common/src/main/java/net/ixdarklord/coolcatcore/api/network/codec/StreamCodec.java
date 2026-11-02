@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Function4;
 import com.mojang.datafixers.util.Function5;
 import com.mojang.datafixers.util.Function6;
 import io.netty.buffer.ByteBuf;
+
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;

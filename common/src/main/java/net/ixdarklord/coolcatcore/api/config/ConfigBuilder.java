@@ -9,11 +9,11 @@ import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.config.ConfigNodeImpl;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.commands.Commands;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;

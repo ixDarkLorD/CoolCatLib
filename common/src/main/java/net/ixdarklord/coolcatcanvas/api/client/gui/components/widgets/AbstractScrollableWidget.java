@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
+import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatcore.api.utils.ColorUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenAxis;
