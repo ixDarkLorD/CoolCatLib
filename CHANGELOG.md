@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.0.1 Release | Unreleased
+### 🐛 Bug Fixes
+- `ItemTooltipEvents.APPEND`'s lines go above the game's advanced tooltip lines (durability, the item's id, its NBT tag count) rather than under them.
+
 ## v8.0.0 Release | Oct 26, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on Fabric and Forge:

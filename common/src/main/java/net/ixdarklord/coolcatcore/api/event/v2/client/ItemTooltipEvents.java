@@ -17,7 +17,8 @@ import java.util.List;
  *     reach other mods' own tooltip listeners: {@link EventPhase#FIRST} runs before them, {@link EventPhase#LAST} after
  *     them (Forge's highest and lowest priorities, Fabric phases before and after the default one).</li>
  *     <li>{@link #APPEND}: lines added at the very end, once every loader event and every other mod has had its say,
- *     so they close the tooltip: a mod's own section that should never land among others' lines.</li>
+ *     so they close the tooltip: a mod's own section that should never land among others' lines. With advanced
+ *     tooltips on, the game's advanced lines (durability, the item's id, its NBT tag count) stay under them.</li>
  * </ul>
  */
 public final class ItemTooltipEvents {
