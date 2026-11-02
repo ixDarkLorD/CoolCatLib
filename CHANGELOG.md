@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v8.0.1 Release | Unreleased
+## v8.0.1 Release | Nov 2, 2026
 ### 🐛 Bug Fixes
 - `ItemTooltipEvents.APPEND`'s lines go above the game's advanced tooltip lines (durability, the item's id, its component count) rather than under them.
 
