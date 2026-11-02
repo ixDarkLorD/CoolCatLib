@@ -19,7 +19,7 @@ public final class EventResultHolder<T> {
     private static final EventResultHolder<?> PASS = new EventResultHolder<>();
 
     @NotNull
-    private final net.ixdarklord.coolcatcore.api.event.v2.core.EventResult result;
+    private final EventResult result;
     @NotNull
     private final T value;
 
@@ -28,14 +28,14 @@ public final class EventResultHolder<T> {
      */
     @SuppressWarnings("DataFlowIssue")
     private EventResultHolder() {
-        this.result = net.ixdarklord.coolcatcore.api.event.v2.core.EventResult.PASS;
+        this.result = EventResult.PASS;
         this.value = null;
     }
 
     /**
      * private constructor
      */
-    private EventResultHolder(@NotNull net.ixdarklord.coolcatcore.api.event.v2.core.EventResult result, @NotNull T value) {
+    private EventResultHolder(@NotNull EventResult result, @NotNull T value) {
         Objects.requireNonNull(result, "result is null");
         Objects.requireNonNull(value, "value is null");
         this.result = result;
@@ -57,7 +57,7 @@ public final class EventResultHolder<T> {
      * @return interrupt instance
      */
     public static <T> EventResultHolder<T> interrupt(@NotNull T value) {
-        return new EventResultHolder<>(net.ixdarklord.coolcatcore.api.event.v2.core.EventResult.INTERRUPT, value);
+        return new EventResultHolder<>(EventResult.INTERRUPT, value);
     }
 
     /**
@@ -66,7 +66,7 @@ public final class EventResultHolder<T> {
      * @return allow instance
      */
     public static <T> EventResultHolder<T> allow(@NotNull T value) {
-        return new EventResultHolder<>(net.ixdarklord.coolcatcore.api.event.v2.core.EventResult.ALLOW, value);
+        return new EventResultHolder<>(EventResult.ALLOW, value);
     }
 
     /**
@@ -75,7 +75,7 @@ public final class EventResultHolder<T> {
      * @return deny instance
      */
     public static <T> EventResultHolder<T> deny(@NotNull T value) {
-        return new EventResultHolder<>(net.ixdarklord.coolcatcore.api.event.v2.core.EventResult.DENY, value);
+        return new EventResultHolder<>(EventResult.DENY, value);
     }
 
     /**

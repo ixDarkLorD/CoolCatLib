@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.internal.effect;
 
-import net.ixdarklord.coolcatcore.api.network.Network;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectPackets;
+import net.ixdarklord.coolcatcore.api.network.Network;
 
 public final class ScreenEffectNetwork {
     private ScreenEffectNetwork() {}

@@ -19,6 +19,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -69,7 +72,7 @@ public final class CommonServicesImpl implements CommonServices {
     }
 
     @Override
-    public void registerEntityAttributes(Supplier<? extends net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.LivingEntity>> type, Supplier<net.minecraft.world.entity.ai.attributes.AttributeSupplier.Builder> attributes) {
+    public void registerEntityAttributes(Supplier<? extends EntityType<? extends LivingEntity>> type, Supplier<AttributeSupplier.Builder> attributes) {
         NeoForgeRegistrations.ENTITY_ATTRIBUTES.add(event -> event.put(type.get(), attributes.get().build()));
     }
 

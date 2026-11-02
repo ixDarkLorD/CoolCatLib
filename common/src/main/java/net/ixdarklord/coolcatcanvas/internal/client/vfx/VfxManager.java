@@ -1,21 +1,22 @@
 package net.ixdarklord.coolcatcanvas.internal.client.vfx;
 
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.renderpearl.api.pipeline.UniformType;
-import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.textures.FilterMode;
-import com.mojang.renderpearl.api.textures.GpuSampler;
-import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.Curve;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.ParticleSpec;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxBlend;
@@ -27,6 +28,7 @@ import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxMaterial;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxRenderer;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.WorldParticles;
 import net.ixdarklord.coolcatcanvas.api.vfx.VfxParams;
+import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
@@ -40,7 +42,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Util;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -51,9 +52,10 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 // World effects: owns the particles and short-lived shapes, gathers everything drawn in a frame into one batch per
 // material, and draws the batches in one render pass on the main target, right after the level and before the hand.
@@ -164,7 +166,7 @@ public final class VfxManager {
     }
 
     public static void clearParticles() {
-        java.util.Arrays.fill(spec, 0, count, null);
+        Arrays.fill(spec, 0, count, null);
         count = 0;
     }
 
@@ -268,7 +270,7 @@ public final class VfxManager {
             FRAME.level = level;
             FRAME.partialTick = partialTick;
             // Its clock stops while the game is paused: renderers that animate by it, and shaders by their Time, stand still.
-            FRAME.time = (float) (net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds() % 3600.0);
+            FRAME.time = (float) (GameClock.seconds() % 3600.0);
             gatherParticles(partialTick);
             gatherShapes(partialTick);
             for (Map.Entry<Identifier, VfxRenderer> renderer : RENDERERS.entrySet()) {
@@ -391,11 +393,11 @@ public final class VfxManager {
         GpuTextureView depth = main.getDepthTextureView();
         if (depth == null) return;
         if (bytes == null) bytes = new ByteBufferBuilder(DefaultVertexFormat.POSITION_TEX_COLOR.getVertexSize() * 4096);
-        if (uniforms == null) uniforms = new DynamicGpuDataStorageMapped<>("CoolCatLib world effects UBO", VfxUniform.SIZE, com.mojang.renderpearl.api.buffers.GpuBuffer.USAGE_UNIFORM, 8);
+        if (uniforms == null) uniforms = new DynamicGpuDataStorageMapped<>("CoolCatLib world effects UBO", VfxUniform.SIZE, GpuBuffer.USAGE_UNIFORM, 8);
 
         // Everything that touches buffers or textures happens before the pass opens. Layers go lowest first (the sort
         // keeps first-use order within one); in each, what blends over the scene goes first, what adds light to it last.
-        BufferBuilder builder = new BufferBuilder(bytes, com.mojang.renderpearl.api.pipeline.PrimitiveTopology.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder builder = new BufferBuilder(bytes, PrimitiveTopology.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         USED.sort(Comparator.comparingInt(batch -> batch.layer.order()));
         int vertices = 0;
         for (int start = 0; start < USED.size(); ) {
@@ -432,11 +434,11 @@ public final class VfxManager {
             try (GpuBuffer vertexBuffer = RenderSystem.getDevice().createBuffer(() -> "CoolCatLib world effects", GpuBuffer.USAGE_VERTEX, mesh.vertexBuffer())) {
             GpuBufferSlice[] slices = uniforms.writeData(blocks);
             try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
-                    .createRenderPass(() -> "CoolCatLib world effects", main.getColorTextureView(), java.util.Optional.empty(), null, OptionalDouble.empty())) {
+                    .createRenderPass(() -> "CoolCatLib world effects", main.getColorTextureView(), Optional.empty(), null, OptionalDouble.empty())) {
                 for (Run run : RUNS) {
                     int i = run.batch;
                     VfxBatch batch = DRAWN.get(i);
-                    pass.setPipeline(com.mojang.blaze3d.systems.RenderSystem.getCompiledPipeline(pipelines[i]));
+                    pass.setPipeline(RenderSystem.getCompiledPipeline(pipelines[i]));
                     RenderSystem.bindDefaultUniforms(pass);
                     pass.setUniform(VfxUniform.BLOCK, slices[i]);
                     pass.setUniform("Sampler0", textures[i], batch.material.smooth() ? linear : nearest);
@@ -532,16 +534,16 @@ public final class VfxManager {
         RenderPipeline cached = PIPELINES.get(key);
         if (cached != null) return cached;
         RenderPipeline pipeline = RenderPipeline.builder()
-                .withLocation(CoolCatCanvas.rl("pipeline/vfx_" + blend.name().toLowerCase(java.util.Locale.ROOT) + "_" + fragment.getNamespace() + "_" + fragment.getPath().replace('/', '_')))
+                .withLocation(CoolCatCanvas.rl("pipeline/vfx_" + blend.name().toLowerCase(Locale.ROOT) + "_" + fragment.getNamespace() + "_" + fragment.getPath().replace('/', '_')))
                 .withVertexShader(SHADER)
                 .withFragmentShader(fragment)
-                .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("Projection", UniformType.UNIFORM_BUFFER).build())
-                .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform(VfxUniform.BLOCK, UniformType.UNIFORM_BUFFER).build())
-                .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("Sampler0", com.mojang.renderpearl.api.pipeline.UniformType.COMBINED_IMAGE_SAMPLER).build())
-                .withBindGroupLayout(com.mojang.renderpearl.api.pipeline.BindGroupLayout.builder().withUniform("DepthSampler", com.mojang.renderpearl.api.pipeline.UniformType.COMBINED_IMAGE_SAMPLER).build())
+                .withBindGroupLayout(BindGroupLayout.builder().withUniform("Projection", UniformType.UNIFORM_BUFFER).build())
+                .withBindGroupLayout(BindGroupLayout.builder().withUniform(VfxUniform.BLOCK, UniformType.UNIFORM_BUFFER).build())
+                .withBindGroupLayout(BindGroupLayout.builder().withUniform("Sampler0", UniformType.COMBINED_IMAGE_SAMPLER).build())
+                .withBindGroupLayout(BindGroupLayout.builder().withUniform("DepthSampler", UniformType.COMBINED_IMAGE_SAMPLER).build())
                 .withColorTargetState(new ColorTargetState(blend.function()))
                 .withCull(false)
-                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(com.mojang.renderpearl.api.pipeline.PrimitiveTopology.TRIANGLES)
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
                 .build();
         // Compiled now, so a broken shader fails here rather than mid-frame.
         if (RenderSystem.getCompiledPipelineNullable(pipeline) == null) throw new IllegalStateException("The world effects shader " + fragment + " failed to compile or link (see the log above)");

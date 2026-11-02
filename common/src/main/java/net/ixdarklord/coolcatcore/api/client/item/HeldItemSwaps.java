@@ -6,11 +6,13 @@ import net.ixdarklord.coolcatcore.internal.attachment.AttachmentBundle;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Supplier;
 
 /**
  * When the item in a player's hand is shown being put away and taken out again. Vanilla plays that swap whenever the
@@ -59,7 +61,7 @@ public final class HeldItemSwaps {
             QUIET_LATER.clear();
         }
         // Every other component the same, and each mod's attachments differing only in quiet ones.
-        Set<DataComponentType<?>> bundles = new java.util.HashSet<>();
+        Set<DataComponentType<?>> bundles = new HashSet<>();
         for (AttachmentRegistry registry : AttachmentRegistry.all()) bundles.add(registry.bundleComponent());
         if (ItemStack.matchesIgnoringComponents(shown, next, type -> type.ignoreSwapAnimation() || QUIET.contains(type) || bundles.contains(type))
                 && quietAttachments(shown, next)) return true;
@@ -76,10 +78,10 @@ public final class HeldItemSwaps {
             AttachmentBundle before = shown.getOrDefault(type, AttachmentBundle.EMPTY);
             AttachmentBundle after = next.getOrDefault(type, AttachmentBundle.EMPTY);
             if (before.equals(after)) continue;
-            Set<Attachment<?>> keys = new java.util.HashSet<>(before.values().keySet());
+            Set<Attachment<?>> keys = new HashSet<>(before.values().keySet());
             keys.addAll(after.values().keySet());
             for (Attachment<?> attachment : keys) {
-                if (attachment.playsSwapAnimation() && !java.util.Objects.equals(before.get(attachment), after.get(attachment))) return false;
+                if (attachment.playsSwapAnimation() && !Objects.equals(before.get(attachment), after.get(attachment))) return false;
             }
         }
         return true;

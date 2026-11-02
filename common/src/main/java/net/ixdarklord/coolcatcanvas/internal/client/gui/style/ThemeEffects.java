@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcanvas.internal.client.gui.style;
 
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffect;
 import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffects;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 // Runs the current theme's effects at each layer. An id nobody registered, or an effect that throws, is logged once and
 // then skipped, so one broken effect never breaks a screen.
@@ -53,7 +54,7 @@ public final class ThemeEffects {
         run(context.screen().theme(), effect -> effect.extractWidget(graphics, context));
     }
 
-    private static void run(ConfigTheme theme, java.util.function.Consumer<ConfigEffect> call) {
+    private static void run(ConfigTheme theme, Consumer<ConfigEffect> call) {
         if (!StyleSettings.themeEffects()) return;
         for (Identifier id : theme.effects()) {
             ConfigEffect effect = ConfigEffects.get(id);

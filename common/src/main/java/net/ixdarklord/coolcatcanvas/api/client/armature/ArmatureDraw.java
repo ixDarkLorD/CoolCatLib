@@ -1,6 +1,8 @@
 package net.ixdarklord.coolcatcanvas.api.client.armature;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.ixdarklord.coolcatcanvas.api.client.model.ObjModel;
+import net.ixdarklord.coolcatcanvas.api.client.model.ObjModels;
 import net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureMesh;
 import net.ixdarklord.coolcatcanvas.internal.client.armature.render.ArmatureModelAdapter;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -9,12 +11,10 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
-import org.jetbrains.annotations.Nullable;
-import net.ixdarklord.coolcatcanvas.api.client.model.ObjModel;
-import net.ixdarklord.coolcatcanvas.api.client.model.ObjModels;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 

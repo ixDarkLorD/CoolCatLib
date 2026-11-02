@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcanvas.internal.client.sky;
 
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.renderpearl.api.textures.AddressMode;
 import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.textures.GpuSampler;
@@ -162,7 +162,7 @@ final class SkyboxProgram {
         }
 
         void draw(RenderPass pass, GpuBufferSlice uniform, @Nullable GpuTextureView texture) {
-            pass.setPipeline(com.mojang.blaze3d.systems.RenderSystem.getCompiledPipeline(this.pipeline));
+            pass.setPipeline(RenderSystem.getCompiledPipeline(this.pipeline));
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform(LayerUniform.BLOCK, uniform);
             if (texture != null) pass.setUniform("Sampler0", texture, this.sampler);

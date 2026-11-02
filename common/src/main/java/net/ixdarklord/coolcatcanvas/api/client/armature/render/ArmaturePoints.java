@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcanvas.api.client.armature.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.ixdarklord.coolcatcanvas.api.client.armature.BakedArmature;
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureDraw;
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureFrame;
+import net.ixdarklord.coolcatcanvas.api.client.armature.BakedArmature;
 import org.joml.Matrix4f;
 
 /** Moving a pose stack to an armature's points, for attachments and sockets. */

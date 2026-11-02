@@ -2,10 +2,10 @@ package net.ixdarklord.coolcatcanvas.api.client.armature.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.ixdarklord.coolcatcanvas.api.client.armature.Animator;
-import net.ixdarklord.coolcatcanvas.api.client.armature.BakedArmature;
 import net.ixdarklord.coolcatcanvas.api.client.armature.Armature;
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureDraw;
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureFrame;
+import net.ixdarklord.coolcatcanvas.api.client.armature.BakedArmature;
 import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

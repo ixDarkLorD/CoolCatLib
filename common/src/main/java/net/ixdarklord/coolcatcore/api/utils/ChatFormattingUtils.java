@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcore.api.utils;
 
 import net.minecraft.ChatFormatting;
+
 import java.util.Comparator;
 
 public final class ChatFormattingUtils {

@@ -3,6 +3,7 @@ package net.ixdarklord.coolcatcore.internal.platform.neoforge;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public final class NeoForgeRegistrations {
     // Kept for every reload, not drained.
     public static final Map<Identifier, PreparableReloadListener> SERVER_RELOAD_LISTENERS = new LinkedHashMap<>();
     /** Default attributes of living entity types, waiting for EntityAttributeCreationEvent. */
-    public static final List<Consumer<net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent>> ENTITY_ATTRIBUTES = new ArrayList<>();
+    public static final List<Consumer<EntityAttributeCreationEvent>> ENTITY_ATTRIBUTES = new ArrayList<>();
     // Sent to each client as its configuration starts, by one configuration task.
     public static final List<Supplier<List<CustomPacketPayload>>> CONFIGURATION_PAYLOADS = new CopyOnWriteArrayList<>();
 

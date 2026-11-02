@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.api.client.sky;
 
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.BlendFactor;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;
 

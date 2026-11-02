@@ -2,9 +2,8 @@ package net.ixdarklord.coolcatcanvas.internal.client.sky;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.serialization.JsonOps;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyContext;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerDefinition;
@@ -12,6 +11,7 @@ import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerStage;
 import net.ixdarklord.coolcatcanvas.api.client.sky.Skybox;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyboxDefinition;
 import net.ixdarklord.coolcatcanvas.api.client.sky.VanillaSky;
+import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -20,11 +20,11 @@ import net.minecraft.client.renderer.state.level.SkyRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.joml.Matrix4fc;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -117,7 +115,7 @@ public final class SkyboxManager {
 
     public static void beginFrame(DeltaTracker deltaTracker) {
         // By the clock that stops while the game is paused: a sky's layers stand still behind the pause menu.
-        double now = net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds();
+        double now = GameClock.seconds();
         float delta = lastFrameSeconds < 0.0 ? 0.0F : (float) Math.min(1.0, now - lastFrameSeconds);
         lastFrameSeconds = now;
         Arrays.fill(HIDDEN, 0.0F);
@@ -176,7 +174,7 @@ public final class SkyboxManager {
         } else if (state.skybox == DimensionType.Skybox.NONE && anyLayers) {
             forcedSky = true;
             state.skybox = DimensionType.Skybox.OVERWORLD;
-            state.sunriseAndSunsetColor = new org.joml.Vector4f();
+            state.sunriseAndSunsetColor = new Vector4f();
             state.rainBrightness = 0.0F;
             state.starBrightness = 0.0F;
             state.shouldRenderDarkDisc = false;
@@ -192,11 +190,11 @@ public final class SkyboxManager {
     }
 
     /** Vanilla's sky color, faded towards the fog color as far as {@link VanillaSky#SKY} is hidden. */
-    public static org.joml.Vector3fc skyColor(org.joml.Vector3fc skyColor) {
+    public static Vector3fc skyColor(Vector3fc skyColor) {
         float hidden = hidden(VanillaSky.SKY);
         if (hidden <= 0.0F) return skyColor;
         Vector4f fog = Minecraft.getInstance().gameRenderer.gameRenderState().levelRenderState.cameraRenderState.fogData.color;
-        return new org.joml.Vector3f(skyColor).lerp(new org.joml.Vector3f(fog.x(), fog.y(), fog.z()), hidden);
+        return new Vector3f(skyColor).lerp(new Vector3f(fog.x(), fog.y(), fog.z()), hidden);
     }
 
     /** Draws the visible skyboxes' layers of a stage, inside vanilla's sky pass (open while it draws the sky). */

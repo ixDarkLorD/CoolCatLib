@@ -1,5 +1,7 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.ixdarklord.coolcatcanvas.api.client.viewport.SceneViewport;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
@@ -7,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -58,7 +61,7 @@ public class SceneViewportWidget extends AbstractWidget {
         GpuTextureView view = SceneViewportManager.view(viewport);
         // It is drawn at the start of the next frame the first time; and upside down, as every texture drawn to is.
         if (view != null) {
-            graphics.blit(view, com.mojang.blaze3d.systems.RenderSystem.getSamplerCache().getClampToEdge(com.mojang.renderpearl.api.textures.FilterMode.NEAREST),
+            graphics.blit(view, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
                     getX(), getY(), getRight(), getBottom(), 0.0F, 1.0F, 1.0F, 0.0F);
         }
     }
@@ -76,7 +79,7 @@ public class SceneViewportWidget extends AbstractWidget {
     }
 
     @Override
-    public void playDownSound(net.minecraft.client.sounds.SoundManager soundManager) {
+    public void playDownSound(SoundManager soundManager) {
     }
 
     @Override

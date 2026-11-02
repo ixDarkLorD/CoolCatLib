@@ -3,8 +3,8 @@ package net.ixdarklord.coolcatcanvas.internal.client.armature.io;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import net.ixdarklord.coolcatcanvas.api.armature.LoopMode;
+import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureData;
 import net.ixdarklord.coolcatcanvas.internal.client.armature.anim.ClipSource;
 import net.ixdarklord.coolcatcanvas.internal.client.armature.anim.Track;
@@ -18,6 +18,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Reads Bedrock's model and animation files ({@code .geo.json}, {@code .animation.json}), the ones Blockbench exports
@@ -238,7 +239,7 @@ public final class BedrockReader {
         return object.has("vector");
     }
 
-    private static void readTimed(JsonObject animation, String key, java.util.function.BiConsumer<Float, JsonElement> reader) {
+    private static void readTimed(JsonObject animation, String key, BiConsumer<Float, JsonElement> reader) {
         if (!animation.has(key) || !animation.get(key).isJsonObject()) return;
         for (Map.Entry<String, JsonElement> entry : animation.getAsJsonObject(key).entrySet()) {
             float time;

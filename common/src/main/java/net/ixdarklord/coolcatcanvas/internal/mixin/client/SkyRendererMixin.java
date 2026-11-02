@@ -1,6 +1,9 @@
 package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerStage;
 import net.ixdarklord.coolcatcanvas.api.client.sky.VanillaSky;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
@@ -8,10 +11,9 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.SkyRenderer;
 import net.minecraft.client.renderer.state.level.SkyRenderState;
-import com.mojang.renderpearl.api.commands.RenderPass;
 import net.minecraft.world.level.MoonPhase;
-import org.joml.Vector4f;
 import org.joml.Vector3fc;
+import org.joml.Vector4f;
 import org.joml.Vector4fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -108,10 +110,10 @@ public abstract class SkyRendererMixin {
     // The end sky's transforms written again with a colour (vanilla writes none): white, faded as a skybox hides it. An
     // argument swap rather than a redirect, which the MixinExtras NeoForge ships can't read.
     @ModifyArg(method = "renderEndSky", at = @At(value = "INVOKE", target = "Lcom/mojang/renderpearl/api/commands/RenderPass;setUniform(Ljava/lang/String;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;)V"), index = 1)
-    private com.mojang.renderpearl.api.buffers.GpuBufferSlice coolcatcanvas$fadeEndSky(com.mojang.renderpearl.api.buffers.GpuBufferSlice transforms) {
+    private GpuBufferSlice coolcatcanvas$fadeEndSky(GpuBufferSlice transforms) {
         float hidden = SkyboxManager.hidden(VanillaSky.END_SKY);
         if (hidden <= 0.0F) return transforms;
-        return com.mojang.blaze3d.systems.RenderSystem.getDynamicUniforms().writeTransform(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrixCopy(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F - hidden));
+        return RenderSystem.getDynamicUniforms().writeTransform(RenderSystem.getModelViewMatrixCopy(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F - hidden));
     }
 
     @Inject(method = "renderEndFlash", at = @At("HEAD"), cancellable = true)

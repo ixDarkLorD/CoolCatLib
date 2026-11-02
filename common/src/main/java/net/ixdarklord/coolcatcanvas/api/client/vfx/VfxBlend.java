@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.api.client.vfx;
 
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.BlendFactor;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
 
 /**
  * How a world effect combines with the scene behind it. None of them writes depth, so effects never cut holes in each

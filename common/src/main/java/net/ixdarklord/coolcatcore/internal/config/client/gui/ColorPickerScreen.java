@@ -1,14 +1,14 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
-import net.ixdarklord.coolcatcore.api.config.type.ConfigTypes;
-import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledEditBox;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledPopup;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledScreen;
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
+import net.ixdarklord.coolcatcore.api.config.type.ConfigTypes;
+import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;

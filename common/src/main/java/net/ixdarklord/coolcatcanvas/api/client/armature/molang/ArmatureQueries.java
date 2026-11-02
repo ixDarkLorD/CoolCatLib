@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
 /**
@@ -107,7 +108,7 @@ public final class ArmatureQueries {
         QUERIES.put("query." + name, (context, args) -> query.applyAsDouble(context));
     }
 
-    private static void flag(String name, java.util.function.Predicate<ArmatureContext> query) {
+    private static void flag(String name, Predicate<ArmatureContext> query) {
         QUERIES.put("query." + name, (context, args) -> query.test(context) ? 1.0 : 0.0);
     }
 

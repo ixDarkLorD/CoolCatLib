@@ -3,11 +3,11 @@ package net.ixdarklord.coolcatcanvas.internal.client.effect;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.serialization.JsonOps;
 import net.ixdarklord.coolcatcanvas.api.client.effect.EffectContext;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffect;
@@ -15,6 +15,7 @@ import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectDefinition;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectLayers;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
 import net.ixdarklord.coolcatcanvas.api.event.v2.client.ScreenEffectEvents;
+import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -23,7 +24,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -119,7 +119,7 @@ public final class ScreenEffectManager {
 
     public static void beginFrame(DeltaTracker deltaTracker) {
         // By the clock that stops while the game is paused: effects neither animate nor age behind the pause menu.
-        double now = net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds();
+        double now = GameClock.seconds();
         float delta = lastFrameSeconds < 0.0 ? 0.0F : (float) Math.min(1.0, now - lastFrameSeconds);
         lastFrameSeconds = now;
         float time = (float) (now % 3600.0D);

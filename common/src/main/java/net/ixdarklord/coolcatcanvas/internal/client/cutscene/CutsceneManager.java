@@ -32,8 +32,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.sdl.SDLMouse;
 
 import java.io.Reader;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -281,7 +283,7 @@ public final class CutsceneManager {
         return switch (key.getType()) {
             case KEYBOARD -> InputConstants.isKeyDown(key.getValue());
             // SDL's pressed buttons, one bit each from the left button up.
-            case MOUSE -> (org.lwjgl.sdl.SDLMouse.SDL_GetMouseState((java.nio.FloatBuffer) null, null) & (1 << (key.getValue() - 1))) != 0;
+            case MOUSE -> (SDLMouse.SDL_GetMouseState((FloatBuffer) null, null) & (1 << (key.getValue() - 1))) != 0;
         };
     }
 

@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets.panel;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.KeyEvent;
@@ -9,7 +10,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2fStack;
-import com.mojang.blaze3d.platform.InputConstants;
 
 import java.util.function.IntSupplier;
 

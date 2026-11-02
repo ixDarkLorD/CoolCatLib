@@ -1,6 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.gametest;
 
-import net.minecraft.world.level.Level;
 import net.ixdarklord.coolcatcore.api.gametest.GameTest;
 import net.ixdarklord.coolcatcore.api.gametest.GameTestOptions;
 import net.ixdarklord.coolcatcore.api.platform.Platform;
@@ -19,6 +18,7 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -138,7 +139,7 @@ public final class GameTestRegistry {
 
     // "zapsAZombie" → "zaps_a_zombie", "WandTests" → "wand_tests", "sand falls" → "sand_falls".
     private static String snake(String name) {
-        return name.replaceAll("([a-z0-9])([A-Z])", "$1_$2").replaceAll("([A-Z])([A-Z][a-z])", "$1_$2").toLowerCase(java.util.Locale.ROOT)
+        return name.replaceAll("([a-z0-9])([A-Z])", "$1_$2").replaceAll("([A-Z])([A-Z][a-z])", "$1_$2").toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9._-]+", "_");
     }
 }

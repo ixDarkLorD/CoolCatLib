@@ -12,6 +12,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.PackGenerator;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -65,12 +66,12 @@ public final class ConstructorServicesImpl implements ConstructorServices {
 
         @Override
         public <T extends DataProvider> T addProvider(DataProvider.Factory<T> factory) {
-            return this.event.createProvider((net.neoforged.neoforge.data.event.PackGenerator.DataProviderFromOutput<T>) factory::create);
+            return this.event.createProvider((PackGenerator.DataProviderFromOutput<T>) factory::create);
         }
 
         @Override
         public <T extends DataProvider> T addProvider(RegistryDependentFactory<T> factory) {
-            return this.event.createProvider((net.neoforged.neoforge.data.event.PackGenerator.DataProviderFromOutputLookup<T>) factory::create);
+            return this.event.createProvider((PackGenerator.DataProviderFromOutputLookup<T>) factory::create);
         }
     }
 }
