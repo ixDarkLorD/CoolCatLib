@@ -1,10 +1,10 @@
 package net.ixdarklord.coolcatcanvas.internal.core;
 
+import net.ixdarklord.coolcatcanvas.internal.armature.ArmatureNetwork;
 import net.ixdarklord.coolcatcanvas.internal.bossbar.BossBarNetwork;
 import net.ixdarklord.coolcatcanvas.internal.bossbar.EntityBossBars;
 import net.ixdarklord.coolcatcanvas.internal.cutscene.CutsceneNetwork;
 import net.ixdarklord.coolcatcanvas.internal.effect.ScreenEffectNetwork;
-import net.ixdarklord.coolcatcanvas.internal.armature.ArmatureNetwork;
 import net.ixdarklord.coolcatcanvas.internal.sky.SkyboxNetwork;
 import net.ixdarklord.coolcatcanvas.internal.sound.SoundFilterNetwork;
 import net.ixdarklord.coolcatcanvas.internal.vfx.VfxNetwork;

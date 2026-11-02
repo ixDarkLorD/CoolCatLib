@@ -1,7 +1,14 @@
 package net.ixdarklord.coolcatcanvas.api.client.armature;
 
 import net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureMesh;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -130,7 +137,7 @@ public final class Spring {
     private final Vector3f scratch = new Vector3f(), worldAt = new Vector3f();
     private final Quaternionf swing = new Quaternionf(), spin = new Quaternionf(), placement = new Quaternionf(), local = new Quaternionf();
     private final Matrix4f around = new Matrix4f();
-    private final List<net.minecraft.world.phys.AABB> found = new ArrayList<>();
+    private final List<AABB> found = new ArrayList<>();
     private float[] balls = new float[0], blockBox = new float[0], entityBox = new float[0];
     private int blockBoxes, entityBoxes, still;
     private float worldAge = Float.MAX_VALUE, entityAge = Float.MAX_VALUE;
@@ -726,18 +733,18 @@ public final class Spring {
             this.blockBoxes = this.entityBoxes = 0;
             return;
         }
-        net.minecraft.world.level.Level level = context.level();
+        Level level = context.level();
         double grow = reach + 0.25;
         this.worldAge += dt;
         this.entityAge += dt;
         boolean blocksStale = this.worldAge > 0.25F || anchorWorld.distanceSquared(this.worldAt) > 0.25F;
         boolean entitiesStale = this.entityAge > 0.05F;
         if (!blocksStale && !entitiesStale) return;
-        net.minecraft.world.phys.AABB around = new net.minecraft.world.phys.AABB(anchorWorld.x - grow, anchorWorld.y - grow, anchorWorld.z - grow,
+        AABB around = new AABB(anchorWorld.x - grow, anchorWorld.y - grow, anchorWorld.z - grow,
                 anchorWorld.x + grow, anchorWorld.y + grow, anchorWorld.z + grow);
         if (this.blocks && blocksStale) {
             this.found.clear();
-            for (net.minecraft.world.phys.shapes.VoxelShape shape : level.getBlockCollisions(null, around)) this.found.addAll(shape.toAabbs());
+            for (VoxelShape shape : level.getBlockCollisions(null, around)) this.found.addAll(shape.toAabbs());
             this.blockBox = pack(this.found, this.blockBox);
             this.blockBoxes = this.found.size();
             this.worldAge = 0.0F;
@@ -745,8 +752,8 @@ public final class Spring {
         }
         if (this.entities && entitiesStale) {
             this.found.clear();
-            net.minecraft.world.entity.Entity self = context.entity();
-            for (net.minecraft.world.entity.Entity other : level.getEntities(self, around,
+            Entity self = context.entity();
+            for (Entity other : level.getEntities(self, around,
                     e -> !e.isSpectator() && e.isAlive() && (self == null || !e.isPassengerOfSameVehicle(self)))) {
                 this.found.add(other.getBoundingBox());
             }
@@ -756,10 +763,10 @@ public final class Spring {
         }
     }
 
-    private static float[] pack(List<net.minecraft.world.phys.AABB> boxes, float[] into) {
+    private static float[] pack(List<AABB> boxes, float[] into) {
         if (into.length < boxes.size() * 6) into = new float[Math.max(boxes.size() * 6, into.length * 2)];
         for (int i = 0; i < boxes.size(); i++) {
-            net.minecraft.world.phys.AABB box = boxes.get(i);
+            AABB box = boxes.get(i);
             into[i * 6] = (float) box.minX; into[i * 6 + 1] = (float) box.minY; into[i * 6 + 2] = (float) box.minZ;
             into[i * 6 + 3] = (float) box.maxX; into[i * 6 + 4] = (float) box.maxY; into[i * 6 + 5] = (float) box.maxZ;
         }
@@ -769,9 +776,9 @@ public final class Spring {
     /** Whether it is too far from the camera for its swing to be worth working out ({@link #simulationDistance}). */
     private boolean tooFar(Vector3f anchorWorld) {
         if (this.simulationDistance <= 0.0F) return false;
-        net.minecraft.client.Camera camera = net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         if (camera == null) return false;
-        net.minecraft.world.phys.Vec3 eye = camera.position();
+        Vec3 eye = camera.position();
         double dx = eye.x - anchorWorld.x, dy = eye.y - anchorWorld.y, dz = eye.z - anchorWorld.z;
         return dx * dx + dy * dy + dz * dz > (double) this.simulationDistance * this.simulationDistance;
     }

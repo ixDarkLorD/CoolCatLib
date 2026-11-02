@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcanvas.api.client.armature;
 
-import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import net.ixdarklord.coolcatcanvas.api.armature.LoopMode;
 import net.ixdarklord.coolcatcanvas.api.armature.Motion;
 import net.ixdarklord.coolcatcanvas.api.armature.Transition;
+import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import net.ixdarklord.coolcatcanvas.api.utils.Easing;
 import net.ixdarklord.coolcatcanvas.internal.client.armature.anim.ClipSource;
 

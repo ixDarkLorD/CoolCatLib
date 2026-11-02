@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.internal.sky;
 
-import net.ixdarklord.coolcatcore.api.network.Network;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxPackets;
+import net.ixdarklord.coolcatcore.api.network.Network;
 
 public final class SkyboxNetwork {
     private SkyboxNetwork() {}

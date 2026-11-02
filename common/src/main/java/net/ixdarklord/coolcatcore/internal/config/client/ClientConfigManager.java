@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -19,19 +20,17 @@ import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
 import net.ixdarklord.coolcatcore.internal.config.network.ConfigNetwork;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
-import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
-
-import com.google.gson.JsonElement;
-import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

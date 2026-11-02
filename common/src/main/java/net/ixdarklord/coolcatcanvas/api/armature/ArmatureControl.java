@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcanvas.api.armature;
 
 import net.ixdarklord.coolcatcanvas.internal.armature.ArmatureCommandPayload;
+import net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureClientPackets;
 import net.ixdarklord.coolcatcore.api.network.Network;
 import net.ixdarklord.coolcatcore.internal.mixin.ChunkMapAccessor;
 import net.ixdarklord.coolcatcore.internal.mixin.TrackedEntityAccessor;
@@ -140,7 +141,7 @@ public final class ArmatureControl {
     // Kept apart so a server never loads the client classes it names.
     private static final class ClientSide {
         static void run(ArmatureCommandPayload payload) {
-            net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureClientPackets.handle(payload);
+            ArmatureClientPackets.handle(payload);
         }
     }
 }

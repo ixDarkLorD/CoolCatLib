@@ -28,6 +28,7 @@ import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxMaterial;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.VfxRenderer;
 import net.ixdarklord.coolcatcanvas.api.client.vfx.WorldParticles;
 import net.ixdarklord.coolcatcanvas.api.vfx.VfxParams;
+import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
@@ -41,7 +42,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Util;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -165,7 +166,7 @@ public final class VfxManager {
     }
 
     public static void clearParticles() {
-        java.util.Arrays.fill(spec, 0, count, null);
+        Arrays.fill(spec, 0, count, null);
         count = 0;
     }
 
@@ -269,7 +270,7 @@ public final class VfxManager {
             FRAME.level = level;
             FRAME.partialTick = partialTick;
             // Its clock stops while the game is paused: renderers that animate by it, and shaders by their Time, stand still.
-            FRAME.time = (float) (net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds() % 3600.0);
+            FRAME.time = (float) (GameClock.seconds() % 3600.0);
             gatherParticles(partialTick);
             gatherShapes(partialTick);
             for (Map.Entry<Identifier, VfxRenderer> renderer : RENDERERS.entrySet()) {
@@ -530,7 +531,7 @@ public final class VfxManager {
         RenderPipeline cached = PIPELINES.get(key);
         if (cached != null) return cached;
         RenderPipeline pipeline = RenderPipeline.builder()
-                .withLocation(CoolCatCanvas.rl("pipeline/vfx_" + blend.name().toLowerCase(java.util.Locale.ROOT) + "_" + fragment.getNamespace() + "_" + fragment.getPath().replace('/', '_')))
+                .withLocation(CoolCatCanvas.rl("pipeline/vfx_" + blend.name().toLowerCase(Locale.ROOT) + "_" + fragment.getNamespace() + "_" + fragment.getPath().replace('/', '_')))
                 .withVertexShader(SHADER)
                 .withFragmentShader(fragment)
                 .withUniform("Projection", UniformType.UNIFORM_BUFFER)

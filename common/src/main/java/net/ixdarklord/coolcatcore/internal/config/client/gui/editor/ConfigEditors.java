@@ -6,12 +6,6 @@ import net.ixdarklord.coolcatcore.api.config.type.ConfigType;
 import net.ixdarklord.coolcatcore.api.config.type.EnumType;
 import net.ixdarklord.coolcatcore.api.config.type.ListType;
 import net.ixdarklord.coolcatcore.api.config.type.NumberType;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.BooleanEditor;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ColorEditor;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.EnumEditor;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ListEditor;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.SliderEditor;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.TextEditor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

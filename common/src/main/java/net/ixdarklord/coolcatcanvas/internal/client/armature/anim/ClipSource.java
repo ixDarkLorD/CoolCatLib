@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.internal.client.armature.anim;
 
-import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import net.ixdarklord.coolcatcanvas.api.armature.LoopMode;
+import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

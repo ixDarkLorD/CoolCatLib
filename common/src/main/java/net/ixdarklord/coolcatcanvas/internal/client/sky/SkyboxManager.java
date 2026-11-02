@@ -12,6 +12,7 @@ import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerStage;
 import net.ixdarklord.coolcatcanvas.api.client.sky.Skybox;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyboxDefinition;
 import net.ixdarklord.coolcatcanvas.api.client.sky.VanillaSky;
+import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,6 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
@@ -117,7 +117,7 @@ public final class SkyboxManager {
 
     public static void beginFrame(DeltaTracker deltaTracker) {
         // By the clock that stops while the game is paused: a sky's layers stand still behind the pause menu.
-        double now = net.ixdarklord.coolcatcanvas.internal.client.GameClock.seconds();
+        double now = GameClock.seconds();
         float delta = lastFrameSeconds < 0.0 ? 0.0F : (float) Math.min(1.0, now - lastFrameSeconds);
         lastFrameSeconds = now;
         Arrays.fill(HIDDEN, 0.0F);

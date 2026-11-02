@@ -1,7 +1,9 @@
 package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
+import net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureLibrary;
 import net.ixdarklord.coolcatcanvas.internal.client.cutscene.CutsceneManager;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
+import net.ixdarklord.coolcatcanvas.internal.client.model.ObjModelCache;
 import net.ixdarklord.coolcatcanvas.internal.client.sky.SkyboxManager;
 import net.ixdarklord.coolcatcanvas.internal.client.vfx.VfxManager;
 import net.minecraft.client.renderer.ShaderManager;
@@ -22,7 +24,7 @@ public abstract class ShaderManagerMixin {
         SkyboxManager.reload(manager);
         VfxManager.reload();
         CutsceneManager.reload(manager);
-        net.ixdarklord.coolcatcanvas.internal.client.model.ObjModelCache.reload();
-        net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureLibrary.reload();
+        ObjModelCache.reload();
+        ArmatureLibrary.reload();
     }
 }

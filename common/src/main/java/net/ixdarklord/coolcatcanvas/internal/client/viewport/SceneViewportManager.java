@@ -9,11 +9,13 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.ixdarklord.coolcatcanvas.api.client.viewport.SceneViewport;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Projection;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import net.minecraft.client.renderer.SubmitNodeStorage;
@@ -24,11 +26,12 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -200,7 +203,7 @@ public final class SceneViewportManager {
                 flat.pushPose();
                 flat.translate(placed.x(), placed.y(), 0.0F);
                 flat.scale(placed.scale(), placed.scale(), 1.0F);
-                texts.submitText(flat, 0.0F, 0.0F, placed.text(), false, net.minecraft.client.gui.Font.DisplayMode.NORMAL, FULL_BRIGHT, placed.color(), 0, 0);
+                texts.submitText(flat, 0.0F, 0.0F, placed.text(), false, Font.DisplayMode.NORMAL, FULL_BRIGHT, placed.color(), 0, 0);
                 flat.popPose();
             }
             minecraft.gameRenderer.getFeatureRenderDispatcher().renderAllFeatures();
@@ -291,19 +294,19 @@ public final class SceneViewportManager {
         int margin = viewport.groundCells();
         int color = viewport.groundColor();
         // Under the scene and no further: the whole blocks its things stand over, and `margin` more each way.
-        net.minecraft.world.phys.AABB box = viewport.bounds();
+        AABB box = viewport.bounds();
         float x0 = (float) Math.floor(box.minX + 1.0E-4) - margin;
         float x1 = (float) Math.ceil(box.maxX - 1.0E-4) + margin;
         float z0 = (float) Math.floor(box.minZ + 1.0E-4) - margin;
         float z1 = (float) Math.ceil(box.maxZ - 1.0E-4) + margin;
         int floor = viewport.groundFloor();
         if ((floor >>> 24) != 0) {
-            storage.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(WHITE), (last, consumer) ->
+            storage.submitCustomGeometry(pose, RenderTypes.entityTranslucent(WHITE), (last, consumer) ->
                     flat(consumer, last, x0, z0, x1, z1, y, floor));
         }
         if ((color >>> 24) != 0) {
             float thick = 0.03F;
-            storage.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(WHITE), (last, consumer) -> {
+            storage.submitCustomGeometry(pose, RenderTypes.entityTranslucent(WHITE), (last, consumer) -> {
                 // A line on every block edge, the outermost ones on the ground's own edge.
                 for (float at = x0; at <= x1 + 1.0E-4F; at++) {
                     flat(consumer, last, Math.max(x0, at - thick), z0, Math.min(x1, at + thick), z1, y + 0.001F, color);
@@ -318,7 +321,7 @@ public final class SceneViewportManager {
                 float radius = Math.max(0.3F, placed.entity().getBbWidth() * 0.65F);
                 float x = (float) placed.pos().x;
                 float z = (float) placed.pos().z;
-                storage.submitCustomGeometry(pose, net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(SHADOW), (last, consumer) -> {
+                storage.submitCustomGeometry(pose, RenderTypes.entityTranslucent(SHADOW), (last, consumer) -> {
                     int shade = 0x50FFFFFF;
                     float h = y + 0.002F;
                     consumer.addVertex(last, x - radius, h, z - radius).setColor(shade).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
@@ -330,7 +333,7 @@ public final class SceneViewportManager {
         }
     }
 
-    private static void flat(com.mojang.blaze3d.vertex.VertexConsumer consumer, PoseStack.Pose last, float x0, float z0, float x1, float z1, float y, int color) {
+    private static void flat(VertexConsumer consumer, PoseStack.Pose last, float x0, float z0, float x1, float z1, float y, int color) {
         consumer.addVertex(last, x0, y, z0).setColor(color).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
         consumer.addVertex(last, x0, y, z1).setColor(color).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
         consumer.addVertex(last, x1, y, z1).setColor(color).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);

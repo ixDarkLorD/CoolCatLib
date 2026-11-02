@@ -1,11 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
 import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffect;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.EditSlot;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ValueEditor;
-import net.ixdarklord.coolcatcore.api.config.type.NumberType;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ThemeEffects;
+import net.ixdarklord.coolcatcore.api.config.type.NumberType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

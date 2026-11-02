@@ -9,6 +9,7 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -319,8 +320,8 @@ public final class AnimLayer {
         if (this.weight <= 0.0F || this.current == null && this.fading.isEmpty()) return;
         int n = pose.armature.jointCount();
         if (n == 0) return;
-        java.util.Arrays.fill(value, 0, n * 12, 0.0F);
-        java.util.Arrays.fill(cover, 0, n * 4, 0.0F);
+        Arrays.fill(value, 0, n * 12, 0.0F);
+        Arrays.fill(cover, 0, n * 4, 0.0F);
 
         float total = 0.0F;
         for (Playback p : this.fading) {

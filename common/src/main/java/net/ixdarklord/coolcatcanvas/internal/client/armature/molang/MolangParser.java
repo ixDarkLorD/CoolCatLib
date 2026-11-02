@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcanvas.internal.client.armature.molang;
 
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureContext;
-import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr.Node;
 import net.ixdarklord.coolcatcanvas.api.client.armature.molang.ArmatureQueries;
+import net.ixdarklord.coolcatcanvas.api.client.armature.molang.MolangExpr.Node;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 
 import java.util.ArrayList;

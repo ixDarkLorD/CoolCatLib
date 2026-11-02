@@ -1,7 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.EditSlot;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ValueEditor;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ToggleSwitch;
 
 // A sliding switch.

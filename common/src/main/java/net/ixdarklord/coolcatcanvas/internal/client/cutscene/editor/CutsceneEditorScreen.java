@@ -21,6 +21,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
@@ -303,7 +304,7 @@ public final class CutsceneEditorScreen extends StyledScreen {
         StyledEditBox box = this.add(new StyledEditBox(this.font, boxWidth, FIELD_HEIGHT, label), boxX, y);
         box.setMaxLength(12);
         box.setValue(CutsceneEditor.format(value.getAsDouble()));
-        if (tooltip != null) box.setTooltip(net.minecraft.client.gui.components.Tooltip.create(tooltip));
+        if (tooltip != null) box.setTooltip(Tooltip.create(tooltip));
         box.setResponder(typed -> {
             if (this.settingFields) return;
             try {

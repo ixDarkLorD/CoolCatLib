@@ -1,7 +1,6 @@
 package net.ixdarklord.coolcatcanvas.api.client.vfx;
 
 import net.ixdarklord.coolcatcanvas.api.utils.Easing;
-import net.minecraft.resources.Identifier;
 
 /**
  * What a kind of effect particle looks like and how it lives, built once and spawned many times with

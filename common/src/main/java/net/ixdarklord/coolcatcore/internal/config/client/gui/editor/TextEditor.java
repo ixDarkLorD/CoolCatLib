@@ -1,11 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.EditSlot;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ValueEditor;
-import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
-import net.minecraft.client.Minecraft;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledEditBox;
+import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
+import net.minecraft.client.Minecraft;
 
 // A text box for any type, through the type's parse/format. Text that doesn't parse turns red and blocks saving.
 public class TextEditor<T> implements ValueEditor {

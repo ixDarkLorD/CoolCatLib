@@ -1,14 +1,14 @@
 package net.ixdarklord.coolcatcanvas.internal.client.gui.style;
 
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffect;
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 // A panel floating over the screen it was opened from, which stays visible and dimmed underneath. Esc or a click

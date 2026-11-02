@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcore.api.utils;
 
 import net.minecraft.util.Mth;
+
 import java.awt.*;
 
 /**

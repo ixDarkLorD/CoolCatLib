@@ -1,14 +1,14 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components;
 
-import net.minecraft.util.ARGB;
-import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.RenderPipelines;
-import java.awt.*;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+
+import java.awt.*;
 
 public class ColorableImageButton extends ImageButton {
     private Color color;

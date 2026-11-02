@@ -1,10 +1,10 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.api.config.ConfigPreset;
-import net.ixdarklord.coolcatcore.api.config.ConfigValue;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledPopup;
+import net.ixdarklord.coolcatcore.api.config.ConfigPreset;
+import net.ixdarklord.coolcatcore.api.config.ConfigValue;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 

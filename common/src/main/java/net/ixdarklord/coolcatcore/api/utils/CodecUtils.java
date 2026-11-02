@@ -3,13 +3,13 @@ package net.ixdarklord.coolcatcore.api.utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.netty.handler.codec.CodecException;
-import net.minecraft.util.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 
 import java.awt.*;

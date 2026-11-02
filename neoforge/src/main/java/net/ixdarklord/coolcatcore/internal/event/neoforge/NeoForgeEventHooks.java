@@ -9,22 +9,16 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
 import net.ixdarklord.coolcatcore.api.hooks.ServerLifecycleHooks;
-import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeTransferCompat;
+import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeRegistrations;
+import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeTransferCompat;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -32,6 +26,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -51,6 +46,12 @@ import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 // Fires CoolCatLib's common events from NeoForge's, and drains the registrations NeoForge takes through events.
 public final class NeoForgeEventHooks {
@@ -178,7 +179,7 @@ public final class NeoForgeEventHooks {
             NeoForgeRegistrations.payloadsRegistered = true;
         });
         modBus.addListener(NeoForgeTransferCompat::register);
-        modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
+        modBus.addListener((EntityAttributeCreationEvent event) ->
                 NeoForgeRegistrations.ENTITY_ATTRIBUTES.forEach(registration -> registration.accept(event)));
         modBus.addListener((RegisterConfigurationTasksEvent event) -> {
             if (!NeoForgeRegistrations.CONFIGURATION_PAYLOADS.isEmpty()) event.register(new ConfigurationPayloadsTask(event.getListener()));

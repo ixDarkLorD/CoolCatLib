@@ -1,12 +1,10 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.EditSlot;
-import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ValueEditor;
+import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigType;
 import net.ixdarklord.coolcatcore.api.config.type.ListType;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.ListEditScreen;
 import net.minecraft.client.Minecraft;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;

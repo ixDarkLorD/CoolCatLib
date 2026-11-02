@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.mixin;
 
 import net.ixdarklord.coolcatcore.api.attachment.Attachment;
+import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.internal.attachment.AttachmentStore;
 import net.ixdarklord.coolcatcore.internal.attachment.AttachmentStoreAccess;
-import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.portal.TeleportTransition;
 import org.spongepowered.asm.mixin.Mixin;
