@@ -1,13 +1,13 @@
 package net.ixdarklord.coolcatcore.internal.core.neoforge;
 
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
-import net.ixdarklord.coolcatcore.api.core.neoforge.NeoForgeModEntrypoint;
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCoreConstructor;
-import net.ixdarklord.coolcatcore.internal.event.neoforge.NeoForgeEventHooks;
 import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.brewing.neoforge.NeoForgeBrewingRecipe;
+import net.ixdarklord.coolcatcore.api.core.neoforge.NeoForgeModEntrypoint;
 import net.ixdarklord.coolcatcore.api.event.v1.server.RegisterBrewingRecipesEvent;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
+import net.ixdarklord.coolcatcore.internal.core.CoolCatCoreConstructor;
+import net.ixdarklord.coolcatcore.internal.event.neoforge.NeoForgeEventHooks;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;

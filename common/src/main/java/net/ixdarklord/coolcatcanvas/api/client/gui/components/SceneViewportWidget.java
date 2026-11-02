@@ -12,8 +12,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
 
 /**
  * A {@link SceneViewport} in a screen: a 3D view of blocks, a structure or entities, kept inside the widget's
@@ -67,7 +69,7 @@ public class SceneViewportWidget extends AbstractWidget {
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.enableBlend();
-            org.joml.Matrix4f pose = graphics.pose().last().pose();
+            Matrix4f pose = graphics.pose().last().pose();
             BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
             builder.addVertex(pose, getX(), getY(), 0.0F).setUv(0.0F, 1.0F);
             builder.addVertex(pose, getX(), getBottom(), 0.0F).setUv(0.0F, 0.0F);
@@ -91,7 +93,7 @@ public class SceneViewportWidget extends AbstractWidget {
     }
 
     @Override
-    public void playDownSound(net.minecraft.client.sounds.SoundManager soundManager) {
+    public void playDownSound(SoundManager soundManager) {
     }
 
     @Override

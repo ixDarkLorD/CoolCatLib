@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 // Runs the current theme's effects at each layer. An id nobody registered, or an effect that throws, is logged once and
 // then skipped, so one broken effect never breaks a screen.
@@ -54,7 +55,7 @@ public final class ThemeEffects {
         run(context.screen().theme(), effect -> effect.renderWidget(graphics, context));
     }
 
-    private static void run(ConfigTheme theme, java.util.function.Consumer<ConfigEffect> call) {
+    private static void run(ConfigTheme theme, Consumer<ConfigEffect> call) {
         if (!CoolCatCoreClientSettings.themeEffects()) return;
         for (ResourceLocation id : theme.effects()) {
             ConfigEffect effect = ConfigEffects.get(id);

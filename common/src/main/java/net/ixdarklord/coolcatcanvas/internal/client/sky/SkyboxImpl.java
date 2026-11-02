@@ -8,8 +8,8 @@ import net.ixdarklord.coolcatcanvas.api.client.sky.SkyboxDefinition;
 import net.ixdarklord.coolcatcanvas.api.client.sky.VanillaSky;
 import net.ixdarklord.coolcatcanvas.api.utils.Easing;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 

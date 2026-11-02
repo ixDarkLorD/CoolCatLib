@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.core.neoforge;
 
 import net.ixdarklord.coolcatcore.internal.core.ModPlatform;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
-import net.minecraft.world.entity.player.Player;
 
 import java.io.IOException;
 import java.nio.file.Files;

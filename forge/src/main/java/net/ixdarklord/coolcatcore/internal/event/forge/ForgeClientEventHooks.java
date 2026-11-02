@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -51,7 +52,7 @@ public final class ForgeClientEventHooks {
 
         listen(modBus, RegisterKeyMappingsEvent.class, ClientServicesImpl::onRegisterKeyMappings);
         listen(modBus, RegisterClientTooltipComponentFactoriesEvent.class, ClientServicesImpl::onRegisterTooltipComponents);
-        listen(modBus, net.minecraftforge.client.event.ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
+        listen(modBus, ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
     }
 
     // Forge's tooltip event has no tooltip context; the client level's is the one vanilla uses for tooltips.

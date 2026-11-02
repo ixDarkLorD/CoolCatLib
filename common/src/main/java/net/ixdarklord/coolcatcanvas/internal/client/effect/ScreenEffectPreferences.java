@@ -8,8 +8,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffect;
 import net.ixdarklord.coolcatcanvas.api.event.v2.client.ScreenEffectEvents;
-import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
+import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 

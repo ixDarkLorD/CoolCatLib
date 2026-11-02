@@ -7,10 +7,14 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -30,8 +34,8 @@ public interface ClientServices {
     void sendToServer(CustomPacketPayload payload);
 
     /** Bakes models no item or block uses (ExtraModels): those named by the provider, asked at every model load. */
-    void registerExtraModels(java.util.function.Function<net.minecraft.server.packs.resources.ResourceManager, java.util.Collection<net.minecraft.resources.ResourceLocation>> provider);
+    void registerExtraModels(Function<ResourceManager, Collection<ResourceLocation>> provider);
 
     /** A model registered with registerExtraModel, once baked; null before. */
-    net.minecraft.client.resources.model.@org.jetbrains.annotations.Nullable BakedModel getExtraModel(net.minecraft.resources.ResourceLocation model);
+    net.minecraft.client.resources.model.@Nullable BakedModel getExtraModel(ResourceLocation model);
 }

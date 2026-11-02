@@ -1,13 +1,13 @@
 package net.ixdarklord.coolcatcanvas.api.utils;
 
 import net.ixdarklord.coolcatcanvas.internal.text.GradientTextColors;
+import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
-import net.minecraft.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

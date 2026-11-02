@@ -5,8 +5,8 @@ import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayer;
 import net.ixdarklord.coolcatcanvas.api.client.sky.SkyLayerDefinition;
 import net.ixdarklord.coolcatcanvas.api.utils.Easing;
 import net.minecraft.util.Mth;
-import org.joml.Vector4fc;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4fc;
 
 import java.util.Arrays;
 import java.util.Objects;

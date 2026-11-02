@@ -14,8 +14,8 @@ import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.ArrayList;

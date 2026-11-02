@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets;
 
-import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
+import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
 import net.ixdarklord.coolcatcore.api.utils.ColorUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.WidgetSprites;

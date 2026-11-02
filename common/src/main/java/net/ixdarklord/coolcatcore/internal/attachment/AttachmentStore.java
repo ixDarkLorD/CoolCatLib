@@ -2,9 +2,9 @@ package net.ixdarklord.coolcatcore.internal.attachment;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.attachment.AttachmentHolder;
 import net.ixdarklord.coolcatcore.api.attachment.AttachmentRegistry;
-import net.ixdarklord.coolcatcore.api.attachment.Attachment;
 import net.ixdarklord.coolcatcore.api.attachment.Trackable;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.core.HolderLookup;
@@ -19,8 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;

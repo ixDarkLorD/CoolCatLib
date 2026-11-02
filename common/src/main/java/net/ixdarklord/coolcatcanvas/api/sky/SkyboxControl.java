@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcanvas.api.sky;
 
-import net.ixdarklord.coolcatcore.api.network.Network;
 import net.ixdarklord.coolcatcanvas.internal.sky.SkyboxPayload;
 import net.ixdarklord.coolcatcanvas.internal.sky.SkyboxPayload.Action;
+import net.ixdarklord.coolcatcore.api.network.Network;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

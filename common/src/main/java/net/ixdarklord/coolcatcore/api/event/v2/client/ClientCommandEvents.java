@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcore.api.event.v2.client;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.ChatFormatting;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventInvoker;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;

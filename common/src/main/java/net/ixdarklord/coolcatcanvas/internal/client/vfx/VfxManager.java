@@ -157,7 +157,7 @@ public final class VfxManager {
     }
 
     public static void clearParticles() {
-        java.util.Arrays.fill(spec, 0, count, null);
+        Arrays.fill(spec, 0, count, null);
         count = 0;
     }
 

@@ -8,20 +8,16 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
 import net.ixdarklord.coolcatcore.api.hooks.ServerLifecycleHooks;
-import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeTransferCompat;
+import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeRegistrations;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.ixdarklord.coolcatcore.internal.platform.neoforge.NeoForgeTransferCompat;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -43,6 +39,10 @@ import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 // Fires CoolCatLib's common events from NeoForge's, and drains the registrations NeoForge takes through events.
 public final class NeoForgeEventHooks {

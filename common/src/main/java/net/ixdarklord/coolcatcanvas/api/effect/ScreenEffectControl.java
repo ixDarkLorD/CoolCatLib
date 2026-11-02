@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcanvas.api.effect;
 
-import net.ixdarklord.coolcatcore.api.network.Network;
 import net.ixdarklord.coolcatcanvas.internal.effect.ScreenEffectPayload;
 import net.ixdarklord.coolcatcanvas.internal.effect.ScreenEffectPayload.Action;
+import net.ixdarklord.coolcatcore.api.network.Network;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 

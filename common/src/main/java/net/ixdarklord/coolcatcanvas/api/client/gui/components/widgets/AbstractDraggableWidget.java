@@ -1,13 +1,13 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components.widgets;
 
-import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.ixdarklord.coolcatcanvas.api.client.utils.RenderUtils;
 import net.ixdarklord.coolcatcore.api.client.utils.MouseHelper;
+import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcore.api.utils.ColorUtils;
 import net.ixdarklord.coolcatcore.api.utils.KeysUtils;
-import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;

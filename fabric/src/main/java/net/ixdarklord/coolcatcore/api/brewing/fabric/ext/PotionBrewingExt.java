@@ -4,7 +4,6 @@ import net.ixdarklord.coolcatcore.api.brewing.BrewingRecipeRegistry;
 import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.world.item.ItemStack;
-
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;

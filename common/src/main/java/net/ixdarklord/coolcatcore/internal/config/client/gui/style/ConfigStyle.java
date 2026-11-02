@@ -2,7 +2,6 @@ package net.ixdarklord.coolcatcore.internal.config.client.gui.style;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.ixdarklord.coolcatcore.api.config.ConfigColorScheme;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.internal.config.client.CoolCatCoreClientSettings;

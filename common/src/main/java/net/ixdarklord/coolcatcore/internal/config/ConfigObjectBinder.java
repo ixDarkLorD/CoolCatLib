@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.config;
 
-import net.ixdarklord.coolcatcore.api.config.EntryBuilder;
 import net.ixdarklord.coolcatcore.api.config.Config;
 import net.ixdarklord.coolcatcore.api.config.ConfigBuilder;
 import net.ixdarklord.coolcatcore.api.config.ConfigValue;
+import net.ixdarklord.coolcatcore.api.config.EntryBuilder;
 import net.ixdarklord.coolcatcore.api.config.annotation.ConfigEntry;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigType;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigTypes;
