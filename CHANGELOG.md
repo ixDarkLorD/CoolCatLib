@@ -1,6 +1,18 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.1.0 Release | Nov 3, 2026
+### 🔧 Changes
+- CoolCatLib's own config screen (used without Glazed Menu) lists each config as a row, instead of a card with artwork: its kind's icon, its name over what its kind means, and how many settings it has. A mod's own card artwork at `assets/<modid>/textures/gui/config/cards/<config name>.png` is no longer used.
+- Each kind of config has its own color in the config list (client blue, common teal, server purple, startup orange, world green), unless the config sets its own theme; its rows are centered in the list and as tall as needed to fit without scrolling.
+- The list of every mod's configs has a new icon (a puzzle piece with a gear), drawn in the theme's accent, and the header's icons no longer sit in a box.
+- Config screens are in CoolCatLib's logo colors by default (warm brown, cream and orange, in dark and light mode), for mods that don't set their own: `ConfigColorScheme.COOLCATLIB` and `COOLCATLIB_LIGHT`, used by `ConfigTheme.DEFAULT` and any theme built without colors.
+
+### 🐛 Bug Fixes
+- Opening CoolCatLib's config screens no longer crashes the game over a large mod icon (on 1.20.1, CoolCatLib's own logo was enough); an icon that can't be loaded is left out, with a warning in the log.
+- Mod icons larger than 512 pixels are scaled down before they're uploaded, as nothing is drawn near that size.
+- CoolCatLib's config list says when no mod has a config there, instead of showing an empty panel.
+
 ## v8.0.1 Release | Nov 2, 2026
 ### 🐛 Bug Fixes
 - `ItemTooltipEvents.APPEND`'s lines go above the game's advanced tooltip lines (durability, the item's id, its NBT tag count) rather than under them.
