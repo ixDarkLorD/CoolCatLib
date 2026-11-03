@@ -124,6 +124,11 @@ public final class ConfigImpl implements Config {
         return this.theme != null ? this.theme : ConfigTheme.forMod(this.modId());
     }
 
+    /** Whether this config set a theme of its own, rather than using its mod's. */
+    public boolean hasOwnTheme() {
+        return this.theme != null;
+    }
+
     @Override
     public List<String> comment() {
         return this.comment;

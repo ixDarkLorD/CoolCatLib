@@ -32,6 +32,26 @@ public final class ConfigColorScheme {
             .text(0xFF1B2230).textDim(0xFF5A6477).textMuted(0xFF98A2B3)
             .modified(0xFFC98300).error(0xFFD93636).success(0xFF2E9E5B).warning(0xFFC77A00)
             .build();
+    /** CoolCatLib's own look, in its logo's colors: warm brown panels, cream text and an orange accent. */
+    public static final ConfigColorScheme COOLCATLIB = new Builder()
+            .accent(0xFFE27D46).backdrop(0xFF0D0907)
+            .panel(0xB81E1714).panelBorder(0xFF3D2E27).bar(0xC8171210).popup(0xF71C1512)
+            .rowHover(0x16FFF3E0).field(0xFF120E0C).fieldBorder(0xFF45352D)
+            .button(0xFF2C211C).buttonHover(0xFF3A2C25).buttonDisabled(0xFF1E1714)
+            .toggleOff(0xFF46372F).knob(0xFFF8EEDD)
+            .text(0xFFF8EEDD).textDim(0xFFB9A796).textMuted(0xFF7A6A5E)
+            .modified(0xFFFFC857).error(0xFFFF5C5C).success(0xFF5FBF9F).warning(0xFFE8A93C)
+            .build();
+    /** {@link #COOLCATLIB} in light mode: cream panels, brown text and a deeper orange accent. */
+    public static final ConfigColorScheme COOLCATLIB_LIGHT = new Builder()
+            .accent(0xFFC8622C).backdrop(0xFFF3E9DA)
+            .panel(0xD6FBF5EC).panelBorder(0xFFE2D3C0).bar(0xE0FFFBF5).popup(0xFAFFFBF5)
+            .rowHover(0x122C1F1A).field(0xFFFFFDF9).fieldBorder(0xFFD6C4AE)
+            .button(0xFFF1E6D6).buttonHover(0xFFE8DAC6).buttonDisabled(0xFFF6EFE5)
+            .toggleOff(0xFFD9C9B5).knob(0xFFFFFFFF)
+            .text(0xFF2C1F1A).textDim(0xFF6B5A4E).textMuted(0xFFA8978A)
+            .modified(0xFFC98300).error(0xFFD93636).success(0xFF2F8C7A).warning(0xFFC77A00)
+            .build();
 
     private final int accent;
     private final int backdrop;
