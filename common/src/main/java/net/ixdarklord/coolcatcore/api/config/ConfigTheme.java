@@ -55,7 +55,7 @@ public final class ConfigTheme {
     // Declared before DEFAULT, which uses it.
     /** The built-in effect: soft glows in the accent and small faint stars falling, shifting with the mouse. */
     public static final Identifier STARFALL = Identifier.fromNamespaceAndPath("coolcatlib", "starfall");
-    /** CoolCatLib's own look: see-through to the title panorama or the world, with the dark scheme. */
+    /** CoolCatLib's own look: see-through to the title panorama or the world, in CoolCatLib's logo colors. */
     public static final ConfigTheme DEFAULT = builder().build();
     private static final Map<String, ConfigTheme> BY_MOD = new ConcurrentHashMap<>();
 
@@ -205,7 +205,9 @@ public final class ConfigTheme {
     }
 
     public static final class Builder {
-        private ConfigColorScheme colors = ConfigColorScheme.DARK;
+        // CoolCatLib's colors (both modes) until the mod sets its own.
+        private ConfigColorScheme colors = ConfigColorScheme.COOLCATLIB;
+        private boolean ownColors;
         private @Nullable ConfigColorScheme lightColors;
         private @Nullable Identifier icon;
         private @Nullable Identifier background;
@@ -222,10 +224,14 @@ public final class ConfigTheme {
         /** Every color of the screens in dark mode. */
         public Builder colors(ConfigColorScheme colors) {
             this.colors = colors;
+            this.ownColors = true;
             return this;
         }
 
-        /** Every color of the screens in light mode; by default the light scheme in the dark scheme's accent. */
+        /**
+         * Every color of the screens in light mode; by default the light scheme in the dark scheme's accent, or CoolCatLib's
+         * own when the theme sets no colors.
+         */
         public Builder lightColors(ConfigColorScheme lightColors) {
             this.lightColors = lightColors;
             return this;
@@ -234,6 +240,7 @@ public final class ConfigTheme {
         /** Just the accent (of both modes), keeping the rest; an opaque RGB like {@code 0xFF8A3D} works too. */
         public Builder accent(int color) {
             this.colors = this.colors.toBuilder().accent(color).build();
+            this.ownColors = true;
             if (this.lightColors != null) this.lightColors = this.lightColors.toBuilder().accent(color).build();
             return this;
         }
@@ -307,6 +314,8 @@ public final class ConfigTheme {
         }
 
         public ConfigTheme build() {
+            // Without colors of its own, light mode is CoolCatLib's too (otherwise it follows the mod's accent).
+            if (!this.ownColors && this.lightColors == null) this.lightColors = ConfigColorScheme.COOLCATLIB_LIGHT;
             return new ConfigTheme(this);
         }
     }
