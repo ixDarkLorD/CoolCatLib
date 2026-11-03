@@ -19,6 +19,8 @@ This file is for listing all the changes to this project
 
 ## v8.0.0 Release | Oct 26, 2026
 ### ✨ New Features
+- `GhostBlocks.Show.OVER_BLOCK`: a ghost over the real block where it stands, hidden only by what is in front of it, to fade one block into another.
+- `SceneViewport.perspective(fov)`: draws a viewport's scene in perspective, as the game's camera sees the world, and `zoom` moves the camera nearer; 0 (the default) keeps it flat.
 - More common events (`api.event.v2.common`), fired the same on every loader:
   - `BlockEvents.PLACE`: a block is about to be placed, by any block item (players, dispensers, other mods' machines) or an enderman; interrupt and it isn't, and the item isn't used up.
   - `PlayerEvents.PICKUP_ITEM` (interrupt to leave the item on the ground), `TRAVEL_TO_DIMENSION` (before any teleport to another dimension: portals, commands, other mods' teleporters; interrupt to stay), `CRAFTED` and `SMELTED` (an item taken from a crafting or furnace result slot).

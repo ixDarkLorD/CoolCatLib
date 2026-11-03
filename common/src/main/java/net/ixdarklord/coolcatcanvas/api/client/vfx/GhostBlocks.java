@@ -35,7 +35,12 @@ public final class GhostBlocks {
         /** Only where nothing in the world is in front of it, as a real block would be (a ghost of what is to be built). */
         IN_WORLD,
         /** Everywhere, over whatever is in front of it. */
-        ALWAYS
+        ALWAYS,
+        /**
+         * Over the real block where it stands, hidden only by what is in front of it: drawn a little larger than the
+         * block, so it covers the block's faces in plain sight (one block fading into another, say).
+         */
+        OVER_BLOCK
     }
 
     /**

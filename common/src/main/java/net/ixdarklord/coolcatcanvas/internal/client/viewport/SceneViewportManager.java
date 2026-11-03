@@ -195,6 +195,16 @@ public final class SceneViewportManager {
         boolean framed = viewport.frameSpan() > 0.0;
         float scale = framed ? (float) (width / viewport.frameSpan()) * viewport.zoom() : fitted;
         Vec3 middle = framed ? viewport.frameCentre() : centre;
+        // In perspective, how far the camera stands from the middle instead: so the same part of the scene fills the
+        // picture as it would flat, plus the scene's reach, so its near side fits too.
+        float distance = 0.0F;
+        if (viewport.fov() > 0.0F) {
+            double tallHalf = Math.tan(Math.toRadians(viewport.fov()) / 2.0);
+            double wideHalf = tallHalf * width / height;
+            distance = framed
+                    ? (float) (viewport.frameSpan() / 2.0 / wideHalf / viewport.zoom())
+                    : (float) (Math.max(target.reach / wideHalf, target.rise / tallHalf) / 0.97 / viewport.zoom() + target.reach);
+        }
 
         // Text laid flat on the picture, in its own pixels.
         if (!viewport.texts().isEmpty()) {
@@ -217,7 +227,7 @@ public final class SceneViewportManager {
             for (int go = 0; go < 2; go++) {
                 boolean blockLit = go == 1;
                 boolean any = false;
-                PoseStack icons = view(viewport, target, width, height, scale, middle);
+                PoseStack icons = view(viewport, target, width, height, scale, middle, distance);
                 SubmitNodeStorage iconStorage = new SubmitNodeStorage();
                 for (SceneViewport.PlacedItem placed : viewport.items()) {
                     ItemStackRenderState icon = target.icons.computeIfAbsent(placed, item -> {
@@ -241,7 +251,7 @@ public final class SceneViewportManager {
             if (viewport.blocks().isEmpty() && viewport.entities().isEmpty()) return;
         }
 
-        PoseStack pose = view(viewport, target, width, height, scale, middle);
+        PoseStack pose = view(viewport, target, width, height, scale, middle, distance);
         // The scene is lit as the world is: by the level's own two lights, which stand still about the scene and not
         // about the camera. For that its faces' normals are left as the models give them (the camera's turning is
         // taken out of them), so a block's top is always its brightest face and each side keeps its own shade as the
@@ -339,9 +349,19 @@ public final class SceneViewportManager {
         consumer.addVertex(last, x1, y, z0).setColor(color).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 1, 0);
     }
 
-    // The camera: from the scene's own space to the picture's.
-    private static PoseStack view(SceneViewport viewport, Target target, int width, int height, float scale, Vec3 middle) {
+    // The camera: from the scene's own space to the picture's. In perspective, the camera stands `distance` from the
+    // middle, and the perspective projection is set from here on (text, drawn before, keeps the flat one).
+    private static PoseStack view(SceneViewport viewport, Target target, int width, int height, float scale, Vec3 middle, float distance) {
         PoseStack pose = new PoseStack();
+        if (viewport.fov() > 0.0F) {
+            target.projection.setupPerspective(0.05F, 1000.0F, viewport.fov(), width, height);
+            RenderSystem.setProjectionMatrix(target.projectionBuffer.getBuffer(target.projection), ProjectionType.PERSPECTIVE);
+            pose.translate(0.0F, 0.0F, -distance);
+            pose.mulPose(Axis.XP.rotationDegrees(viewport.pitch()));
+            pose.mulPose(Axis.YP.rotationDegrees(-(viewport.yaw() + target.spun)));
+            pose.translate(-middle.x, -middle.y, -middle.z);
+            return pose;
+        }
         pose.translate(width / 2.0F, height / 2.0F, 0.0F);
         // As the game sets a picture up: down the screen is +y there, so the scene is turned upright, and the depth
         // is turned to match.
