@@ -74,7 +74,7 @@ public final class GhostRenderer {
         RenderTarget main = minecraft.getMainRenderTarget();
         if (main.getDepthTextureView() == null || main.getColorTextureView() == null) return;
         TextureTarget ghosts = target(main);
-        float size = show == GhostBlocks.Show.THROUGH_WALLS ? GROW : SHRINK;
+        float size = show == GhostBlocks.Show.THROUGH_WALLS || show == GhostBlocks.Show.OVER_BLOCK ? GROW : SHRINK;
         drawBlocks(minecraft, ghosts, blocks, size, shaded);
         composite(main, ghosts, argb, show);
     }

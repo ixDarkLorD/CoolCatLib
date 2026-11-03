@@ -66,7 +66,7 @@ public final class SceneViewport implements AutoCloseable {
     private final List<PlacedItem> items = new ArrayList<>();
     private double frameSpan;
     private Vec3 frameCentre = Vec3.ZERO;
-    private float yaw = 35.0F, pitch = 28.0F, zoom = 1.0F, spin;
+    private float yaw = 35.0F, pitch = 28.0F, zoom = 1.0F, spin, fov;
     private int refreshRate = 60;
     private boolean dirty = true, closed;
     private long lastUsed;
@@ -303,6 +303,25 @@ public final class SceneViewport implements AutoCloseable {
             dirty = true;
         }
         return this;
+    }
+
+    /**
+     * Draws the scene in perspective, as the game's own camera sees the world: near things larger than far ones, with
+     * this vertical field of view in degrees (the game's default is 70). 0, the default, draws it flat (orthographic),
+     * as an inventory draws an entity. {@link #zoom} then moves the camera nearer, so zooming in closes on the scene.
+     */
+    public SceneViewport perspective(float fovDegrees) {
+        fovDegrees = fovDegrees <= 0.0F ? 0.0F : Mth.clamp(fovDegrees, 5.0F, 150.0F);
+        if (this.fov != fovDegrees) {
+            this.fov = fovDegrees;
+            dirty = true;
+        }
+        return this;
+    }
+
+    /** The perspective's vertical field of view in degrees, or 0 when the scene is drawn flat. */
+    public float fov() {
+        return fov;
     }
 
     /** Turns the camera round the scene by itself, this many degrees a second; 0 to stop. */
