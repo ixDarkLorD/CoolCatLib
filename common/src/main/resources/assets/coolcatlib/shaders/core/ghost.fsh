@@ -5,7 +5,8 @@
 
 // GhostBlocks laid over the world: their picture, drawn opaque with the world's own camera, where the world's depth
 // lets it show. GHOST_MODE 0: only where the world is in front of them (through walls); 1: only where it isn't (as real
-// blocks); 2: everywhere. ColorModulator holds the tint (rgb) and the opacity (a).
+// blocks); 2: everywhere; 3: as 1, for ghosts drawn a little larger than the real blocks they cover. ColorModulator
+// holds the tint (rgb) and the opacity (a).
 uniform sampler2D GhostSampler;
 uniform sampler2D GhostDepthSampler;
 uniform sampler2D DepthSampler;
@@ -24,7 +25,7 @@ void main() {
     float worldDepth = texelFetch(DepthSampler, pixel, 0).r;
 #if GHOST_MODE == 0
     if (worldDepth <= ghostDepth) discard;
-#elif GHOST_MODE == 1
+#elif GHOST_MODE == 1 || GHOST_MODE == 3
     if (worldDepth > ghostDepth) discard;
 #endif
     vec3 ghost = texelFetch(GhostSampler, pixel, 0).rgb;
