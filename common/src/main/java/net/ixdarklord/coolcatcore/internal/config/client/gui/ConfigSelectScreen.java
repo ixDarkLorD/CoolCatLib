@@ -10,6 +10,7 @@ import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledScreen;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ThemeEffects;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ThemeResources;
 import net.ixdarklord.coolcatcore.api.config.ConfigNode;
+import net.ixdarklord.coolcatcore.api.config.ConfigScope;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
@@ -57,22 +58,16 @@ public final class ConfigSelectScreen extends StyledScreen {
     private static final int HEADER_HEIGHT = 46;
     private static final int HEADER_ICON = 32;
     private static final Identifier MOD_LIST_ICON = CoolCatCore.rl("textures/gui/config/mod_list.png");
-    // Cards are portrait, 1:1.3, sized to fit: as wide as a row allows up to the maximum, and never taller than the list.
-    private static final int TILE_MIN_WIDTH = 84;
-    private static final int TILE_MAX_WIDTH = 116;
-    private static final float TILE_ASPECT = 1.3F;
-    private static final int TILE_MIN_FIT_WIDTH = 70;
+    // Each config is a row, as wide as the list: this tall, or shorter (down to the smallest that fits its two lines) so
+    // a mod's few configs fit without scrolling.
+    private static final int ROW_HEIGHT = 32;
+    private static final int ROW_MIN_HEIGHT = 26;
+    private static final int MOD_HEADING_HEIGHT = 22;
     private static final int TILE_GAP = 12;
     private static final int TOOLTIP_WIDTH = 220;
-    // Room above and below a row of cards for a hovered one to grow into.
-    private static final int TILE_ROW_PADDING = 6;
-    // The artwork's opacity at rest and hovered: faint, so the card's label and icon lead.
-    private static final float ART_OPACITY = 0.4F;
-    private static final float ART_OPACITY_HOVERED = 0.65F;
-    // The frame around a card's artwork, on all four sides.
-    private static final int TILE_PADDING = 4;
-    // How much a hovered tile grows, and how quickly (the time to get about two thirds of the way).
-    private static final float TILE_GROW = 0.07F;
+    // Room above and below each row.
+    private static final int TILE_ROW_PADDING = 2;
+    // How quickly a hovered row lights up (the time to get about two thirds of the way).
     private static final float TILE_EASE_MILLIS = 70;
 
     private final @Nullable Screen parent;
@@ -142,30 +137,22 @@ public final class ConfigSelectScreen extends StyledScreen {
         this.resultCount = 0;
         this.resultConfigs = 0;
         if (query.isEmpty()) {
-            // Each mod's configs as tiles, a few to a row; the list of every mod heads each mod's tiles with its name.
+            // Each config as a row; the list of every mod heads each mod's rows with its name.
             Map<String, List<ConfigImpl>> byMod = new LinkedHashMap<>();
             for (ConfigImpl config : this.configs()) byMod.computeIfAbsent(config.modId(), id -> new ArrayList<>()).add(config);
-            int rowWidth = this.rows.getRowWidth();
-            int columns = Math.max(1, (rowWidth + TILE_GAP) / (TILE_MIN_WIDTH + TILE_GAP));
-            int cardWidth = Math.min(TILE_MAX_WIDTH, (rowWidth - TILE_GAP * (columns - 1)) / columns);
-            int cardHeight = Math.round(cardWidth * TILE_ASPECT);
-            // Short enough for a row to fit whole, under its mod's name on the list of every mod.
-            int maxHeight = this.rows.getHeight() - TILE_ROW_PADDING * 2 - 8 - (this.modId == null ? 22 : 0);
-            if (cardHeight > maxHeight) {
-                // Never so small the names don't fit; the list scrolls instead.
-                cardWidth = Math.max(TILE_MIN_FIT_WIDTH, Math.round(maxHeight / TILE_ASPECT));
-                cardHeight = Math.round(cardWidth * TILE_ASPECT);
-            }
-            int width = cardWidth;
-            int height = cardHeight;
+            int width = this.rows.getRowWidth();
+            int count = byMod.values().stream().mapToInt(List::size).sum();
+            int headings = this.modId == null ? byMod.size() : 0;
+            int fit = (this.rows.getHeight() - 8 - headings * MOD_HEADING_HEIGHT) / Math.max(1, count) - TILE_ROW_PADDING * 2;
+            int height = Math.max(ROW_MIN_HEIGHT, Math.min(ROW_HEIGHT, fit));
             byMod.forEach((mod, configs) -> {
                 if (this.modId == null) entries.add(new ModHeading(mod));
-                for (int i = 0; i < configs.size(); i += columns) {
-                    entries.add(new TileRow(configs.subList(i, Math.min(configs.size(), i + columns)), width, height));
-                }
+                for (ConfigImpl config : configs) entries.add(new TileRow(List.of(config), width, height));
             });
-            int used = entries.stream().mapToInt(Row::height).sum();
-            int free = this.rows.getHeight() - used - 8;
+            // No mod has a config here (CoolCatLib has none of its own): say so.
+            if (entries.isEmpty()) entries.add(new NoConfigs());
+            // Centered in the list when they don't fill it (which keeps 4 pixels above its rows, but none below).
+            int free = this.rows.getHeight() - entries.stream().mapToInt(Row::height).sum() - 4;
             if (free > 1) entries.addFirst(new Spacer(free / 2));
         } else {
             // Each config with matches is a category: its header, then its matching settings.
@@ -234,18 +221,17 @@ public final class ConfigSelectScreen extends StyledScreen {
 
     // The mod's icon in a framed tile at the left, then its title over a line saying what's here.
     private void extractHeader(GuiGraphicsExtractor graphics, int right) {
-        int tile = HEADER_ICON + 4;
-        int tileX = this.frameLeft() + 6;
-        int tileY = this.topBarY() + (HEADER_HEIGHT - tile) / 2;
-        ConfigStyle.rect(graphics, tileX, tileY, tile, tile, ConfigStyle.withAlpha(ConfigStyle.accent(), 0x26));
-        ConfigStyle.outline(graphics, tileX, tileY, tile, tile, ConfigStyle.withAlpha(ConfigStyle.accent(), 0x66));
+        // The icon on its own, with nothing around it.
+        int iconX = this.frameLeft() + 8;
+        int iconY = this.topBarY() + (HEADER_HEIGHT - HEADER_ICON) / 2;
         if (this.modId == null) {
-            // The list of every mod's configs has its own icon (resource packs may replace it).
-            graphics.blit(RenderPipelines.GUI_TEXTURED, MOD_LIST_ICON, tileX + 2, tileY + 2, 0, 0, HEADER_ICON, HEADER_ICON, 64, 64, 64, 64);
+            // The list of every mod's configs has its own: a white glyph, drawn in the theme's accent (resource packs
+            // may replace it).
+            graphics.blit(RenderPipelines.GUI_TEXTURED, MOD_LIST_ICON, iconX, iconY, 0, 0, HEADER_ICON, HEADER_ICON, 64, 64, 64, 64, ConfigStyle.accent());
         } else {
-            this.extractModIcon(graphics, this.modId, this.theme, tileX + 2, tileY + 2, HEADER_ICON);
+            this.extractModIcon(graphics, this.modId, this.theme, iconX, iconY, HEADER_ICON);
         }
-        int x = tileX + tile + 9;
+        int x = iconX + HEADER_ICON + 10;
         int width = Math.max(40, right - x);
         int textTop = this.topBarY() + (HEADER_HEIGHT - 21) / 2;
         ConfigStyle.text(graphics, this.font, this.title.copy().withStyle(ChatFormatting.BOLD), x, textTop, width, ConfigStyle.colors().text());
@@ -347,7 +333,7 @@ public final class ConfigSelectScreen extends StyledScreen {
 
         @Override
         int height() {
-            return 22;
+            return MOD_HEADING_HEIGHT;
         }
 
         @Override
@@ -363,7 +349,7 @@ public final class ConfigSelectScreen extends StyledScreen {
         }
     }
 
-    // A row of config cards, centered.
+    // A config's row in the list.
     private final class TileRow extends Row {
         private final List<Tile> tiles = new ArrayList<>();
         private final int cardWidth;
@@ -426,7 +412,7 @@ public final class ConfigSelectScreen extends StyledScreen {
         }
     }
 
-    // Empty room above the tiles, centering them in the list.
+    // Empty room above a row, centering it in the list.
     private static final class Spacer extends Row {
         private final int height;
 
@@ -443,13 +429,14 @@ public final class ConfigSelectScreen extends StyledScreen {
         public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {}
     }
 
-    // One config as a navigation card: its artwork framed on all four sides, its scope's icon and a short name over the
-    // artwork's foot; it grows and lights up while hovered.
+    // One config as a row: its scope's icon, its short name over what its scope means, and how many settings it has; it
+    // lights up while hovered, and its tooltip says more.
     private final class Tile {
         private final ConfigImpl config;
         private final ConfigTheme theme;
         private final Component label;
-        private final Identifier artwork;
+        private final int settings;
+        private final int accent;
         int x;
         int y;
         int width;
@@ -462,7 +449,11 @@ public final class ConfigSelectScreen extends StyledScreen {
             this.config = config;
             this.theme = themeOf(config);
             this.label = ConfigNames.name(config);
-            this.artwork = artworkOf(config);
+            // Its own theme's accent if it has one, otherwise its kind's color.
+            this.accent = config.hasOwnTheme() ? ConfigStyle.accentOf(this.theme) : scopeColor(config.scope());
+            int settings = 0;
+            for (ConfigValueImpl<?> ignored : config.allValues()) settings++;
+            this.settings = settings;
         }
 
         boolean contains(double mouseX, double mouseY) {
@@ -474,7 +465,7 @@ public final class ConfigSelectScreen extends StyledScreen {
         List<FormattedCharSequence> tooltip() {
             Font font = ConfigSelectScreen.this.font;
             List<FormattedCharSequence> lines = new ArrayList<>();
-            lines.add(ConfigNames.withMod(this.config).withStyle(ChatFormatting.BOLD).withColor(ConfigStyle.accentOf(this.theme) & 0xFFFFFF).getVisualOrderText());
+            lines.add(ConfigNames.withMod(this.config).withStyle(ChatFormatting.BOLD).withColor(this.accent & 0xFFFFFF).getVisualOrderText());
             lines.addAll(font.split(scopeDescription(this.config).copy().withStyle(ChatFormatting.GRAY), TOOLTIP_WIDTH));
             int settings = 0;
             for (ConfigValueImpl<?> ignored : this.config.allValues()) settings++;
@@ -515,66 +506,51 @@ public final class ConfigSelectScreen extends StyledScreen {
         void extract(GuiGraphicsExtractor graphics) {
             Font font = ConfigSelectScreen.this.font;
             boolean unavailable = ClientConfigManager.access(this.config) == ClientConfigManager.Access.UNAVAILABLE;
-            int accent = ConfigStyle.accentOf(this.theme);
+            int accent = this.accent;
             float eased = this.grow * this.grow * (3 - 2 * this.grow);
-            float scale = 1 + TILE_GROW * eased;
+            int x = this.x;
+            int y = this.y;
             int width = this.width;
             int height = this.height;
+            int muted = ConfigStyle.colors().textMuted();
 
-            Matrix3x2fStack pose = graphics.pose();
-            pose.pushMatrix();
-            pose.translate(this.x + width / 2F, this.y + height / 2F);
-            pose.scale(scale, scale);
-            pose.translate(-width / 2F, -height / 2F);
-            // A shadow that deepens as it lifts, the frame, and its border fading to the accent.
-            int shadow = Math.round(2 + 4 * eased);
-            ConfigStyle.rect(graphics, 2, shadow, width, height, ConfigStyle.withAlpha(0xFF000000, Math.round(0x38 + 0x48 * eased)));
-            ConfigStyle.rect(graphics, 0, 0, width, height, blend(ConfigStyle.colors().button(), ConfigStyle.colors().buttonHover(), eased));
-            ConfigStyle.outline(graphics, 0, 0, width, height, blend(ConfigStyle.colors().panelBorder(), accent, eased));
+            // The row, faintly in its color and lighter while hovered, its border fading to the color, and the color down
+            // its left edge.
+            int fill = blend(blend(ConfigStyle.colors().button(), ConfigStyle.colors().buttonHover(), eased), accent, 0.08F + 0.06F * eased);
+            ConfigStyle.rect(graphics, x, y, width, height, fill);
+            ConfigStyle.outline(graphics, x, y, width, height, blend(ConfigStyle.colors().panelBorder(), accent, 0.25F + 0.75F * eased));
+            graphics.fill(x + 1, y + 1, x + 4, y + height - 1, ConfigStyle.withAlpha(accent, Math.round(0xD0 + 0x2F * eased)));
 
-            // The artwork, inside the frame's padding; greyed out when the config can't be opened here.
-            int artX = TILE_PADDING;
-            int artY = TILE_PADDING;
-            int artWidth = width - TILE_PADDING * 2;
-            int artHeight = height - TILE_PADDING * 2;
-            int[] size = ConfigStyle.textureSize(this.artwork);
-            // Covers the area keeping its proportions, cropping the sides or the top and bottom.
-            float cover = Math.max(artWidth / (float) size[0], artHeight / (float) size[1]);
-            int regionWidth = Math.round(artWidth / cover);
-            int regionHeight = Math.round(artHeight / cover);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, this.artwork, artX, artY, (size[0] - regionWidth) / 2F, (size[1] - regionHeight) / 2F,
-                    artWidth, artHeight, regionWidth, regionHeight, size[0], size[1],
-                    ConfigStyle.withAlpha(unavailable ? 0xFF6A6A6A : 0xFFFFFFFF, Math.round(255 * (ART_OPACITY + (ART_OPACITY_HOVERED - ART_OPACITY) * eased))));
-            // A dark fade over the artwork's foot, for the icon and name to sit on.
-            int scrim = Math.min(artHeight, 46);
-            graphics.fillGradient(artX, artY + artHeight - scrim, artX + artWidth, artY + artHeight, 0x00000000, 0xD0000000);
-            graphics.fill(artX, artY, artX + artWidth, artY + 2, ConfigStyle.withAlpha(accent, Math.round(0x90 + 0x6F * eased)));
-
-            int iconSize = 18;
-            int labelY = artY + artHeight - 13;
-            int iconY = labelY - iconSize - 5;
-            int iconColor = unavailable ? 0xFFB0B0B0 : blend(0xFFFFFFFF, accent, 0.25F + 0.5F * eased);
-            ConfigIcons.forScope(this.config.scope()).draw(graphics, (width - iconSize) / 2 + 1, iconY + 1, iconSize, 0x90000000);
-            ConfigIcons.forScope(this.config.scope()).draw(graphics, (width - iconSize) / 2, iconY, iconSize, iconColor);
-            if (unavailable) ConfigIcons.LOCK.draw(graphics, width - TILE_PADDING - ConfigIcons.SIZE - 4, TILE_PADDING + 5, 0xFFE0E0E0);
+            // The scope's icon, then the name over what the scope means; the settings count (and a lock) on the right.
+            int iconSize = 16;
+            int iconX = x + 10;
+            int iconColor = unavailable ? ConfigStyle.colors().textDim() : accent;
+            ConfigIcons.forScope(this.config.scope()).draw(graphics, iconX, y + (height - iconSize) / 2, iconSize, iconColor);
+            int right = x + width - 10;
+            if (unavailable) {
+                ConfigIcons.LOCK.draw(graphics, right - ConfigIcons.SIZE, y + (height - ConfigIcons.SIZE) / 2, muted);
+                right -= ConfigIcons.SIZE + 8;
+            }
+            Component count = Component.translatableWithFallback("config.coolcatlib.row.settings", "%s settings", this.settings);
+            int countWidth = font.width(count);
+            ConfigStyle.text(graphics, font, count, right - countWidth, y + (height - 8) / 2, countWidth, muted);
+            int textX = iconX + iconSize + 8;
+            int textWidth = right - countWidth - 12 - textX;
             Component label = this.label.copy().withStyle(ChatFormatting.BOLD);
-            int textWidth = Math.min(font.width(label), artWidth - 6);
-            ConfigStyle.text(graphics, font, label, (width - textWidth) / 2 + 1, labelY + 1, textWidth, 0x90000000);
-            ConfigStyle.text(graphics, font, label, (width - textWidth) / 2, labelY, textWidth, unavailable ? 0xFFB0B0B0 : 0xFFFFFFFF);
-            pose.popMatrix();
-            int grownWidth = Math.round(width * scale);
-            int grownHeight = Math.round(height * scale);
-            ThemeEffects.widget(graphics, ConfigEffect.WidgetKind.CARD, this.x - (grownWidth - width) / 2, this.y - (grownHeight - height) / 2,
-                    grownWidth, grownHeight, this.grow > 0.5F, false, !unavailable);
+            ConfigStyle.text(graphics, font, label, textX, y + height / 2 - 10, textWidth, unavailable ? ConfigStyle.colors().textDim() : ConfigStyle.colors().text());
+            ConfigStyle.text(graphics, font, scopeDescription(this.config), textX, y + height / 2 + 2, textWidth, muted);
+            ThemeEffects.widget(graphics, ConfigEffect.WidgetKind.CARD, x, y, width, height, this.grow > 0.5F, false, !unavailable);
         }
     }
 
-    // A config's card artwork: the mod's own for that config if it ships one
-    // (assets/<modid>/textures/gui/config/cards/<config name>.png), otherwise CoolCatLib: Core's for its scope.
-    private static Identifier artworkOf(ConfigImpl config) {
-        Identifier own = Identifier.fromNamespaceAndPath(config.modId(), "textures/gui/config/cards/" + config.name() + ".png");
-        if (Minecraft.getInstance().getResourceManager().getResource(own).isPresent()) return own;
-        return CoolCatCore.rl("textures/gui/config/cards/" + config.scope().name().toLowerCase(Locale.ROOT) + ".png");
+    // Each kind of config's color in the list, readable on the light and the dark panels.
+    private static int scopeColor(ConfigScope scope) {
+        return switch (scope) {
+            case CLIENT -> 0xFF4F9BE8;
+            case COMMON -> 0xFF3FAE8C;
+            case SERVER -> 0xFF9B7BEA;
+            case STARTUP -> 0xFFE8893F;
+        };
     }
 
     private static Component scopeDescription(ConfigImpl config) {
@@ -688,6 +664,24 @@ public final class ConfigSelectScreen extends StyledScreen {
         public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             ConfigSelectScreen.this.minecraft.setScreen(ConfigScreen.create(ConfigSelectScreen.this, this.config, this.value.path()));
             return true;
+        }
+    }
+
+    // In place of the list when no mod has a config here.
+    private final class NoConfigs extends Row {
+        @Override
+        int height() {
+            return 30;
+        }
+
+        @Override
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            Font font = ConfigSelectScreen.this.font;
+            int center = this.getX() + this.getWidth() / 2;
+            Component title = Component.translatableWithFallback("config.coolcatlib.no_configs", "No configs here yet");
+            Component hint = Component.translatableWithFallback("config.coolcatlib.no_configs.hint", "Mods that use CoolCatLib's configs show them here");
+            graphics.text(font, title, center - font.width(title) / 2, this.getY() + 4, ConfigStyle.colors().text(), false);
+            graphics.text(font, hint, center - font.width(hint) / 2, this.getY() + 18, ConfigStyle.colors().textMuted(), false);
         }
     }
 
