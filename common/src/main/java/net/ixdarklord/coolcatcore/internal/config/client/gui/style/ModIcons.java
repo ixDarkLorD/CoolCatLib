@@ -24,6 +24,8 @@ public final class ModIcons {
     private static final Map<String, Optional<Icon>> LOADED = new HashMap<>();
     // Halving stops here; nothing is drawn smaller.
     private static final int SMALLEST = 16;
+    // Nothing is drawn near this big, so larger icons are halved down to it before any goes to the GPU.
+    private static final int LARGEST = 512;
 
     private ModIcons() {}
 
@@ -80,6 +82,11 @@ public final class ModIcons {
                 NativeImage image = NativeImage.read(new ByteArrayInputStream(bytes));
                 String base = "mod_icon/" + modId.replaceAll("[^a-z0-9_.-]", "_");
                 List<Level> levels = new ArrayList<>();
+                while (Math.max(image.getWidth(), image.getHeight()) > LARGEST && Math.min(image.getWidth(), image.getHeight()) / 2 >= SMALLEST) {
+                    NativeImage smaller = half(image);
+                    image.close();
+                    image = smaller;
+                }
                 for (int i = 0; ; i++) {
                     ResourceLocation id = CoolCatCore.rl(i == 0 ? base : base + "_" + i);
                     int width = image.getWidth();
@@ -90,8 +97,9 @@ public final class ModIcons {
                     image = half(image);
                 }
                 return Optional.of(new Icon(List.copyOf(levels)));
-            } catch (IOException | RuntimeException e) {
-                CoolCatCore.LOGGER.debug("Couldn't load the icon of {}", modId, e);
+            } catch (IOException | RuntimeException | OutOfMemoryError e) {
+                // Drawn without one, rather than taking the game down over an icon.
+                CoolCatCore.LOGGER.warn("Couldn't load the icon of {}", modId, e);
                 return Optional.empty();
             }
         });
