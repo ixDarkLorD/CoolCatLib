@@ -2,6 +2,7 @@ package net.ixdarklord.coolcatcore.internal.event.fabric;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -17,6 +18,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.BlockEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.EntityEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.InteractionEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.LivingEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.hooks.ServerLifecycleHooks;
 import net.minecraft.server.level.ServerLevel;
@@ -62,6 +64,8 @@ public final class FabricEventHooks {
         // "alive" is true for a player coming back from the End, false after death.
         ServerPlayerEvents.COPY_FROM.register((original, player, alive) -> PlayerEvents.CLONE.invoker().onClone(original, player, !alive));
         ServerPlayerEvents.AFTER_RESPAWN.register((original, player, alive) -> PlayerEvents.RESPAWN.invoker().onRespawn(player, alive));
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !LivingEvents.DAMAGE.invoker().onDamage(entity, source, amount).isInterrupt());
+        ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> !LivingEvents.DEATH.invoker().onDeath(entity, source).isInterrupt());
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, from, to) ->
                 PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, from.dimension(), to.dimension()));
 
