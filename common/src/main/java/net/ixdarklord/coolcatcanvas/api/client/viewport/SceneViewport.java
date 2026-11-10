@@ -52,6 +52,17 @@ public final class SceneViewport implements AutoCloseable {
     }
 
     /**
+     * A glowing picture in the scene, always facing the camera: {@code width} by {@code height} blocks, its middle at a
+     * place, turned {@code roll} degrees in the picture's plane, tinted {@code argb} (its alpha how strong). Added on to
+     * what's behind it, as light is, so its texture's colour is its shape: light on black (alpha is ignored); and hidden by what's in front of it: blocks and entities nearer the camera cover it,
+     * farther ones don't. Rays, halos and flares at a place in the scene. An {@code upright} one stands straight up and
+     * only turns about its vertical to face the camera (a beam of light, a column of mist), so it stays where it is as
+     * the camera moves; {@code roll} is ignored for it.
+     */
+    public record PlacedSprite(Identifier texture, Vec3 pos, float width, float height, float roll, int argb, boolean upright) {
+    }
+
+    /**
      * A line of text laid flat on the picture, in the texture's own pixels: its top left at (x, y), each font pixel
      * {@code scale} texture pixels. Drawn over the scene, unlit and facing out of the picture whatever the camera.
      */
@@ -64,6 +75,7 @@ public final class SceneViewport implements AutoCloseable {
     private final List<PlacedBlock> blocks = new ArrayList<>();
     private final List<PlacedEntity> entities = new ArrayList<>();
     private final List<PlacedItem> items = new ArrayList<>();
+    private final List<PlacedSprite> sprites = new ArrayList<>();
     private double frameSpan;
     private Vec3 frameCentre = Vec3.ZERO;
     private float yaw = 35.0F, pitch = 28.0F, zoom = 1.0F, spin, fov;
@@ -107,6 +119,7 @@ public final class SceneViewport implements AutoCloseable {
         entities.clear();
         items.clear();
         texts.clear();
+        sprites.clear();
         dirty = true;
         return this;
     }
@@ -165,6 +178,33 @@ public final class SceneViewport implements AutoCloseable {
             dirty = true;
         }
         return this;
+    }
+
+    /** A glowing sprite at a place, facing the camera ({@link PlacedSprite}). */
+    public SceneViewport sprite(Identifier texture, double x, double y, double z, float width, float height, float roll, int argb) {
+        sprites.add(new PlacedSprite(texture, new Vec3(x, y, z), width, height, roll, argb, false));
+        dirty = true;
+        return this;
+    }
+
+    /** A glowing sprite standing upright at a place, turning only about its vertical to face the camera ({@link PlacedSprite}). */
+    public SceneViewport uprightSprite(Identifier texture, double x, double y, double z, float width, float height, int argb) {
+        sprites.add(new PlacedSprite(texture, new Vec3(x, y, z), width, height, 0.0F, argb, true));
+        dirty = true;
+        return this;
+    }
+
+    /** Takes away the sprites, leaving the rest of the scene: to place them again each frame as they move. */
+    public SceneViewport clearSprites() {
+        if (!sprites.isEmpty()) {
+            sprites.clear();
+            dirty = true;
+        }
+        return this;
+    }
+
+    public List<PlacedSprite> sprites() {
+        return Collections.unmodifiableList(sprites);
     }
 
     public List<PlacedItem> items() {

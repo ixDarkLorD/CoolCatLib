@@ -23,3 +23,6 @@ accessible field net/minecraft/resources/RegistryOps$HolderLookupAdapter lookupP
 # MenuScreens (Fabric registers menu screens directly; NeoForge has an event)
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
 accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/client/gui/screens/MenuScreens$ScreenConstructor;)V
+
+# CreativeModeTab.Output (CreativeTabs.builder(ItemLister) lists a tab's items through it)
+accessible class net/minecraft/world/item/CreativeModeTab$Output

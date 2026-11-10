@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v8.2.0 Release | Unreleased
+## v8.2.0 Release | Nov 10, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
   - `EntityEvents.SPAWN`: a new mob is about to be added to the world (spawned naturally or with a new chunk, by a spawner, a spawn egg, a command, breeding, a conversion), with why it was made; interrupt to keep it out, with its passengers. `EntityEvents.MOUNT`: an entity is about to ride another (interrupt to keep it off), or got off one.
@@ -14,11 +14,14 @@ This file is for listing all the changes to this project
   - `EnchantEvents.TABLE_OPTIONS` (the enchantments an enchanting table's offer gives) and `ANVIL_RESULT` (what an anvil makes; interrupt with another stack or none).
   - `LootEvents.MODIFY`: any loot table's loot as it's rolled (chests, block drops, mobs, fishing), with the table's id; change the list.
 - Blocks that look like other blocks to some players (`api.block.BlockViews`): `BlockViews.register(id, view)` adds a `BlockView`, which groups players by a key (players with the same key see the same, and a null key leaves everything as it is for them) and says what a block looks like to them. What the server sends them (chunks, block changes, block entities' data) has that block in its place, so their client never knows the real one, while the server keeps it for everything else. `BlockViews.refresh(player)` sends them their chunks again when what they should see changes.
+- `SpecialModelRendererRegistry` (`api.client.registry`): registers special item model renderer types, the code-drawn parts of item models (`"type": "minecraft:special"`), the same on every loader.
+- `SceneViewport.sprite(...)`: a glowing, camera-facing picture at a place in the scene (rays, halos, flares), added on as light and hidden by nearer blocks and entities.
 
 ### 🔧 Changes
 - CoolCatLib's mixin configs declare Java 25 (`compatibilityLevel`), so loading no longer warns that a mixin needs a newer class version.
 
 ## v8.1.0 Release | Nov 3, 2026
+
 ### 🔧 Changes
 - CoolCatLib's own config screen (used without Glazed Menu) lists each config as a row, instead of a card with artwork: its kind's icon, its name over what its kind means, and how many settings it has. A mod's own card artwork at `assets/<modid>/textures/gui/config/cards/<config name>.png` is no longer used.
 - Each kind of config has its own color in the config list (client blue, common teal, server purple, startup orange), unless the config sets its own theme; its rows are centered in the list and as tall as needed to fit without scrolling.
