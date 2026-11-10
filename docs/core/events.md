@@ -84,6 +84,7 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 | | `CRAFTED`, `SMELTED` | `(Player, ItemStack, Container)`: taken out of a crafting or furnace result slot |
 | | `OPEN_MENU` | `EventResult (ServerPlayer, MenuProvider)`: before any menu opens (a block's, an entity's, an item's, one another mod opens with extra data); interrupt to keep it closed |
 | | `ADVANCEMENT_EARNED` | `(ServerPlayer, AdvancementHolder)`: an advancement was completed |
+| | `ITEM_FISHED` | `(ServerPlayer, FishingHook, List<ItemStack> items)`: what a fishing rod reeled in, as its own list, before it's thrown to the player; change the list (not for a hooked entity) |
 | | `BREAK_SPEED` | `EventResultHolder<Float> (Player, BlockState, @Nullable BlockPos, float speed)`: how fast a block breaks, on both sides; interrupt with another speed |
 | | `HARVEST_CHECK` | `EventResultHolder<Boolean> (Player, BlockState, @Nullable BlockPos, boolean canHarvest)`: whether the tool is right for the block (without it, it drops nothing), on both sides |
 | `LivingEvents` | `DAMAGE` | `EventResult (LivingEntity, DamageSource, float amount)`: before armor; interrupt and no damage is taken |
@@ -109,14 +110,36 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 | `EnchantEvents` | `TABLE_OPTIONS` | `(Player, ItemStack, int slot, List<EnchantmentInstance>)`: what an enchanting table's offer gives; change the list |
 | | `ANVIL_RESULT` | `EventResultHolder<ItemStack> (Player, ItemStack left, ItemStack right, ItemStack result)`: what an anvil makes; interrupt with another stack, or `ItemStack.EMPTY` |
 | `LootEvents` | `MODIFY` | `(@Nullable ResourceKey<LootTable>, LootContext, List<ItemStack> loot)`: any loot table rolled (chests, block drops, mobs, fishing); change the list |
+| `LootTableEvents` | `MODIFY` | `(ResourceKey<LootTable>, Consumer<LootPool> pools)`: a loot table loading (on server start and `/reload`), vanilla's, mods' and data packs' alike; add pools to it |
 | `AttachmentEvents` | `CHANGING`, `ADDED`, `CHANGED`, `REMOVED`, `START_TRACKING`, `STOP_TRACKING`, `RECEIVED` | See [Attachments](attachments.md). |
+
+### Loot
+
+Two events change loot, at different times:
+
+- `LootTableEvents.MODIFY` runs once per table as tables load. Pools you add become part of the table, so they roll wherever it's used, and other mods and data packs see them as the table's own.
+- `LootEvents.MODIFY` runs every time a table is rolled, with what came out. Use it for loot that depends on who or where: the player, the tool, the place.
+
+```java
+// A rare echo shard in ancient city chests:
+LootTableEvents.MODIFY.register((table, pools) -> {
+    if (table.equals(BuiltInLootTables.ANCIENT_CITY)) pools.accept(LootPool.lootPool()
+            .when(LootItemRandomChanceCondition.randomChance(0.05F))
+            .add(LootItem.lootTableItem(Items.ECHO_SHARD)).build());
+});
+
+// Players can't fish up locked items:
+PlayerEvents.ITEM_FISHED.register((player, hook, items) -> items.removeIf(stack -> isLocked(player, stack.getItem())));
+```
 
 !!! info "Which versions have which"
     Interaction events, `ItemTooltipEvents.APPEND` and the phase bands: since **26.1.2-6** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1).
     `LivingEvents.DAMAGE` / `DEATH`: since **26.1.2-6** (and 26.2, 26.3), **8.0.0** on 1.21.1 and 1.20.1. `EntityEvents.UNLOAD`: since **26.1.2-6** (and 26.2, 26.3); not yet on 1.21.1 and 1.20.1.
     `PlayerEvents.CLONE` / `RESPAWN` / `CHANGE_DIMENSION`: since **26.1.2-6** (and 26.2, 26.3), **8.0.0** on 1.21.1 and 1.20.1.
-    `BlockEvents.PLACE`, `PlayerEvents.PICKUP_ITEM` / `TRAVEL_TO_DIMENSION` / `CRAFTED` / `SMELTED`, `LivingEvents.EQUIPMENT_CHANGE` and `RecipeEvents`: coming in **8.0.0**, on every version. On 1.20.1, `CRAFT_RESULT` takes `(Player, Recipe<?>, CraftingContainer, ItemStack)`, as that version has no `RecipeHolder` or `CraftingInput`, and there's no crafter.
-    `EntityEvents.SPAWN` / `MOUNT`, `PlayerEvents.OPEN_MENU` / `ADVANCEMENT_EARNED` / `BREAK_SPEED` / `HARVEST_CHECK`, `LivingEvents.EFFECT_APPLICABLE`, `BlockEvents.DROPS`, `RecipeEvents.MATCH`, `CommandEvents.EXECUTE`, `MerchantEvents`, `EnchantEvents` and `LootEvents`: coming in **8.0.0**, on every version. On 1.21.1 and 1.20.1, `SPAWN` gives a `MobSpawnType`, null when the game doesn't say (a mob summoned or spawned with data). On 1.20.1, `MATCH` gives a `Recipe<?>`, `ADVANCEMENT_EARNED` an `Advancement`, and `LootEvents.MODIFY` the table's `ResourceLocation`. On Forge, `HARVEST_CHECK` isn't told where the block is.
+    `BlockEvents.PLACE`, `PlayerEvents.PICKUP_ITEM` / `TRAVEL_TO_DIMENSION` / `CRAFTED` / `SMELTED`, `LivingEvents.EQUIPMENT_CHANGE` and `RecipeEvents`: since **8.0.0**, on every version. On 1.20.1, `CRAFT_RESULT` takes `(Player, Recipe<?>, CraftingContainer, ItemStack)`, as that version has no `RecipeHolder` or `CraftingInput`, and there's no crafter.
+    `PlayerEvents.ADVANCEMENT_EARNED`: since **8.2.0**, on every version.
+    `EntityEvents.SPAWN` / `MOUNT`, `PlayerEvents.OPEN_MENU` / `BREAK_SPEED` / `HARVEST_CHECK`, `LivingEvents.EFFECT_APPLICABLE`, `BlockEvents.DROPS`, `RecipeEvents.MATCH`, `CommandEvents.EXECUTE`, `MerchantEvents`, `EnchantEvents` and `LootEvents`: since **8.2.0** on every version. On 1.21.1 and 1.20.1, `SPAWN` gives a `MobSpawnType`, null when the game doesn't say (a mob summoned or spawned with data). On 1.20.1, `MATCH` gives a `Recipe<?>`, `ADVANCEMENT_EARNED` an `Advancement`, and `LootEvents.MODIFY` the table's `ResourceLocation`. On Forge, `HARVEST_CHECK` isn't told where the block is.
+    `PlayerEvents.ITEM_FISHED` and `LootTableEvents`: since **8.2.0**, on 26.1.2 only for now.
 
 ### Client (`api.event.v2.client`)
 
@@ -133,7 +156,7 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 ### Elsewhere
 
 - Config events (`ConfigEvents`): see [Configs](configs.md).
-- Blocks that look like other blocks to some players (`api.block.BlockViews`, 8.0.0): `BlockViews.register(id, view)` with a `BlockView` that groups players by a key and says what a block looks like to them; chunks, block changes and block entities are sent that way, while the server keeps the real block. `BlockViews.refresh(player)` re-sends their chunks when what they should see changes.
+- Blocks that look like other blocks to some players (`api.block.BlockViews`, since **8.2.0** on every version): `BlockViews.register(id, view)` with a `BlockView` that groups players by a key and says what a block looks like to them; chunks, block changes and block entities are sent that way, while the server keeps the real block. `BlockViews.refresh(player)` re-sends their chunks when what they should see changes.
 - Screen effect events (`ScreenEffectEvents`, in Canvas): see [Canvas Screen Effects](../canvas/screen-effects.md).
 - Brewing recipes: `api.event.v1.server.RegisterBrewingRecipesEvent.EVENT.register(event -> event.getBuilder().addRecipe(input, ingredient, output))`, from the older `event.v1` API.
 

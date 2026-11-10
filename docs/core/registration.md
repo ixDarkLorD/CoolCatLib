@@ -57,6 +57,33 @@ MenuScreenRegistry.register(MyRegistries.CRATE_MENU, CrateScreen::new);
 TooltipComponentRegistry.register(MyTooltip.class, MyClientTooltip::new);
 ```
 
+Block entity renderers go through `BlockEntityRendererRegistry.register(MyBlockEntities.ALTAR, AltarRenderer::new)`; for culling, detail by distance and layers, base them on Canvas's [`BlockRenderer`](../canvas/block-entity-renderers.md).
+
+Special item model renderers, the code-drawn parts of item models (`"type": "minecraft:special"`), are registered by their type's id and the codec that reads them from the item model JSON. Register them before resources load:
+
+```java
+SpecialModelRendererRegistry.register(MyMod.id("trophy_icon"), TrophyIconRenderer.Unbaked.MAP_CODEC);
+```
+
+```json title="assets/mymod/items/trophy.json"
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "mymod:item/trophy",
+    "model": { "type": "mymod:trophy_icon" }
+  }
+}
+```
+
+On 1.21.1 and 1.20.1, `BlockRenderLayers` draws a block's model in another layer than solid, for textures with clear or partly see-through pixels:
+
+```java
+BlockRenderLayers.register(MyBlocks.GLASS_CASE, RenderType.translucent());   // or cutout(), cutoutMipped()
+```
+
+!!! info "Since"
+    `BlockEntityRendererRegistry`: since **26.1.2-4** (and 26.2, 26.3), **8.2.0** on 1.21.1 and 1.20.1. `SpecialModelRendererRegistry`: since **8.2.0**, on 26.1.2, 26.2 and 26.3. `BlockRenderLayers`: since **8.2.0**, on 1.21.1 and 1.20.1.
+
 ## Reference
 
 | Type | Description |
@@ -70,3 +97,6 @@ TooltipComponentRegistry.register(MyTooltip.class, MyClientTooltip::new);
 | `api.client.registry.KeyMappingRegistry` | `register(KeyMapping)` → the mapping. |
 | `api.client.registry.MenuScreenRegistry` | `register(Supplier<MenuType<M>> type, ScreenFactory<M, U> factory)`, where the factory is `(menu, inventory, title) -> screen`. |
 | `api.client.registry.TooltipComponentRegistry` | `register(Class<T> type, Function<T, ClientTooltipComponent> factory)`. |
+| `api.client.registry.BlockEntityRendererRegistry` | `register(Supplier<? extends BlockEntityType<? extends T>> type, BlockEntityRendererProvider<T, S> provider)`; on 1.21.1 and 1.20.1, `BlockEntityRendererProvider<T>`. |
+| `api.client.registry.SpecialModelRendererRegistry` | `register(Identifier id, MapCodec<? extends SpecialModelRenderer.Unbaked<?>> codec)`. 26.x. |
+| `api.client.registry.BlockRenderLayers` | `register(Supplier<? extends Block> block, RenderType layer)`. 1.21.1 and 1.20.1. |

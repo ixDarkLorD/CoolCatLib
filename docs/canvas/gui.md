@@ -1,14 +1,14 @@
 ---
 icon: material/dock-window
-description: Windows, panels, pan and zoom, animations, items at an opacity
+description: Windows, panels, pan and zoom, animations, items at an opacity, scene viewports
 ---
 
 # GUI
 
-GUI building blocks: draggable windows, scrolling, stacked panels with pan and zoom, slide animations and drawing helpers. Packages: `net.ixdarklord.coolcatcanvas.api.client.gui.components` (and its `widgets`, `widgets.panel` and `animations` subpackages) and `api.client.utils`.
+GUI building blocks: draggable windows, scrolling, stacked panels with pan and zoom, slide animations, 3D scene viewports and drawing helpers. Packages: `net.ixdarklord.coolcatcanvas.api.client.gui.components` (and its `widgets`, `widgets.panel` and `animations` subpackages), `api.client.viewport` and `api.client.utils`.
 
 !!! warning
-    `AbstractMultiPanelWidget`, `Panel`, `ScrollPanel` and `ViewportPanel` are marked `@ApiStatus.Experimental`: they may still change.
+    `AbstractMultiPanelWidget`, `Panel`, `ScrollPanel`, `ViewportPanel`, `SceneViewport` and `SceneViewportWidget` are marked `@ApiStatus.Experimental`: they may still change.
 
 ## Windows
 
@@ -102,6 +102,47 @@ On 26.1.2, 26.2 and 26.3, `pushItemOpacity(opacity)` and `popItemOpacity()` fade
 
 !!! note "1.21.1 and 1.20.1"
     There, items fade with the shader color's alpha: any item drawn while it's under 1 is drawn see-through, including the game's own, such as the hotbar under a HUD you've faded.
+
+## Scene viewports
+
+A `SceneViewport` (`api.client.viewport`) is a small 3D scene drawn into a texture of its own: blocks, whole structures, block entities, entities and items' icons, seen from a camera that circles them. As a texture, it stays inside the rectangle it's drawn in: a GUI, through `SceneViewportWidget`, or a face in the world, with `texture()` and any textured render type.
+
+```java
+SceneViewport view = SceneViewport.create(MyMod.id("altar_view"), 256, 256);
+view.blocks(structureBlocks).camera(35, 28).spin(16);
+addRenderableWidget(new SceneViewportWidget(x, y, 128, 128, view));   // drag to turn, scroll to zoom
+
+// when the screen closes:
+view.close();
+```
+
+The widget doesn't own the viewport: close it yourself. For a sharp picture, make the viewport as large as the widget is on screen (its size times the GUI scale). Drawn anywhere else, call `view.use()` every frame it's shown; a viewport nobody has used for a couple of seconds isn't drawn. Make and change viewports on the render thread.
+
+A viewport is drawn again only when its scene or camera changes, or, while it spins or holds entities or block entities, `refreshRate` times a second (60 by default).
+
+| Method | What it adds or sets |
+|---|---|
+| `block(pos, state)`, `blocks(map)` | A block, or every block of a structure. |
+| `blockEntity(pos, blockEntity)` | A block entity, drawn by its renderer as in the world: a chest's lid, a sign's text, a mod's pedestal and its effects. Its block goes in with `block`. It's never in a world, only drawn: its renderer reads it each time the viewport is drawn, so change it to animate it. What faces the camera faces the viewport's camera. |
+| `entity(entity, x, y, z, yaw)` | An entity with its feet at a place. Tick it to animate it. |
+| `item(stack, x, y, z, size)` | An item's icon, `size` across. |
+| `sprite(texture, x, y, z, width, height, roll, argb)` | A glowing picture facing the camera: rays, halos, flares. It's added on as light, shaped by its texture's alpha, and hidden by blocks and entities nearer the camera. |
+| `uprightSprite(texture, x, y, z, width, height, argb)` | The same, standing straight up and turning only about its vertical: a beam of light, a column of mist. |
+| `text(line, x, y, color, scale)` | Text laid flat on the picture, in the texture's own pixels. |
+| `ground(y, margin, floorArgb, lineArgb, shadows)`, `noGround()` | A floor under the scene with a grid of lines, and soft shadows under entities. |
+| `frame(span, x, y, z)` | Fixes what the picture shows (`span` blocks across, a point at its middle) instead of fitting the scene to it; 0 goes back to fitting. |
+| `camera(yaw, pitch)`, `zoom(z)`, `spin(degreesPerSecond)`, `perspective(fov)` | Where the camera stands, how large the scene is drawn, turning it by itself, and drawing it in perspective (0, the default, is flat). |
+| `clear()`, `clearText()`, `clearSprites()` | Takes away the whole scene, or just its text or its sprites (to place them again each frame as they move). |
+
+```java
+view.block(BlockPos.ZERO, MyBlocks.PEDESTAL.get().defaultBlockState())
+    .blockEntity(BlockPos.ZERO, pedestal)
+    .uprightSprite(MyMod.id("textures/effect/beam.png"), 0.5, 2.5, 0.5, 1.0F, 3.0F, 0x80FFE0A0);
+```
+
+!!! info "Since"
+    `SceneViewport` and `SceneViewportWidget`: since **26.1.2-5** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1). `perspective`: since **8.0.0** on 26.1.2, 26.2 and 26.3.
+    `sprite`, `uprightSprite` and `clearSprites`: since **8.2.0** on 26.1.2, 26.2 and 26.3. `blockEntity`: since **8.2.0**, on 26.1.2 only for now.
 
 ## Drawing helpers
 

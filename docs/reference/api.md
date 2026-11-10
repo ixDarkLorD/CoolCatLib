@@ -37,13 +37,14 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 |---|---|
 | `ServerLifecycleEvents` | `STARTING`, `STARTED`, `STOPPING`, `STOPPED`, `SYNC_DATA_PACK_CONTENTS` |
 | `ServerTickEvents` | `START`, `END`, `START_LEVEL`, `END_LEVEL` |
-| `PlayerEvents` | `JOIN`, `LEAVE`, `START_TICK`, `END_TICK`, `CLONE`, `RESPAWN`, `TRAVEL_TO_DIMENSION` (cancellable), `CHANGE_DIMENSION`, `PICKUP_ITEM` (cancellable), `CRAFTED`, `SMELTED` |
+| `PlayerEvents` | `JOIN`, `LEAVE`, `START_TICK`, `END_TICK`, `CLONE`, `RESPAWN`, `TRAVEL_TO_DIMENSION` (cancellable), `CHANGE_DIMENSION`, `PICKUP_ITEM` (cancellable), `CRAFTED`, `SMELTED`, `ADVANCEMENT_EARNED`, `ITEM_FISHED` (change the catch) |
 | `LivingEvents` | `DAMAGE`, `DEATH` (cancellable), `EQUIPMENT_CHANGE` |
 | `EntityEvents` | `LOAD`, `UNLOAD` |
 | `BlockEvents` | `BREAK`, `PLACE` (cancellable), `PLACED` |
 | `InteractionEvents` | `USE_BLOCK`, `USE_ITEM`, `USE_ENTITY` (answer with an `InteractionResult`), `ATTACK_BLOCK`, `ATTACK_ENTITY` (cancellable) |
 | `RecipeEvents` | `CRAFT_RESULT` (change or empty a crafting result) |
 | `CommandEvents` | `REGISTER` |
+| `LootTableEvents` | `MODIFY` (add pools to a loot table as it loads) |
 | `AttachmentEvents` | `CHANGING`, `ADDED`, `CHANGED`, `REMOVED`, `START_TRACKING`, `STOP_TRACKING`, `RECEIVED` |
 
 ### `event.v2.client`: client events ([Events](../core/events.md))
@@ -76,6 +77,9 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `KeyMappingRegistry` | Registers key mappings. |
 | `MenuScreenRegistry` | Binds screens to menu types. |
 | `TooltipComponentRegistry` | Binds client tooltip components to tooltip data. |
+| `EntityRendererRegistry`, `BlockEntityRendererRegistry` | Registers entity and block entity renderers. |
+| `SpecialModelRendererRegistry` | Registers special item model renderer types (`"type": "minecraft:special"`). |
+| `BlockRenderLayers` | Draws a block's model in the cutout or translucent layer (1.21.1 and 1.20.1). |
 
 ### `item` and `client.gui` ([Item Decorators](../core/item-decorators.md))
 | Class | Functionality |
@@ -247,6 +251,16 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `SkyContext` | The frame a skybox draws in. |
 | `sky.SkyboxControl` | Drives players' skyboxes from the server. |
 
+### `client.blockentity` ([Canvas Block Entity Renderers](../canvas/block-entity-renderers.md))
+| Class | Functionality |
+|---|---|
+| `BlockRenderer` | Base block entity renderer: culling by distance and view, detail bands, facing, reused states and layers. |
+| `BlockRenderState` | Its state: vanilla's, plus detail, distance, time, facing and looked-at. |
+| `BlockRenderContext` | What `extract` can use: the camera, model resolvers and eased transitions. |
+| `Detail`, `Facing`, `RenderBounds` | Detail levels, facing modes, and the box a renderer is culled by. |
+| `BlockRenderLayer` | A layer drawn with a renderer's block entities, with a typed state of its own. |
+| `ItemLayer`, `LabelLayer`, `ChildLayer` | Built-in layers: a floating item, text over the block, another block entity's renderer. |
+
 ### `client.vfx` and `vfx` ([Canvas World Effects](../canvas/world-effects.md))
 | Class | Functionality |
 |---|---|
@@ -259,6 +273,13 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `client.vfx.WorldRifts`, `Rift`, `RiftSpec` | Rifts: tears in the air that open, hang and close. |
 | `vfx.VfxControl`, `VfxParams` | Plays a named effect on players' clients from the server. |
 | `vfx.RiftControl` | Opens and closes registered rifts from the server. |
+| `client.vfx.GhostBlocks` | Blocks drawn as see-through ghosts of their real models: where they show (`Show`), how they're lit (`Light`), in groups, or with a shader of your own (`drawEffect`). |
+
+### `client.viewport` ([Canvas GUI](../canvas/gui.md#scene-viewports))
+| Class | Functionality |
+|---|---|
+| `SceneViewport` | A small 3D scene drawn into a texture: blocks, block entities, entities, items, glowing sprites and text, with a camera that circles them. |
+| `client.gui.components.SceneViewportWidget` | A scene viewport in a screen: drag to turn, scroll to zoom. |
 
 ### `client.sound` and `sound` ([Canvas Sound Filters](../canvas/sound-filters.md))
 | Class | Functionality |
@@ -312,8 +333,9 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `widgets.AbstractMultiPanelWidget` | A window of stacked panels (experimental). |
 | `widgets.panel.Panel`, `ScrollPanel`, `ViewportPanel` | Panel types: plain, scrolling, pan and zoom (experimental). |
 
-### Shader includes ([Canvas Screen Effects](../canvas/screen-effects.md), [Canvas Skyboxes](../canvas/skyboxes.md))
+### Shader includes ([Canvas Screen Effects](../canvas/screen-effects.md), [Canvas Skyboxes](../canvas/skyboxes.md), [Canvas World Effects](../canvas/world-effects.md#with-a-shader))
 | Include | Functionality |
 |---|---|
 | `coolcatcanvas:screen_effect.glsl` | `Strength`, `Time`, `Age` and `Seed` for screen effect shaders, plus luminance, noise and edge helpers. |
 | `coolcatcanvas:sky.glsl` | Layer inputs, the `SkyLayerInfo` block and `sky_finish` for sky layer shaders. |
+| `coolcatlib:ghost_effect.glsl` | `ghost_depth`, `ghost_world_position`, `ghost_color`, `EffectSampler` and `GhostParams0` to `GhostParams3` for `GhostBlocks.drawEffect` shaders. |

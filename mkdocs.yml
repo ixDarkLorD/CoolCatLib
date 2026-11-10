@@ -124,6 +124,7 @@ nav:
       - Screen Effects: canvas/screen-effects.md
       - Skyboxes: canvas/skyboxes.md
       - World Effects: canvas/world-effects.md
+      - Block Entity Renderers: canvas/block-entity-renderers.md
       - Cutscenes: canvas/cutscenes.md
       - Sound Filters: canvas/sound-filters.md
       - Text and Colors: canvas/text-and-colors.md

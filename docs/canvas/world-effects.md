@@ -1,11 +1,11 @@
 ---
 icon: material/shimmer
-description: Glowing particles, beams, trails and rifts in the world
+description: Glowing particles, beams, trails, rifts and ghost blocks in the world
 ---
 
 # World Effects
 
-Glowing shapes drawn in the world: particles that swell and fade, beams, flashes, trails and shapes of your own, and rifts that tear open in the air. Package: `net.ixdarklord.coolcatcanvas.api.client.vfx` (client) and `api.vfx` (server).
+Glowing shapes drawn in the world: particles that swell and fade, beams, flashes, trails and shapes of your own, rifts that tear open in the air, and blocks shown as ghosts. Package: `net.ixdarklord.coolcatcanvas.api.client.vfx` (client) and `api.vfx` (server).
 
 !!! info "Since"
     CoolCatLib **26.1.2-5** (Canvas 26.1.2-6 before the merge), on Minecraft 26.1 – 26.1.2, and in 26.2 and 26.3; **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1). On 1.20.1, shader materials use GLSL 150.
@@ -19,6 +19,7 @@ World effects are drawn after the whole level and before the player's hand, lit 
 | Shapes that follow something every frame | [A renderer](#draw-every-frame): `WorldVfx.register` with a `VfxRenderer`. |
 | An effect the server starts | [Named effects](#from-the-server): `VfxEffects.register`, then `VfxControl.play`. |
 | A tear in the air | [Rifts](#rifts): `WorldRifts`, or `RiftControl` from the server. |
+| Blocks shown as see-through ghosts | [Ghost blocks](#ghost-blocks): `GhostBlocks.draw`, or `drawEffect` with a shader. |
 
 ## Materials
 
@@ -244,3 +245,95 @@ void main() {
 ```
 
 A shader has no uniforms of its own: what changes from one shape to the next travels in the color and the UVs, which is why `VfxDraw.quad` takes any UV range. `VfxMaterial.RIFT_SHADER` is the shader rifts are drawn with.
+
+## Ghost blocks
+
+`GhostBlocks` draws blocks as ghosts: their real models (block entities too, a chest as a chest), tinted and faded by one color. A group of ghosts is drawn as one picture, so only its outside shows, as the real blocks would, never the faces behind.
+
+```java
+List<GhostBlocks.Placed> blocks = List.of(new GhostBlocks.Placed(pos, Blocks.CHEST.defaultBlockState()));
+
+WorldVfx.register(MyMod.id("ghosts"), frame ->
+        GhostBlocks.draw(blocks, 0x80FFFFFF, GhostBlocks.Show.THROUGH_WALLS, GhostBlocks.Light.BRIGHT));
+```
+
+Call it from a [renderer](#draw-every-frame), or anywhere else right after the level is drawn, while its depth is still there. The color's alpha is the ghosts' opacity. Each call draws one group in one color.
+
+| `Show` | Where the ghost shows |
+|---|---|
+| `THROUGH_WALLS` | Only where something is in front of it: seen through walls, not over the real block in plain sight. To find something. |
+| `IN_WORLD` | Only where nothing is in front of it, as a real block would be. A ghost of what is to be built. |
+| `ALWAYS` | Everywhere, over whatever is in front of it. |
+| `OVER_BLOCK` | Over the real block where it stands, hidden only by what is in front of it. It covers exactly the block's faces, to fade one block into another. |
+
+| `Light` | How it's lit |
+|---|---|
+| `BRIGHT` | Every face full bright, so it stands out. |
+| `SHADED` | Each face shaded by its side, as an item is, at full brightness. |
+| `WORLD` | As the world lights a real block there: each face shaded by its side, smooth lighting, and the block and sky light where it stands (dark in a cave, dimmer at dusk). A ghost over a real block matches its shading exactly. |
+
+On 26.2, 26.3, 1.21.1 and 1.20.1, which don't have `Light` yet, pass `true` (shaded) or `false` (full bright) in its place.
+
+World-lit ghosts keep their lighting from frame to frame, and build it again only when their block changes, or twice a second for changes in the light. Plants drawn off the middle of their block (flowers, grass) sit where the real ones are.
+
+### Several groups
+
+`draw(groups, argbs, show, light)` draws several groups at once, each in its own color and opacity: a reveal fading in, wave by wave. It's the same as a `draw` for each group, but world-lit groups of solid blocks go over the world in one pass instead of one pass a group. A group with no opacity is skipped.
+
+```java
+List<List<GhostBlocks.Placed>> waves = List.of(firstRing, secondRing, thirdRing);
+int[] colors = new int[waves.size()];   // reuse it from frame to frame
+
+// every frame, in a VfxRenderer
+for (int i = 0; i < colors.length; i++) colors[i] = (int) (opacity(i) * 255) << 24 | 0xFFFFFF;
+GhostBlocks.draw(waves, colors, GhostBlocks.Show.IN_WORLD, GhostBlocks.Light.WORLD);
+```
+
+### With a shader
+
+`drawEffect(blocks, show, light, shader, texture, params)` draws the ghosts' models and lays a fragment shader of your own over the world where they show, in place of a flat color: a force field running over the blocks, a scan, frost creeping across them. It works per pixel, so it follows the blocks' true shapes (a flower's petals, grass's blades) with no seams between them.
+
+```java
+static final float[] PARAMS = new float[4];   // reuse it from frame to frame
+
+WorldVfx.register(MyMod.id("shield"), frame -> {
+    PARAMS[0] = frame.time();                 // seconds, for the shader to move by
+    GhostBlocks.drawEffect(blocks, GhostBlocks.Show.ALWAYS, GhostBlocks.Light.BRIGHT,
+            MyMod.id("core/force_field"), MyMod.id("textures/effect/hex.png"), PARAMS);
+});
+```
+
+The id `mymod:core/force_field` reads `assets/mymod/shaders/core/force_field.fsh`. It imports `coolcatlib:ghost_effect.glsl`:
+
+```glsl title="assets/mymod/shaders/core/force_field.fsh"
+#version 330
+#moj_import <coolcatlib:ghost_effect.glsl>
+
+out vec4 fragColor;
+
+void main() {
+    ivec2 pixel = ivec2(gl_FragCoord.xy);
+    float depth = ghost_depth(pixel);                         // -1 where no ghost shows
+    if (depth < 0.0) discard;
+    vec3 world = ghost_world_position(gl_FragCoord.xy, depth);
+    float wave = 0.5 + 0.5 * sin(world.y * 4.0 - GhostParams0.x * 3.0);
+    vec4 hex = texture(EffectSampler, world.xz + world.y);
+    fragColor = vec4(vec3(0.4, 0.8, 1.0) * hex.rgb, hex.a * wave * 0.7);
+}
+```
+
+| From `ghost_effect.glsl` | What it gives |
+|---|---|
+| `ghost_depth(pixel)` | Where a ghost shows at a pixel, as `show` says, or -1. |
+| `ghost_world_position(fragCoord, depth)` | That pixel's place in the world. |
+| `ghost_color(pixel)` | The ghost's own color there. |
+| `EffectSampler` | The texture you passed, repeating, with nearest-pixel filtering. |
+| `GhostParams0` to `GhostParams3` | Your `params`, up to sixteen numbers, in order. |
+
+The shader's output is blended over the world by its alpha.
+
+After the game's models are reloaded, `GhostBlocks.clearModels()` forgets the block models made so far, so new ones are drawn.
+
+!!! info "Since"
+    `GhostBlocks`: since **26.1.2-6** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1), with `draw(blocks, argb, show, shaded)`, where `shaded` is `SHADED` and false is `BRIGHT`. `Show.OVER_BLOCK`: since **8.0.0** on 26.1.2, 26.2 and 26.3.
+    `Light`, `draw(blocks, argb, show, light)`, `draw(groups, argbs, show, light)` and `drawEffect`: since **8.2.0**, on 26.1.2 only for now.
