@@ -13,6 +13,12 @@ public class TestingMod implements ModConstructor {
     public void onConstructMod() {
         TestConfigs.init();
         TestStartupConfig.registerContent();
+        SampleGameTests.register();
+        HookGameTests.register();
+        HookGameTests2.register();
+        HookGameTestsBV.register();
+        HookGameTestsB3.register();
+        HookGameTests3.register();
         TestAttachments.init();
         RegisterBrewingRecipesEvent.EVENT.register(event ->
                 event.getBuilder().addRecipe(Ingredient.of(Items.POTION), Ingredient.of(Items.RAW_COPPER, Items.IRON_NUGGET), Items.COPPER_INGOT.getDefaultInstance()));

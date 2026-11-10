@@ -8,6 +8,7 @@ import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.internal.core.client.CoolCatCoreClientConstructor;
 import net.ixdarklord.coolcatcore.internal.event.neoforge.NeoForgeClientEventHooks;
+import net.ixdarklord.coolcatcore.internal.platform.neoforge.ClientServicesImpl;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -25,7 +26,10 @@ public class NeoForgeClientSetup extends NeoForgeModEntrypoint {
         NeoForge.EVENT_BUS.addListener(ItemTooltipEvent.class, event -> ComponentItem.onTooltip(event.getItemStack(), event.getToolTip()));
         this.client(() -> CoolCatCoreClientConstructor::new);
         this.client(() -> CoolCatCanvasClientConstructor::new);
-        this.modEventBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(NeoForgeClientSetup::registerConfigScreens));
+        this.modEventBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(() -> {
+            ClientServicesImpl.setBlockRenderLayers();
+            registerConfigScreens();
+        }));
     }
 
     // Every mod with a CoolCatLib config gets a "Config" button in the mod list, unless it set its own screen.

@@ -18,6 +18,7 @@ final class ForgeClientSetup {
         ForgeClientEventHooks.register(modBus);
         modBus.addListener(EventPriority.NORMAL, false, FMLClientSetupEvent.class, event -> event.enqueueWork(() -> {
             ClientServicesImpl.registerMenuScreens();
+            ClientServicesImpl.setBlockRenderLayers();
             registerConfigScreens();
         }));
     }

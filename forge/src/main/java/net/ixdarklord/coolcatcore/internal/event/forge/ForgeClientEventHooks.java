@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
@@ -52,6 +53,7 @@ public final class ForgeClientEventHooks {
 
         listen(modBus, RegisterKeyMappingsEvent.class, ClientServicesImpl::onRegisterKeyMappings);
         listen(modBus, RegisterClientTooltipComponentFactoriesEvent.class, ClientServicesImpl::onRegisterTooltipComponents);
+        listen(modBus, EntityRenderersEvent.RegisterRenderers.class, ClientServicesImpl::onRegisterRenderers);
         listen(modBus, ModelEvent.RegisterAdditional.class, ClientServicesImpl::onRegisterAdditionalModels);
     }
 

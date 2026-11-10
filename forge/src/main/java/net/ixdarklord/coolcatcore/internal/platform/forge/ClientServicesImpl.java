@@ -8,6 +8,9 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -16,6 +19,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -37,6 +44,8 @@ public final class ClientServicesImpl implements ClientServices {
     private static final List<KeyMapping> KEY_MAPPINGS = new ArrayList<>();
     private static final List<Runnable> MENU_SCREENS = new ArrayList<>();
     private static final List<Consumer<RegisterClientTooltipComponentFactoriesEvent>> TOOLTIP_COMPONENTS = new ArrayList<>();
+    // Block entity renderers wait for Forge's renderer registration event.
+    private static final List<Consumer<EntityRenderersEvent.RegisterRenderers>> RENDERERS = new ArrayList<>();
     private static boolean menuScreensRegistered;
 
     public static ClientServices get() {
@@ -70,6 +79,41 @@ public final class ClientServicesImpl implements ClientServices {
     }
 
     @Override
+    public <T extends BlockEntity> void registerBlockEntityRenderer(Supplier<? extends BlockEntityType<? extends T>> type, BlockEntityRendererProvider<T> provider) {
+        synchronized (RENDERERS) {
+            RENDERERS.add(event -> event.registerBlockEntityRenderer(type.get(), provider));
+        }
+    }
+
+    // Render layers go into ItemBlockRenderTypes during client setup (see setBlockRenderLayers), once blocks exist; any
+    // registered after that go in at once.
+    private static final List<Runnable> BLOCK_RENDER_LAYERS = new ArrayList<>();
+    private static boolean blockRenderLayersSet;
+
+    @Override
+    public void registerBlockRenderLayer(Supplier<? extends Block> block, RenderType layer) {
+        Runnable registration = () -> ItemBlockRenderTypes.setRenderLayer(block.get(), layer);
+        synchronized (BLOCK_RENDER_LAYERS) {
+            if (!blockRenderLayersSet) {
+                BLOCK_RENDER_LAYERS.add(registration);
+                return;
+            }
+        }
+        Minecraft.getInstance().execute(registration);
+    }
+
+    /** Called on the main thread during client setup. */
+    public static void setBlockRenderLayers() {
+        List<Runnable> pending;
+        synchronized (BLOCK_RENDER_LAYERS) {
+            blockRenderLayersSet = true;
+            pending = List.copyOf(BLOCK_RENDER_LAYERS);
+            BLOCK_RENDER_LAYERS.clear();
+        }
+        pending.forEach(Runnable::run);
+    }
+
+    @Override
     public void sendToServer(CustomPacketPayload payload) {
         ForgeClientNetworking.sendToServer(payload);
     }
@@ -89,6 +133,12 @@ public final class ClientServicesImpl implements ClientServices {
             MENU_SCREENS.clear();
         }
         pending.forEach(Runnable::run);
+    }
+
+    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        synchronized (RENDERERS) {
+            RENDERERS.forEach(registration -> registration.accept(event));
+        }
     }
 
     public static void onRegisterTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
