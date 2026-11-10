@@ -8,7 +8,8 @@ import net.minecraft.util.ExtraCodecs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-// The special item model types, so the armature item model ("coolcatlib:armature") can be one of them on either loader.
+// The special item model types, so the armature item model ("coolcatlib:armature") and mods' own
+// (api/client/registry/SpecialModelRendererRegistry) can be among them on either loader.
 @Mixin(SpecialModelRenderers.class)
 public interface SpecialModelRenderersAccessor {
     @Accessor("ID_MAPPER")

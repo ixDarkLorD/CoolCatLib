@@ -35,7 +35,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -292,6 +294,48 @@ public final class SceneViewportManager {
         }
 
         features.renderAllFeatures(storage);
+
+        // Sprites last, over the scene's depth: added on as light, hidden by whatever is nearer the camera, writing no
+        // depth of their own. They face the camera: their quads are laid along the camera's right and up, read off the
+        // view (its inverse rotation).
+        if (!viewport.sprites().isEmpty()) {
+            SubmitNodeStorage glows = new SubmitNodeStorage();
+            Matrix4f view = pose.last().pose();
+            Vector3f right = new Vector3f(view.m00(), view.m10(), view.m20()).normalize();
+            Vector3f up = new Vector3f(view.m01(), view.m11(), view.m21()).normalize();
+            for (SceneViewport.PlacedSprite sprite : viewport.sprites()) {
+                Vector3f across, along;
+                if (sprite.upright()) {
+                    // Straight up, and across along the camera's right laid level.
+                    Vector3f level = new Vector3f(right.x, 0.0F, right.z);
+                    if (level.lengthSquared() < 1.0E-6F) level.set(1.0F, 0.0F, 0.0F);
+                    across = level.normalize().mul(sprite.width() / 2.0F);
+                    along = new Vector3f(0.0F, sprite.height() / 2.0F, 0.0F);
+                } else {
+                    double roll = Math.toRadians(sprite.roll());
+                    float cos = (float) Math.cos(roll), sin = (float) Math.sin(roll);
+                    across = new Vector3f(right).mul(cos).add(new Vector3f(up).mul(sin)).mul(sprite.width() / 2.0F);
+                    along = new Vector3f(up).mul(cos).sub(new Vector3f(right).mul(sin)).mul(sprite.height() / 2.0F);
+                }
+                float x = (float) sprite.pos().x, y = (float) sprite.pos().y, z = (float) sprite.pos().z;
+                // Added on as light: its alpha scales its colour, since additive blending reads no alpha.
+                int argb = sprite.argb();
+                float strength = (argb >>> 24) / 255.0F;
+                int color = 0xFF000000 | Math.round((argb >> 16 & 0xFF) * strength) << 16 | Math.round((argb >> 8 & 0xFF) * strength) << 8
+                        | Math.round((argb & 0xFF) * strength);
+                glows.submitCustomGeometry(pose, RenderTypes.energySwirl(sprite.texture(), 0.0F, 0.0F), (last, consumer) -> {
+                    corner(consumer, last, x - across.x - along.x, y - across.y - along.y, z - across.z - along.z, 0, 1, color);
+                    corner(consumer, last, x + across.x - along.x, y + across.y - along.y, z + across.z - along.z, 1, 1, color);
+                    corner(consumer, last, x + across.x + along.x, y + across.y + along.y, z + across.z + along.z, 1, 0, color);
+                    corner(consumer, last, x - across.x + along.x, y - across.y + along.y, z - across.z + along.z, 0, 0, color);
+                });
+            }
+            features.renderAllFeatures(glows);
+        }
+    }
+
+    private static void corner(VertexConsumer consumer, PoseStack.Pose last, float x, float y, float z, float u, float v, int color) {
+        consumer.addVertex(last, x, y, z).setColor(color).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 0, 1);
     }
 
     private static final Identifier WHITE = Identifier.fromNamespaceAndPath("coolcatlib", "textures/misc/white.png");
