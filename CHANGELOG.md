@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v8.2.0 Release | Unreleased
+## v8.2.0 Release | Nov 10, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
   - `EntityEvents.SPAWN`: a new mob is about to be added to the world (spawned naturally or with a new chunk, by a spawner, a spawn egg, a command, breeding, a conversion), with why it was made when the game says; interrupt to keep it out, with its passengers. `EntityEvents.MOUNT`: an entity is about to ride another (interrupt to keep it off), or got off one.
@@ -15,6 +15,8 @@ This file is for listing all the changes to this project
   - `LootEvents.MODIFY`: any loot table's loot as it's rolled (chests, block drops, mobs, fishing), with the table's id; change the list.
   - `LivingEvents.DAMAGE` (before armor; interrupt and no damage is taken) and `DEATH` (interrupt to keep the entity alive), as on 26.1.2.
 - Blocks that look like other blocks to some players (`api.block.BlockViews`): `BlockViews.register(id, view)` adds a `BlockView`, which groups players by a key (players with the same key see the same, and a null key leaves everything as it is for them) and says what a block looks like to them. What the server sends them (chunks, block changes, block entities' data) has that block in its place, so their client never knows the real one, while the server keeps it for everything else. `BlockViews.refresh(player)` sends them their chunks again when what they should see changes.
+- `BlockEntityRendererRegistry` (`api.client.registry`): registers block entity renderers, the same on every loader, as on 26.x.
+- `BlockRenderLayers` (`api.client.registry`): `register(block, RenderType.translucent())` (or `cutout()`, `cutoutMipped()`) draws a block's model in that layer, for textures with clear or partly see-through pixels, the same on every loader.
 
 ## v8.1.0 Release | Nov 3, 2026
 ### 🔧 Changes

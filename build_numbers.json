@@ -1,6 +1,6 @@
 {
     "projects": {
-        "forge": 7,
-        "fabric": 6
+        "forge": 15,
+        "fabric": 14
     }
 }
