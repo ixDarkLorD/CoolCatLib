@@ -19,7 +19,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -36,6 +39,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -48,9 +52,11 @@ import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -116,6 +122,18 @@ public final class NeoForgeEventHooks {
         bus.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) PlayerEvents.CHANGE_DIMENSION.invoker().onChangeDimension(player, event.getFrom(), event.getTo());
         });
+
+        bus.addListener((PlayerEvent.BreakSpeed event) -> {
+            if (PlayerEvents.BREAK_SPEED.hasListeners()) {
+                PlayerEvents.BREAK_SPEED.invoker().onBreakSpeed(event.getEntity(), event.getState(), event.getPosition().orElse(null), event.getNewSpeed()).ifInterrupt(event::setNewSpeed);
+            }
+        });
+        bus.addListener((PlayerEvent.HarvestCheck event) -> {
+            if (PlayerEvents.HARVEST_CHECK.hasListeners()) {
+                PlayerEvents.HARVEST_CHECK.invoker().onHarvestCheck(event.getEntity(), event.getTargetBlock(), event.getPos(), event.canHarvest()).ifInterrupt(event::setCanHarvest);
+            }
+        });
+        bus.addListener(NeoForgeEventHooks::onBlockDrops);
 
         bus.addListener((LivingIncomingDamageEvent event) -> {
             if (LivingEvents.DAMAGE.invoker().onDamage(event.getEntity(), event.getSource(), event.getAmount()).isInterrupt()) event.setCanceled(true);
@@ -255,5 +273,29 @@ public final class NeoForgeEventHooks {
         public ConfigurationTask.Type type() {
             return TYPE;
         }
+    }
+
+    // BlockEvents.DROPS from NeoForge's drops event, which holds the drops as item entities: their stacks are told about,
+    // then the entities follow what the list became (the first ones reused, more made where the first lies).
+    private static void onBlockDrops(BlockDropsEvent event) {
+        if (!BlockEvents.DROPS.hasListeners()) return;
+        List<ItemEntity> entities = event.getDrops();
+        List<ItemStack> drops = new ArrayList<>(entities.size());
+        for (ItemEntity entity : entities) drops.add(entity.getItem());
+        MutableInt experience = new MutableInt(event.getDroppedExperience());
+        BlockEvents.DROPS.invoker().onDrops(event.getLevel(), event.getPos(), event.getState(), event.getBreaker(), event.getTool(), drops, experience);
+        event.setDroppedExperience(Math.max(0, experience.intValue()));
+        Vec3 at = entities.isEmpty() ? Vec3.atCenterOf(event.getPos()) : entities.getFirst().position();
+        List<ItemEntity> kept = new ArrayList<>(drops.size());
+        for (int i = 0; i < drops.size(); i++) {
+            ItemStack stack = drops.get(i);
+            if (stack.isEmpty()) continue;
+            ItemEntity entity = i < entities.size() ? entities.get(i) : new ItemEntity(event.getLevel(), at.x, at.y, at.z, stack);
+            entity.setItem(stack);
+            entity.setDefaultPickUpDelay();
+            kept.add(entity);
+        }
+        entities.clear();
+        entities.addAll(kept);
     }
 }

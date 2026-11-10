@@ -4,9 +4,18 @@ This file is for listing all the changes to this project
 ## v8.2.0 Release | Nov 10, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
-  - `PlayerEvents.ADVANCEMENT_EARNED`: a player completed an advancement (as its rewards are given, before its chat announcement).
+  - `EntityEvents.SPAWN`: a new mob is about to be added to the world (spawned naturally or with a new chunk, by a spawner, a spawn egg, a command, breeding, a conversion), with why it was made; interrupt to keep it out, with its passengers. `EntityEvents.MOUNT`: an entity is about to ride another (interrupt to keep it off), or got off one.
+  - `PlayerEvents.OPEN_MENU`: a player is about to open a menu: a block's, an entity's, an item's, or one another mod opens with extra data; interrupt to keep it closed.
+  - `RecipeEvents.MATCH`: a recipe matched where the game looks one up (furnaces, campfires, smithing tables, stonecutters, crafting grids, other mods' machines), with the block entity or the player asking; interrupt to pass it over for the next one that matches.
+  - `PlayerEvents.ADVANCEMENT_EARNED` (a player completed an advancement), `CommandEvents.EXECUTE` (a command is about to run; interrupt to stop it) and `LivingEvents.EFFECT_APPLICABLE` (an effect is about to be given; interrupt to keep it off).
+  - `BlockEvents.DROPS`: a broken block is about to drop its items and experience; change the list and the amount.
+  - `PlayerEvents.BREAK_SPEED` and `HARVEST_CHECK`: how fast a player breaks a block, and whether their tool is right for it (without it, it drops nothing), on both sides.
+  - `MerchantEvents.OFFERS`: the trades a player is shown, as their own list; take trades out to hide them (they can't make them either).
+  - `EnchantEvents.TABLE_OPTIONS` (the enchantments an enchanting table's offer gives) and `ANVIL_RESULT` (what an anvil makes; interrupt with another stack or none).
+  - `LootEvents.MODIFY`: any loot table's loot as it's rolled (chests, block drops, mobs, fishing), with the table's id; change the list.
   - `PlayerEvents.ITEM_FISHED`: what a player reeled in with a fishing rod, as its own list, before it's thrown to them; change the list.
   - `LootTableEvents.MODIFY`: a loot table loading (on server start and `/reload`), vanilla's, mods' and data packs' alike; add pools to it.
+- Blocks that look like other blocks to some players (`api.block.BlockViews`): `BlockViews.register(id, view)` adds a `BlockView`, which groups players by a key (players with the same key see the same, and a null key leaves everything as it is for them) and says what a block looks like to them. What the server sends them (chunks, block changes, block entities' data) has that block in its place, so their client never knows the real one, while the server keeps it for everything else. `BlockViews.refresh(player)` sends them their chunks again when what they should see changes.
 - `SceneViewport.blockEntity(pos, blockEntity)`: a block entity in a viewport's scene, drawn by its renderer as in the world (its camera-facing parts face the viewer).
 - `SpecialModelRendererRegistry` (`api.client.registry`): registers special item model renderer types, the code-drawn parts of item models (`"type": "minecraft:special"`), the same on every loader.
 - Block entity renderers (`coolcatcanvas.api.client.blockentity`): `BlockRenderer`, a base that leaves a mod to write only what it draws (`newState`, `extract`, `render`). Registered as any renderer, with `BlockEntityRendererRegistry.register(type, MyRenderer::new)`.
@@ -22,6 +31,7 @@ This file is for listing all the changes to this project
 - `SceneViewport.sprite(...)`: a glowing, camera-facing picture at a place in the scene (rays, halos, flares), added on as light and hidden by nearer blocks and entities.
 
 ### 🔧 Changes
+- CoolCatLib's mixin configs declare Java 25 (`compatibilityLevel`), so loading no longer warns that a mixin needs a newer class version.
 - `GhostBlocks.Show.OVER_BLOCK` ghosts are drawn a hair nearer the camera instead of a little larger, so they cover exactly their blocks' faces and no longer spill onto the blocks beside them.
 - World-lit ghosts keep their lighting from frame to frame and build it again only when their block changes, or twice a second for changes in the light.
 - World-lit ghosts of blocks drawn off the middle of their block (flowers, grass, other plants) sit where the real ones are, instead of in the middle.

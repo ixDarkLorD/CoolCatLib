@@ -10,15 +10,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-// PlayerEvents.ADVANCEMENT_EARNED: an advancement was just completed, as its rewards are given.
+// PlayerEvents.ADVANCEMENT_EARNED, once an advancement is done and its rewards given.
 @Mixin(PlayerAdvancements.class)
 public abstract class PlayerAdvancementsMixin {
     @Shadow
     private ServerPlayer player;
 
-    @Inject(method = "award", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/advancements/AdvancementRewards;grant(Lnet/minecraft/server/level/ServerPlayer;)V"))
-    private void coolcatlib$earned(AdvancementHolder holder, String criterion, CallbackInfoReturnable<Boolean> cir) {
-        if (PlayerEvents.ADVANCEMENT_EARNED.hasListeners()) PlayerEvents.ADVANCEMENT_EARNED.invoker().onAdvancementEarned(this.player, holder);
+    @Inject(method = "award", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancements/AdvancementRewards;grant(Lnet/minecraft/server/level/ServerPlayer;)V", shift = At.Shift.AFTER))
+    private void coolcatlib$earned(AdvancementHolder advancement, String criterion, CallbackInfoReturnable<Boolean> cir) {
+        if (PlayerEvents.ADVANCEMENT_EARNED.hasListeners()) PlayerEvents.ADVANCEMENT_EARNED.invoker().onAdvancementEarned(this.player, advancement);
     }
 }

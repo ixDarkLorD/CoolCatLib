@@ -2,15 +2,20 @@ package net.ixdarklord.coolcatcore.api.event.v2.common;
 
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventInvoker;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventResult;
+import net.ixdarklord.coolcatcore.api.event.v2.core.EventResultHolder;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -51,15 +56,40 @@ public final class PlayerEvents {
         }
         return EventResult.PASS;
     });
+    public static final EventInvoker<OpenMenu> OPEN_MENU = EventInvoker.create(OpenMenu.class, listeners -> (player, menu) -> {
+        for (OpenMenu listener : listeners) {
+            EventResult result = listener.onOpenMenu(player, menu);
+            if (result.isInterrupt()) return result;
+        }
+        return EventResult.PASS;
+    });
+    public static final EventInvoker<AdvancementEarned> ADVANCEMENT_EARNED = EventInvoker.create(AdvancementEarned.class, listeners -> (player, advancement) -> {
+        for (AdvancementEarned listener : listeners) listener.onAdvancementEarned(player, advancement);
+    });
+    public static final EventInvoker<BreakSpeed> BREAK_SPEED = EventInvoker.create(BreakSpeed.class, listeners -> (player, state, pos, speed) -> {
+        float current = speed;
+        boolean changed = false;
+        for (BreakSpeed listener : listeners) {
+            EventResultHolder<Float> outcome = listener.onBreakSpeed(player, state, pos, current);
+            if (outcome.isInterrupt()) {
+                current = outcome.getInterrupt().orElse(current);
+                changed = true;
+            }
+        }
+        return changed ? EventResultHolder.interrupt(current) : EventResultHolder.pass();
+    });
+    public static final EventInvoker<HarvestCheck> HARVEST_CHECK = EventInvoker.create(HarvestCheck.class, listeners -> (player, state, pos, canHarvest) -> {
+        for (HarvestCheck listener : listeners) {
+            EventResultHolder<Boolean> outcome = listener.onHarvestCheck(player, state, pos, canHarvest);
+            if (outcome.isInterrupt()) return outcome;
+        }
+        return EventResultHolder.pass();
+    });
     public static final EventInvoker<Crafted> CRAFTED = EventInvoker.create(Crafted.class, listeners -> (player, crafted, grid) -> {
         for (Crafted listener : listeners) listener.onCrafted(player, crafted, grid);
     });
     public static final EventInvoker<Smelted> SMELTED = EventInvoker.create(Smelted.class, listeners -> (player, smelted, furnace) -> {
         for (Smelted listener : listeners) listener.onSmelted(player, smelted, furnace);
-    });
-
-    public static final EventInvoker<AdvancementEarned> ADVANCEMENT_EARNED = EventInvoker.create(AdvancementEarned.class, listeners -> (player, advancement) -> {
-        for (AdvancementEarned listener : listeners) listener.onAdvancementEarned(player, advancement);
     });
     public static final EventInvoker<ItemFished> ITEM_FISHED = EventInvoker.create(ItemFished.class, listeners -> (player, hook, items) -> {
         for (ItemFished listener : listeners) listener.onItemFished(player, hook, items);
@@ -161,8 +191,20 @@ public final class PlayerEvents {
     }
 
     /**
-     * A player earned an advancement: its last criterion was just granted, and its rewards are being given (before its
-     * chat announcement). Not fired again for one they already had.
+     * A player is about to open a menu: a block's, an entity's (a villager's trades, a chest boat), an item's, or one a
+     * command or another mod opens. Interrupting keeps it closed. A horse's inventory isn't opened this way and doesn't
+     * fire it.
+     *
+     * @param menu what makes the menu: a block entity, an entity, or a {@link net.minecraft.world.SimpleMenuProvider}
+     */
+    @FunctionalInterface
+    public interface OpenMenu {
+        EventResult onOpenMenu(ServerPlayer player, MenuProvider menu);
+    }
+
+    /**
+     * A player completed an advancement (its last criterion was just met, and its rewards given), on the server. Not
+     * fired again for one they had already completed.
      */
     @FunctionalInterface
     public interface AdvancementEarned {
@@ -178,5 +220,29 @@ public final class PlayerEvents {
     @FunctionalInterface
     public interface ItemFished {
         void onItemFished(ServerPlayer player, FishingHook hook, List<ItemStack> items);
+    }
+
+    /**
+     * How fast a player breaks a block, on both sides (check {@code player.level().isClientSide()}): the speed the game
+     * divides by the block's hardness each tick. Interrupt with another speed to change it; each listener is given the
+     * speed the ones before it chose. Change it the same way on both sides, or breaking looks wrong to the player.
+     *
+     * @param pos   where the block is, when the game says
+     * @param speed the speed so far (the tool, enchantments, effects, being underwater or in the air)
+     */
+    @FunctionalInterface
+    public interface BreakSpeed {
+        EventResultHolder<Float> onBreakSpeed(Player player, BlockState state, @Nullable BlockPos pos, float speed);
+    }
+
+    /**
+     * Whether a player's tool is right for a block, on both sides: without it the block breaks slower and drops nothing
+     * (stone without a pickaxe). Interrupt with true or false to decide.
+     *
+     * @param pos where the block is, when the game says
+     */
+    @FunctionalInterface
+    public interface HarvestCheck {
+        EventResultHolder<Boolean> onHarvestCheck(Player player, BlockState state, @Nullable BlockPos pos, boolean canHarvest);
     }
 }
