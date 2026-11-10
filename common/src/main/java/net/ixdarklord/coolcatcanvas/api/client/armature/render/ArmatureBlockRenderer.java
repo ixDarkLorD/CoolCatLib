@@ -6,13 +6,16 @@ import net.ixdarklord.coolcatcanvas.api.client.armature.Armature;
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureDraw;
 import net.ixdarklord.coolcatcanvas.api.client.armature.ArmatureFrame;
 import net.ixdarklord.coolcatcanvas.api.client.armature.BakedArmature;
+import net.ixdarklord.coolcatcanvas.api.client.blockentity.BlockRenderContext;
+import net.ixdarklord.coolcatcanvas.api.client.blockentity.BlockRenderState;
+import net.ixdarklord.coolcatcanvas.api.client.blockentity.BlockRenderer;
+import net.ixdarklord.coolcatcanvas.api.client.blockentity.Detail;
 import net.ixdarklord.coolcatcanvas.internal.client.GameClock;
+import net.ixdarklord.coolcatcanvas.internal.client.blockentity.BlockRenderFrames;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -20,7 +23,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
@@ -38,14 +40,24 @@ import java.util.function.Function;
  *             animator.layer("base").drive(ctx -> ctx.<TurretEntity>owner().isFiring() ? FIRE : IDLE);
  *         })));
  * }</pre>
+ * A {@link BlockRenderer}: culled out of view by the armature's bounds, its states reused, and drawn in less detail
+ * farther off once {@link #detail} bands are set (an armature at {@link Detail#REDUCED} animates every other frame, at
+ * {@link Detail#MINIMAL} every fourth, without its attachments).
  */
-public class ArmatureBlockRenderer<T extends BlockEntity> implements BlockEntityRenderer<T, ArmatureBlockRenderer.State> {
+public class ArmatureBlockRenderer<T extends BlockEntity> extends BlockRenderer<T, ArmatureBlockRenderer.State> {
     private final ArmatureRenderSettings<T> settings;
+    private final Matrix4f modelToWorld = new Matrix4f();
+    private final Matrix4f placement = new Matrix4f();
     private boolean facing = true;
-    private int viewDistance = 64;
 
     public ArmatureBlockRenderer(BlockEntityRendererProvider.Context context, Armature armature) {
+        super(context);
         this.settings = new ArmatureRenderSettings<>(armature);
+        this.bounds((blockEntity, box) -> {
+            // However it's turned, the model stays within its farthest reach from the block's middle.
+            float reach = this.reach();
+            box.set(0.5F - reach, 0.5F - reach, 0.5F - reach, 0.5F + reach, 0.5F + reach, 0.5F + reach);
+        });
     }
 
     public static <T extends BlockEntity> BlockEntityRendererProvider<T, State> of(Armature armature, Consumer<ArmatureBlockRenderer<T>> configure) {
@@ -86,8 +98,9 @@ public class ArmatureBlockRenderer<T extends BlockEntity> implements BlockEntity
     }
 
     /** How far away, in blocks, it is still drawn; 64 by default. */
+    @Override
     public ArmatureBlockRenderer<T> viewDistance(int blocks) {
-        this.viewDistance = blocks;
+        super.viewDistance(blocks);
         return this;
     }
 
@@ -108,22 +121,34 @@ public class ArmatureBlockRenderer<T extends BlockEntity> implements BlockEntity
         return Direction.NORTH;
     }
 
+    // (Turned by its own placement, not BlockRenderer's: the armature stands on its block's floor.)
     @Override
-    public State createRenderState() {
+    protected Direction direction(T blockEntity) {
+        return this.facing(blockEntity, blockEntity.getBlockState());
+    }
+
+    @Override
+    protected State newState() {
         return new State();
     }
 
     @Override
-    public void extractRenderState(T blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
-        BlockEntityRenderState.extractBase(blockEntity, state, breakProgress);
-        state.facing = this.facing(blockEntity, blockEntity.getBlockState());
+    protected void extract(T blockEntity, State state, BlockRenderContext context) {
         state.modelScale = this.settings.scale;
         Animator animator = this.settings.animator(blockEntity, a -> this.setupAnimator(a, blockEntity));
-        BakedArmature armature = this.settings.armature.get();
-        Matrix4f modelToWorld = new Matrix4f().translation(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
-        place(modelToWorld, state);
-        modelToWorld.mul(ArmatureDraw.modelTransform(armature));
-        state.frame = animator.update(GameClock.seconds(), partialTicks, modelToWorld);
+        ArmatureFrame last = animator.frame();
+        // Farther off, it animates less often (staggered by place, so they don't all update on the same frame).
+        int every = state.detail <= Detail.FULL ? 1 : state.detail == Detail.REDUCED ? 2 : 4;
+        if (last != null && every > 1 && Math.floorMod(BlockRenderFrames.current() + (int) BlockPos.asLong(state.blockPos.getX(), 0, state.blockPos.getZ()), every) != 0) {
+            state.frame = last;
+        } else {
+            BakedArmature armature = this.settings.armature.get();
+            BlockPos pos = blockEntity.getBlockPos();
+            Matrix4f modelToWorld = this.modelToWorld.translation(pos.getX(), pos.getY(), pos.getZ());
+            place(modelToWorld, state);
+            modelToWorld.mul(ArmatureDraw.modelTransform(armature));
+            state.frame = animator.update(GameClock.seconds(), context.partialTicks(), modelToWorld);
+        }
         state.texture = this.settings.texture != null ? this.settings.texture.apply(blockEntity) : null;
     }
 
@@ -140,18 +165,26 @@ public class ArmatureBlockRenderer<T extends BlockEntity> implements BlockEntity
     }
 
     @Override
-    public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+    protected void render(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.frame == null) return;
         poseStack.pushPose();
-        Matrix4f placement = new Matrix4f();
-        place(placement, state);
-        poseStack.mulPose(placement);
+        place(this.placement.identity(), state);
+        poseStack.mulPose(this.placement);
         Identifier texture = state.texture;
         ArmatureDraw.submit(state.frame, poseStack, collector, ArmatureDraw.Style.lit(state.lightCoords)
                 .crumbling(state.breakProgress)
                 .texture(texture == null ? null : slot -> slot == 0 ? texture : null));
-        this.settings.submitAttachments(state.frame, poseStack, collector, state.lightCoords);
+        if (state.detail < Detail.MINIMAL) this.settings.submitAttachments(state.frame, poseStack, collector, state.lightCoords);
         poseStack.popPose();
+    }
+
+    // How far the model reaches from the block's middle, in blocks, however it's turned.
+    private float reach() {
+        AABB bounds = this.settings.armature.get().bounds();
+        double far = Math.max(Math.max(Math.max(-bounds.minX, bounds.maxX), Math.max(-bounds.minY, bounds.maxY)), Math.max(-bounds.minZ, bounds.maxZ));
+        // (In model pixels from its origin, which may be the block's corner rather than its floor's middle: a block's
+        // more either way.)
+        return (float) (far / 16.0 * this.settings.scale) + 1.0F;
     }
 
     @Override
@@ -162,16 +195,10 @@ public class ArmatureBlockRenderer<T extends BlockEntity> implements BlockEntity
         return bounds.minX < -reach || bounds.maxX > reach || bounds.minZ < -reach || bounds.maxZ > reach || bounds.maxY > reach * 1.5F;
     }
 
-    @Override
-    public int getViewDistance() {
-        return this.viewDistance;
-    }
-
     /** What an armature-driven block entity is drawn from, each frame. */
-    public static class State extends BlockEntityRenderState {
+    public static class State extends BlockRenderState {
         public @Nullable ArmatureFrame frame;
         public @Nullable Identifier texture;
-        public Direction facing = Direction.NORTH;
         public float modelScale = 1.0F;
     }
 }

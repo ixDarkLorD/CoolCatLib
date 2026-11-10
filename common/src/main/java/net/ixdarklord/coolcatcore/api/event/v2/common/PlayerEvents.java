@@ -2,18 +2,18 @@ package net.ixdarklord.coolcatcore.api.event.v2.common;
 
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventInvoker;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventResult;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-/**
- * Players joining and leaving the server, their tick, respawning and changing dimension, picking items up, and crafting
- * and smelting.
- */
+import java.util.List;
+
 public final class PlayerEvents {
     public static final EventInvoker<Join> JOIN = EventInvoker.create(Join.class, listeners -> player -> {
         for (Join listener : listeners) listener.onJoin(player);
@@ -56,6 +56,13 @@ public final class PlayerEvents {
     });
     public static final EventInvoker<Smelted> SMELTED = EventInvoker.create(Smelted.class, listeners -> (player, smelted, furnace) -> {
         for (Smelted listener : listeners) listener.onSmelted(player, smelted, furnace);
+    });
+
+    public static final EventInvoker<AdvancementEarned> ADVANCEMENT_EARNED = EventInvoker.create(AdvancementEarned.class, listeners -> (player, advancement) -> {
+        for (AdvancementEarned listener : listeners) listener.onAdvancementEarned(player, advancement);
+    });
+    public static final EventInvoker<ItemFished> ITEM_FISHED = EventInvoker.create(ItemFished.class, listeners -> (player, hook, items) -> {
+        for (ItemFished listener : listeners) listener.onItemFished(player, hook, items);
     });
 
     private PlayerEvents() {}
@@ -151,5 +158,25 @@ public final class PlayerEvents {
     @FunctionalInterface
     public interface ChangeDimension {
         void onChangeDimension(ServerPlayer player, ResourceKey<Level> from, ResourceKey<Level> to);
+    }
+
+    /**
+     * A player earned an advancement: its last criterion was just granted, and its rewards are being given (before its
+     * chat announcement). Not fired again for one they already had.
+     */
+    @FunctionalInterface
+    public interface AdvancementEarned {
+        void onAdvancementEarned(ServerPlayer player, AdvancementHolder advancement);
+    }
+
+    /**
+     * A player reeled in a catch with a fishing rod, on the server: what the fishing loot table gave, before it's thrown
+     * to them. Not fired for a hooked entity.
+     *
+     * @param items what they caught, to add to or change (a mutable list); each is thrown to them
+     */
+    @FunctionalInterface
+    public interface ItemFished {
+        void onItemFished(ServerPlayer player, FishingHook hook, List<ItemStack> items);
     }
 }

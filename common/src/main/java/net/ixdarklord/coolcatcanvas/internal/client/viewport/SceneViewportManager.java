@@ -1,18 +1,29 @@
 package net.ixdarklord.coolcatcanvas.internal.client.viewport;
 
 import com.mojang.blaze3d.ProjectionType;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import net.ixdarklord.coolcatcanvas.api.client.viewport.SceneViewport;
 import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.RenderPipelinesAccessor;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.RenderTypeInvoker;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -22,10 +33,14 @@ import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockModelResolver;
 import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -35,7 +50,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,7 +140,7 @@ public final class SceneViewportManager {
             if (now - viewport.lastUsed() > IDLE) continue;
             Target target = entry.getValue();
             boolean changed = viewport.takeDirty();
-            boolean moves = viewport.spin() != 0.0F || !viewport.entities().isEmpty();
+            boolean moves = viewport.spin() != 0.0F || !viewport.entities().isEmpty() || !viewport.blockEntities().isEmpty();
             if (target != null && !changed && !(moves && now - target.lastDrawn >= 1000L / viewport.refreshRate())) continue;
             try {
                 if (target == null) {
@@ -248,7 +265,7 @@ public final class SceneViewportManager {
                     minecraft.renderBuffers().bufferSource().endBatch();
                 }
             }
-            if (viewport.blocks().isEmpty() && viewport.entities().isEmpty()) return;
+            if (viewport.blocks().isEmpty() && viewport.entities().isEmpty() && viewport.blockEntities().isEmpty()) return;
         }
 
         PoseStack pose = view(viewport, target, width, height, scale, middle, distance);
@@ -275,6 +292,8 @@ public final class SceneViewportManager {
             pose.popPose();
         }
 
+        if (!viewport.blockEntities().isEmpty()) blockEntities(viewport, pose, storage, partialTick);
+
         if (viewport.hasGround()) ground(viewport, pose, storage);
 
         EntityRenderDispatcher entities = minecraft.getEntityRenderDispatcher();
@@ -293,12 +312,95 @@ public final class SceneViewportManager {
 
         features.renderAllFeatures();
         minecraft.renderBuffers().bufferSource().endBatch();
+
+        // Sprites last, over the scene's depth: added on as light, hidden by whatever is nearer the camera, writing no
+        // depth of their own. They face the camera: their quads are laid along the camera's right and up, read off the
+        // view (its inverse rotation).
+        if (!viewport.sprites().isEmpty()) {
+            Matrix4f view = pose.last().pose();
+            Vector3f right = new Vector3f(view.m00(), view.m10(), view.m20()).normalize();
+            Vector3f up = new Vector3f(view.m01(), view.m11(), view.m21()).normalize();
+            for (SceneViewport.PlacedSprite sprite : viewport.sprites()) {
+                Vector3f across, along;
+                if (sprite.upright()) {
+                    // Straight up, and across along the camera's right laid level.
+                    Vector3f level = new Vector3f(right.x, 0.0F, right.z);
+                    if (level.lengthSquared() < 1.0E-6F) level.set(1.0F, 0.0F, 0.0F);
+                    across = level.normalize().mul(sprite.width() / 2.0F);
+                    along = new Vector3f(0.0F, sprite.height() / 2.0F, 0.0F);
+                } else {
+                    double roll = Math.toRadians(sprite.roll());
+                    float cos = (float) Math.cos(roll), sin = (float) Math.sin(roll);
+                    across = new Vector3f(right).mul(cos).add(new Vector3f(up).mul(sin)).mul(sprite.width() / 2.0F);
+                    along = new Vector3f(up).mul(cos).sub(new Vector3f(right).mul(sin)).mul(sprite.height() / 2.0F);
+                }
+                float x = (float) sprite.pos().x, y = (float) sprite.pos().y, z = (float) sprite.pos().z;
+                int color = sprite.argb();
+                storage.submitCustomGeometry(pose, SPRITE_TYPES.computeIfAbsent(sprite.texture(), SceneViewportManager::spriteType), (last, consumer) -> {
+                    corner(consumer, last, x - across.x - along.x, y - across.y - along.y, z - across.z - along.z, 0, 1, color);
+                    corner(consumer, last, x + across.x - along.x, y + across.y - along.y, z + across.z - along.z, 1, 1, color);
+                    corner(consumer, last, x + across.x + along.x, y + across.y + along.y, z + across.z + along.z, 1, 0, color);
+                    corner(consumer, last, x - across.x + along.x, y - across.y + along.y, z - across.z + along.z, 0, 0, color);
+                });
+            }
+            features.renderAllFeatures();
+            minecraft.renderBuffers().bufferSource().endBatch();
+        }
+    }
+
+    // Light: the texture times the colour, added on by its alpha; the picture's own alpha is left alone, so light over an
+    // empty part of the picture stays see-through and is added onto what's behind the picture as it's shown
+    // (SceneViewportWidget shows the picture premultiplied).
+    private static final RenderPipeline SPRITE_PIPELINE = RenderPipeline.builder(RenderPipelinesAccessor.coolcatcanvas$matricesFogSnippet())
+            .withLocation(CoolCatCanvas.rl("pipeline/viewport_sprite"))
+            .withVertexShader("core/entity")
+            .withFragmentShader("core/entity")
+            .withShaderDefine("EMISSIVE")
+            .withShaderDefine("NO_OVERLAY")
+            .withShaderDefine("NO_CARDINAL_LIGHTING")
+            .withSampler("Sampler0")
+            .withColorTargetState(new ColorTargetState(new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE, SourceFactor.ZERO, DestFactor.ONE)))
+            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+            .withCull(false)
+            .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+            .build();
+    private static final Map<Identifier, RenderType> SPRITE_TYPES = new HashMap<>();
+
+    private static RenderType spriteType(Identifier texture) {
+        return RenderTypeInvoker.coolcatcanvas$create("coolcatlib_viewport_sprite", RenderSetup.builder(SPRITE_PIPELINE).withTexture("Sampler0", texture).createRenderSetup());
+    }
+
+    private static void corner(VertexConsumer consumer, PoseStack.Pose last, float x, float y, float z, float u, float v, int color) {
+        consumer.addVertex(last, x, y, z).setColor(color).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT).setNormal(last, 0, 0, 1);
     }
 
     private static final Identifier WHITE = Identifier.fromNamespaceAndPath("coolcatlib", "textures/misc/white.png");
     private static final Identifier SHADOW = Identifier.withDefaultNamespace("textures/misc/shadow.png");
 
     // The ground: grid lines lying on it, thin strips fading towards its edge, and a shadow under each entity.
+    // The scene's block entities, each by its renderer, as in the world. Their renderers get the viewport's camera:
+    // turned as the view is (so what faces the camera faces out of the picture at the viewer), at its place in the
+    // scene's coordinates (read back out of the view), which is where the block entities' own places are.
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void blockEntities(SceneViewport viewport, PoseStack pose, SubmitNodeStorage storage, float partialTick) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Matrix4f view = new Matrix4f(pose.last().pose());
+        CameraRenderState camera = new CameraRenderState();
+        camera.orientation = view.getNormalizedRotation(new Quaternionf()).conjugate();
+        Vector3f eye = new Matrix4f(view).invert().transformPosition(new Vector3f());
+        camera.pos = new Vec3(eye.x, eye.y, eye.z);
+        for (SceneViewport.PlacedBlockEntity placed : viewport.blockEntities()) {
+            BlockEntityRenderer renderer = minecraft.getBlockEntityRenderDispatcher().getRenderer(placed.blockEntity());
+            if (renderer == null) continue;
+            BlockEntityRenderState state = renderer.createRenderState();
+            renderer.extractRenderState(placed.blockEntity(), state, partialTick, camera.pos, null);
+            pose.pushPose();
+            pose.translate(placed.pos().getX(), placed.pos().getY(), placed.pos().getZ());
+            renderer.submit(state, pose, storage, camera);
+            pose.popPose();
+        }
+    }
+
     private static void ground(SceneViewport viewport, PoseStack pose, SubmitNodeStorage storage) {
         float y = (float) viewport.groundY();
         int margin = viewport.groundCells();

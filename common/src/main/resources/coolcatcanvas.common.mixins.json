@@ -37,7 +37,11 @@
     "client.ChannelMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
-    "client.SoundManagerAccessor"
+    "client.SoundManagerAccessor",
+    "client.GuiGraphicsExtractorInvoker",
+    "client.RenderPipelinesAccessor",
+    "client.RenderTypeInvoker",
+    "client.FrustumInvoker"
   ],
   "injectors": {
     "defaultRequire": 1

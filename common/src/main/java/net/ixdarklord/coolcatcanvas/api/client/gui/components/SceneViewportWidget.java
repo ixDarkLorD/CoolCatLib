@@ -1,10 +1,16 @@
 package net.ixdarklord.coolcatcanvas.api.client.gui.components;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import net.ixdarklord.coolcatcanvas.api.client.viewport.SceneViewport;
 import net.ixdarklord.coolcatcanvas.internal.client.viewport.SceneViewportManager;
+import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.GuiGraphicsExtractorInvoker;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.RenderPipelinesAccessor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -28,6 +34,13 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Experimental
 public class SceneViewportWidget extends AbstractWidget {
+    // The GUI's premultiplied textured blit, with a shader that keeps the pixels the GUI's own drops (alpha 0), where a
+    // viewport's glowing sprites add light over nothing of the scene.
+    private static final RenderPipeline BLIT = RenderPipeline.builder(RenderPipelinesAccessor.coolcatcanvas$guiTexturedSnippet())
+            .withLocation(CoolCatCanvas.rl("pipeline/viewport_blit"))
+            .withFragmentShader(CoolCatCanvas.rl("core/viewport_blit"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT_PREMULTIPLIED_ALPHA))
+            .build();
     private final SceneViewport viewport;
     private boolean turnable = true, zoomable = true;
     private int background;
@@ -61,8 +74,10 @@ public class SceneViewportWidget extends AbstractWidget {
         GpuTextureView view = SceneViewportManager.view(viewport);
         // It is drawn at the start of the next frame the first time; and upside down, as every texture drawn to is.
         if (view != null) {
-            graphics.blit(view, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
-                    getX(), getY(), getRight(), getBottom(), 0.0F, 1.0F, 1.0F, 0.0F);
+            // Premultiplied, as the picture is drawn: translucent edges keep their colour, and a viewport's glowing
+            // sprites add their light onto what's behind the widget.
+            ((GuiGraphicsExtractorInvoker) graphics).coolcatcanvas$innerBlit(BLIT, view, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
+                    getX(), getY(), getRight(), getBottom(), 0.0F, 1.0F, 1.0F, 0.0F, -1);
         }
     }
 

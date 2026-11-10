@@ -13,6 +13,11 @@ public class TestingMod implements ModConstructor {
     public void onConstructMod() {
         TestConfigs.init();
         TestStartupConfig.registerContent();
+        SampleGameTests.register();
+        HookGameTests.register();
+        HookGameTests2.register();
+        HookGameTestsBV.register();
+        HookGameTests3.register();
         TestAttachments.init();
         ArmatureDemo.init();
         ForeignConfigs.init();

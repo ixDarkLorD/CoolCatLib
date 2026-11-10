@@ -19,6 +19,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.EntityEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.InteractionEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.LivingEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.LootTableEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.hooks.ServerLifecycleHooks;
 import net.minecraft.server.level.ServerLevel;
@@ -70,6 +71,9 @@ public final class FabricEventHooks {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !LivingEvents.DAMAGE.invoker().onDamage(entity, source, amount).isInterrupt());
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> !LivingEvents.DEATH.invoker().onDeath(entity, source).isInterrupt());
 
+        net.fabricmc.fabric.api.loot.v3.LootTableEvents.MODIFY.register((key, table, source, registries) -> {
+            if (LootTableEvents.MODIFY.hasListeners()) LootTableEvents.MODIFY.invoker().modify(key, table::pool);
+        });
         UseBlockCallback.EVENT.register((player, level, hand, hit) -> InteractionEvents.USE_BLOCK.invoker().onUseBlock(player, hand, hit));
         UseItemCallback.EVENT.register((player, level, hand) -> InteractionEvents.USE_ITEM.invoker().onUseItem(player, hand));
         UseEntityCallback.EVENT.register((player, level, hand, entity, hit) -> InteractionEvents.USE_ENTITY.invoker().onUseEntity(player, hand, entity));

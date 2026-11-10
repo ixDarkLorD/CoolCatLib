@@ -7,6 +7,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -40,6 +41,14 @@ public final class SceneViewport implements AutoCloseable {
     public record PlacedBlock(BlockPos pos, BlockState state) {
     }
 
+    /**
+     * A block entity of the scene, drawn by its renderer as it is in the world (a chest's lid, a sign's text, a mod's
+     * pedestal and its effects), at a place; its block goes in with {@link #block} as any other. Never in a world, only
+     * drawn: its renderer reads it each time the viewport is drawn, so change it to animate it.
+     */
+    public record PlacedBlockEntity(BlockPos pos, BlockEntity blockEntity) {
+    }
+
     /** An entity of the scene: never in a world, only drawn. {@code yaw} turns it about itself. */
     public record PlacedEntity(Entity entity, Vec3 pos, float yaw) {
     }
@@ -49,6 +58,17 @@ public final class SceneViewport implements AutoCloseable {
      * the camera when the camera looks straight on ({@code camera(0, 0)}).
      */
     public record PlacedItem(ItemStack stack, Vec3 pos, float size) {
+    }
+
+    /**
+     * A glowing picture in the scene, always facing the camera: {@code width} by {@code height} blocks, its middle at a
+     * place, turned {@code roll} degrees in the picture's plane, tinted {@code argb} (its alpha how strong). Added on to
+     * what's behind it, as light is, shaped by its texture's alpha; and hidden by what's in front of it: blocks and entities nearer the camera cover it,
+     * farther ones don't. Rays, halos and flares at a place in the scene. An {@code upright} one stands straight up and
+     * only turns about its vertical to face the camera (a beam of light, a column of mist), so it stays where it is as
+     * the camera moves; {@code roll} is ignored for it.
+     */
+    public record PlacedSprite(Identifier texture, Vec3 pos, float width, float height, float roll, int argb, boolean upright) {
     }
 
     /**
@@ -63,7 +83,9 @@ public final class SceneViewport implements AutoCloseable {
     private final List<PlacedText> texts = new ArrayList<>();
     private final List<PlacedBlock> blocks = new ArrayList<>();
     private final List<PlacedEntity> entities = new ArrayList<>();
+    private final List<PlacedBlockEntity> blockEntities = new ArrayList<>();
     private final List<PlacedItem> items = new ArrayList<>();
+    private final List<PlacedSprite> sprites = new ArrayList<>();
     private double frameSpan;
     private Vec3 frameCentre = Vec3.ZERO;
     private float yaw = 35.0F, pitch = 28.0F, zoom = 1.0F, spin, fov;
@@ -104,9 +126,11 @@ public final class SceneViewport implements AutoCloseable {
 
     public SceneViewport clear() {
         blocks.clear();
+        blockEntities.clear();
         entities.clear();
         items.clear();
         texts.clear();
+        sprites.clear();
         dirty = true;
         return this;
     }
@@ -148,6 +172,17 @@ public final class SceneViewport implements AutoCloseable {
         return this;
     }
 
+    /**
+     * A block entity at a place, drawn by its renderer each time the viewport is (so the viewport is drawn its
+     * {@link #refreshRate} times a second while it holds one). Its renderer sees the viewport's camera: what faces the
+     * camera faces it, and the camera's place is in the scene's own coordinates, as the block entity's is.
+     */
+    public SceneViewport blockEntity(BlockPos pos, BlockEntity blockEntity) {
+        blockEntities.add(new PlacedBlockEntity(pos, blockEntity));
+        dirty = true;
+        return this;
+    }
+
     /** An entity standing with its feet at a place. It is drawn as it is each time the viewport is: animate it by ticking it. */
     public SceneViewport entity(Entity entity, double x, double y, double z, float yaw) {
         entities.add(new PlacedEntity(entity, new Vec3(x, y, z), yaw));
@@ -165,6 +200,33 @@ public final class SceneViewport implements AutoCloseable {
             dirty = true;
         }
         return this;
+    }
+
+    /** A glowing sprite at a place, facing the camera ({@link PlacedSprite}). */
+    public SceneViewport sprite(Identifier texture, double x, double y, double z, float width, float height, float roll, int argb) {
+        sprites.add(new PlacedSprite(texture, new Vec3(x, y, z), width, height, roll, argb, false));
+        dirty = true;
+        return this;
+    }
+
+    /** A glowing sprite standing upright at a place, turning only about its vertical to face the camera ({@link PlacedSprite}). */
+    public SceneViewport uprightSprite(Identifier texture, double x, double y, double z, float width, float height, int argb) {
+        sprites.add(new PlacedSprite(texture, new Vec3(x, y, z), width, height, 0.0F, argb, true));
+        dirty = true;
+        return this;
+    }
+
+    /** Takes away the sprites, leaving the rest of the scene: to place them again each frame as they move. */
+    public SceneViewport clearSprites() {
+        if (!sprites.isEmpty()) {
+            sprites.clear();
+            dirty = true;
+        }
+        return this;
+    }
+
+    public List<PlacedSprite> sprites() {
+        return Collections.unmodifiableList(sprites);
     }
 
     public List<PlacedItem> items() {
@@ -199,6 +261,10 @@ public final class SceneViewport implements AutoCloseable {
 
     public List<PlacedEntity> entities() {
         return Collections.unmodifiableList(entities);
+    }
+
+    public List<PlacedBlockEntity> blockEntities() {
+        return Collections.unmodifiableList(blockEntities);
     }
 
     /** The box the scene fills: what the camera circles and fits in view. */

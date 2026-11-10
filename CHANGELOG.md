@@ -1,7 +1,34 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.2.0 Release | Nov 10, 2026
+### ✨ New Features
+- More common events (`api.event.v2.common`), fired the same on every loader:
+  - `PlayerEvents.ADVANCEMENT_EARNED`: a player completed an advancement (as its rewards are given, before its chat announcement).
+  - `PlayerEvents.ITEM_FISHED`: what a player reeled in with a fishing rod, as its own list, before it's thrown to them; change the list.
+  - `LootTableEvents.MODIFY`: a loot table loading (on server start and `/reload`), vanilla's, mods' and data packs' alike; add pools to it.
+- `SceneViewport.blockEntity(pos, blockEntity)`: a block entity in a viewport's scene, drawn by its renderer as in the world (its camera-facing parts face the viewer).
+- `SpecialModelRendererRegistry` (`api.client.registry`): registers special item model renderer types, the code-drawn parts of item models (`"type": "minecraft:special"`), the same on every loader.
+- Block entity renderers (`coolcatcanvas.api.client.blockentity`): `BlockRenderer`, a base that leaves a mod to write only what it draws (`newState`, `extract`, `render`). Registered as any renderer, with `BlockEntityRendererRegistry.register(type, MyRenderer::new)`.
+  - It is culled before the game makes it a render state: by distance (`viewDistance`, grown by `reach` for one shown larger), and when its `bounds` are out of view. This works the same on Fabric, which doesn't cull block entities by view at all, and on NeoForge, without NeoForge's new box per block entity per frame.
+  - Detail by distance: `detail(Detail.FULL, 16).detail(Detail.REDUCED, 40)` sets what each block entity's state is drawn at (`state.detail`, `state.detailed(...)`), and layers are skipped past the detail they're drawn to.
+  - Render states are reused from frame to frame instead of made anew for every block entity every frame (`pooled(false)` turns it off; `createUnpooledState()` makes one to keep).
+  - `facing(Facing.HORIZONTAL)` or `facing(Facing.ALL)` turns what it draws to the block's facing. `trackLookedAt()` sets `state.lookedAt`, and `BlockRenderContext.transition(...)` eases a change in over some ticks. `onFrame()` runs once a frame, for work every block entity shares.
+  - Layers (`BlockRenderLayer`, each with a typed state of its own): `ItemLayer` (an item shown on the block, which can spin and bob), `LabelLayer` (lines of text facing the camera, always, while looked at or never, within a range) and `ChildLayer` (another block entity drawn by its own renderer, such as a cabinet's pedestals).
+  - With F3 + B, each one's bounds are drawn, colored by the detail it's drawn at.
+- `GhostBlocks.Light.WORLD`: ghosts lit as the world lights a real block there (each face shaded by its side, smooth lighting, the block and sky light where it stands), so a ghost of one block over another matches it exactly. Pass it to the new `GhostBlocks.draw(blocks, argb, show, light)`; `BRIGHT` and `SHADED` are the old full-bright and shaded looks.
+- `GhostBlocks.draw(groups, argbs, show, light)`: several groups of ghosts at once, each with its own colour and opacity (a reveal fading in waves). World-lit groups of solid blocks go over the world in one pass instead of one pass a group.
+- `GhostBlocks.drawEffect(blocks, show, light, shader, texture, params)`: ghosts of blocks' real models (a flower's petals, grass's blades) with a fragment shader of the mod's own laid over the world where they show, in place of a flat colour: a force field running over the blocks, a scan, frost creeping across them. The shader imports `coolcatlib:ghost_effect.glsl`, which gives each pixel's place in the world, the ghosts' colour, a texture of the mod's choosing and up to sixteen numbers of its own.
+- `SceneViewport.sprite(...)`: a glowing, camera-facing picture at a place in the scene (rays, halos, flares), added on as light and hidden by nearer blocks and entities.
+
+### 🔧 Changes
+- `GhostBlocks.Show.OVER_BLOCK` ghosts are drawn a hair nearer the camera instead of a little larger, so they cover exactly their blocks' faces and no longer spill onto the blocks beside them.
+- World-lit ghosts keep their lighting from frame to frame and build it again only when their block changes, or twice a second for changes in the light.
+- World-lit ghosts of blocks drawn off the middle of their block (flowers, grass, other plants) sit where the real ones are, instead of in the middle.
+- `ArmatureBlockRenderer` is a `BlockRenderer`. Its setup and its `State` are unchanged, and it is now culled out of view by its armature's bounds, with its states reused. With `detail` bands set, it animates every other frame at `REDUCED` and every fourth at `MINIMAL`, without its attachments. It no longer makes two matrices per block entity per frame. A subclass that overrides `createRenderState()` still works, without the reuse; override `newState()` to get it.
+
 ## v8.1.0 Release | Nov 3, 2026
+
 ### 🔧 Changes
 - CoolCatLib's own config screen (used without Glazed Menu) lists each config as a row, instead of a card with artwork: its kind's icon, its name over what its kind means, and how many settings it has. A mod's own card artwork at `assets/<modid>/textures/gui/config/cards/<config name>.png` is no longer used.
 - Each kind of config has its own color in the config list (client blue, common teal, server purple, startup orange), unless the config sets its own theme; its rows are centered in the list and as tall as needed to fit without scrolling.

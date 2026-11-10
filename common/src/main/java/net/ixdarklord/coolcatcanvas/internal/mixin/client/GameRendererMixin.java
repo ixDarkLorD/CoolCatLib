@@ -1,6 +1,7 @@
 package net.ixdarklord.coolcatcanvas.internal.mixin.client;
 
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffectScope;
+import net.ixdarklord.coolcatcanvas.internal.client.blockentity.BlockRenderFrames;
 import net.ixdarklord.coolcatcanvas.internal.client.cutscene.CutsceneManager;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectManager;
 import net.ixdarklord.coolcatcanvas.internal.client.gui.GuiAreaRecorder;
@@ -21,11 +22,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 // World effects: drawn right after the level, while its projection is set and before the hand clears its depth.
 // Cutscenes: while one has the camera, the frame is drawn as with the HUD hidden (no hand, no fire or water over the
 // view) and the block the player looks at isn't outlined.
+// Block renderers: the frame they're in is counted at its start (for their state pools).
 // GuiAreas: what the HUD adds is recorded, and once the frame's GUI is gathered it becomes what the areas are.
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void coolcatcanvas$beginFrame(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+        BlockRenderFrames.beginFrame();
         ScreenEffectManager.beginFrame(deltaTracker);
         SkyboxManager.beginFrame(deltaTracker);
         // Scene viewports are drawn to their own textures now, before the level, while nothing else waits to be drawn.

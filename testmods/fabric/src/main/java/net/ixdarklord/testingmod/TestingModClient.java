@@ -1,10 +1,10 @@
 package net.ixdarklord.testingmod;
 
+import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffects;
 import net.ixdarklord.coolcatcore.api.client.gui.screens.StorageScreen;
 import net.ixdarklord.coolcatcore.api.client.registry.MenuScreenRegistry;
 import net.ixdarklord.coolcatcore.api.config.ConfigColorScheme;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
-import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffects;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
 
 public class TestingModClient implements ClientModConstructor {
@@ -19,6 +19,8 @@ public class TestingModClient implements ClientModConstructor {
         TextEffectsDemo.init();
         CutsceneDemo.init();
         ArmatureDemoClient.init();
+        VfxLayersDemoClient.init();
+        BlockRendererDemoClient.init();
         MenuScreenRegistry.register(TestAttachments.CRATE_MENU, CrateScreen::new);
         MenuScreenRegistry.register(TestAttachments.POUCH_MENU, StorageScreen::new);
     }

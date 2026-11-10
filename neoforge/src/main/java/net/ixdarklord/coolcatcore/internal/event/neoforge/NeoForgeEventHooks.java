@@ -5,6 +5,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.EntityEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.InteractionEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.LivingEvents;
+import net.ixdarklord.coolcatcore.api.event.v2.common.LootTableEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
@@ -24,6 +25,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.LootTableLoadEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -117,6 +119,9 @@ public final class NeoForgeEventHooks {
 
         bus.addListener((LivingIncomingDamageEvent event) -> {
             if (LivingEvents.DAMAGE.invoker().onDamage(event.getEntity(), event.getSource(), event.getAmount()).isInterrupt()) event.setCanceled(true);
+        });
+        bus.addListener((LootTableLoadEvent event) -> {
+            if (LootTableEvents.MODIFY.hasListeners()) LootTableEvents.MODIFY.invoker().modify(event.getKey(), event.getTable()::addPool);
         });
         bus.addListener((LivingDeathEvent event) -> {
             if (LivingEvents.DEATH.invoker().onDeath(event.getEntity(), event.getSource()).isInterrupt()) event.setCanceled(true);
