@@ -10,12 +10,14 @@
 </p>
 
 <p align="center">
-  <a href="https://modrinth.com/mod/coolcatlib"><img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/modrinth.svg" alt="Modrinth" height="26"></a>
-  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib"><img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/curseforge.svg" alt="CurseForge" height="26"></a>
+  <a href="https://modrinth.com/mod/coolcatlib"><img src="https://ixdarklord.github.io/ModResources/badges/coolcatlib/modrinth-downloads.svg" alt="Modrinth downloads" height="26"></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/coolcatlib"><img src="https://ixdarklord.github.io/ModResources/badges/coolcatlib/curseforge-downloads.svg" alt="CurseForge downloads" height="26"></a>
   <a href="https://ixdarklord.github.io/CoolCatLib/"><img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/docs.svg" alt="Docs" height="26"></a>
   <a href="https://discord.gg/ZapGEPqm2V"><img src="https://img.shields.io/discord/1173075408556654592?style=flat&logo=discord&logoColor=white&label=&labelColor=e0703a&color=3A3F58" alt="Discord" width="110" height="26"></a>
 </p>
 <p align="center">
+  <img src="https://ixdarklord.github.io/ModResources/badges/coolcatlib/version.svg" alt="Version" height="26">
+  <img src="https://ixdarklord.github.io/ModResources/badges/coolcatlib/minecraft.svg" alt="Minecraft versions" height="26">
   <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/fabric.svg" alt="Fabric" height="26">
   <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/neoforge.svg" alt="NeoForge" height="26">
   <img src="https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/badges/coolcatlib/forge.svg" alt="Forge" height="26">
