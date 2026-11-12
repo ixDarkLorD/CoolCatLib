@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.2.1 Release | Nov 12, 2026
+### 🐛 Bug Fixes
+- No longer crashes the game alongside Citadel (or any mod that changes the smithing table's recipe lookup): CoolCatLib's hooks added in 8.2.0 (the smithing table's recipes, a merchant's offers, BlockViews' chunk data, and a broken block's drops on Fabric and Forge) now wrap the game's calls instead of replacing them, so other mods can change the same calls too.
+
 ## v8.2.0 Release | Nov 10, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
