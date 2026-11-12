@@ -1,5 +1,7 @@
 package net.ixdarklord.coolcatcore.internal.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.ixdarklord.coolcatcore.internal.block.BlockViewRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.state.BlockState;
@@ -9,11 +11,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 // BlockViews: a section counts its block changes, and is written (and sized) as its blocks look to the player a chunk is
-// being built for (BlockViewRegistry).
+// being built for (BlockViewRegistry). Wrapped rather than redirected, so other mods can change the same calls too.
 @Mixin(LevelChunkSection.class)
 public abstract class LevelChunkSectionMixin implements BlockViewRegistry.Tracked {
     @Unique
@@ -29,13 +30,13 @@ public abstract class LevelChunkSectionMixin implements BlockViewRegistry.Tracke
         this.coolcatlib$changes++;
     }
 
-    @Redirect(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/PalettedContainer;write(Lnet/minecraft/network/FriendlyByteBuf;)V", ordinal = 0))
-    private void coolcatlib$writeViewed(PalettedContainer<BlockState> states, FriendlyByteBuf buffer) {
-        BlockViewRegistry.statesOf((LevelChunkSection) (Object) this, states).write(buffer);
+    @WrapOperation(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/PalettedContainer;write(Lnet/minecraft/network/FriendlyByteBuf;)V", ordinal = 0))
+    private void coolcatlib$writeViewed(PalettedContainer<BlockState> states, FriendlyByteBuf buffer, Operation<Void> write) {
+        write.call(BlockViewRegistry.statesOf((LevelChunkSection) (Object) this, states), buffer);
     }
 
-    @Redirect(method = "getSerializedSize", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/PalettedContainer;getSerializedSize()I", ordinal = 0))
-    private int coolcatlib$sizeViewed(PalettedContainer<BlockState> states) {
-        return BlockViewRegistry.statesOf((LevelChunkSection) (Object) this, states).getSerializedSize();
+    @WrapOperation(method = "getSerializedSize", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/PalettedContainer;getSerializedSize()I", ordinal = 0))
+    private int coolcatlib$sizeViewed(PalettedContainer<BlockState> states, Operation<Integer> size) {
+        return size.call(BlockViewRegistry.statesOf((LevelChunkSection) (Object) this, states));
     }
 }
