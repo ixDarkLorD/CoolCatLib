@@ -26,6 +26,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -37,8 +38,10 @@ import java.util.function.Supplier;
 // filters and slot limits.
 public final class ForgeTransferCompat {
     private static final ResourceLocation KEY = CoolCatCore.rl("container");
-    // The providers attached to block entities, for invalidating them by position.
-    private static final Map<BlockEntity, HandlerProvider> BLOCK_PROVIDERS = Collections.synchronizedMap(new WeakHashMap<>());
+    // The providers attached to block entities, for invalidating them by position. Both held weakly: a provider looks its
+    // block entity up through a reference to it, so holding the provider would keep the block entity (and the entry)
+    // alive forever. The block entity keeps its own provider for as long as it lives.
+    private static final Map<BlockEntity, WeakReference<HandlerProvider>> BLOCK_PROVIDERS = Collections.synchronizedMap(new WeakHashMap<>());
 
     private ForgeTransferCompat() {}
 
@@ -54,7 +57,7 @@ public final class ForgeTransferCompat {
             });
             event.addCapability(KEY, provider);
             event.addListener(provider::invalidate);
-            BLOCK_PROVIDERS.put(blockEntity, provider);
+            BLOCK_PROVIDERS.put(blockEntity, new WeakReference<>(provider));
         });
         forgeBus.addGenericListener(Entity.class, (AttachCapabilitiesEvent<Entity> event) -> {
             Entity entity = event.getObject();
@@ -87,7 +90,8 @@ public final class ForgeTransferCompat {
         if (!level.isLoaded(pos)) return;
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity == null) return;
-        HandlerProvider provider = BLOCK_PROVIDERS.get(blockEntity);
+        WeakReference<HandlerProvider> reference = BLOCK_PROVIDERS.get(blockEntity);
+        HandlerProvider provider = reference != null ? reference.get() : null;
         if (provider != null) provider.invalidate();
     }
 
