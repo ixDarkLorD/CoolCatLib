@@ -34,6 +34,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +46,10 @@ import java.util.function.Consumer;
 // component. Vanilla containers are left to Forge's own providers.
 public final class ForgeTransferCompat {
     private static final ResourceLocation ID = CoolCatCore.rl("container");
-    // The block providers by block entity, for HandlerType.invalidate.
-    private static final Map<BlockEntity, CachingProvider> BLOCK_PROVIDERS = Collections.synchronizedMap(new WeakHashMap<>());
+    // The providers attached to block entities, for invalidating them by position. Both held weakly: a provider looks its
+    // block entity up through a reference to it, so holding the provider would keep the block entity (and the entry)
+    // alive forever. The block entity keeps its own provider for as long as it lives.
+    private static final Map<BlockEntity, WeakReference<CachingProvider>> BLOCK_PROVIDERS = Collections.synchronizedMap(new WeakHashMap<>());
 
     private ForgeTransferCompat() {}
 
@@ -55,7 +58,7 @@ public final class ForgeTransferCompat {
             BlockEntity blockEntity = event.getObject();
             if (blockEntity instanceof Container && !(blockEntity instanceof ExtendedContainerBlockEntity)) return;
             CachingProvider provider = new CachingProvider(side -> blockContainer(blockEntity, side));
-            BLOCK_PROVIDERS.put(blockEntity, provider);
+            BLOCK_PROVIDERS.put(blockEntity, new WeakReference<>(provider));
             event.addCapability(ID, provider);
             event.addListener(provider::invalidate);
         });
@@ -91,7 +94,8 @@ public final class ForgeTransferCompat {
         if (!level.isLoaded(pos)) return;
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity == null) return;
-        CachingProvider provider = BLOCK_PROVIDERS.get(blockEntity);
+        WeakReference<CachingProvider> reference = BLOCK_PROVIDERS.get(blockEntity);
+        CachingProvider provider = reference != null ? reference.get() : null;
         if (provider != null) provider.invalidate();
     }
 
