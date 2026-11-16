@@ -1,6 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.core.forge;
 
-import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigScreens;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
 import net.ixdarklord.coolcatcore.api.item.ComponentItem;
@@ -23,7 +22,6 @@ public final class ForgeClientSetup {
         ForgeClientEventHooks.register(modEventBus);
         MinecraftForge.EVENT_BUS.addListener((ItemTooltipEvent event) -> ComponentItem.onTooltip(event.getItemStack(), event.getToolTip()));
         ClientModConstructor.construct(CoolCatCore.MOD_ID, CoolCatCoreClientConstructor::new);
-        ClientModConstructor.construct(CoolCatCore.MOD_ID, CoolCatCanvasClientConstructor::new);
         modEventBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(ForgeClientSetup::registerConfigScreens));
     }
 

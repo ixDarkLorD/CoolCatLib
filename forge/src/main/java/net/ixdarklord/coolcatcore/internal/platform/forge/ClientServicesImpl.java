@@ -1,5 +1,7 @@
 package net.ixdarklord.coolcatcore.internal.platform.forge;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.ixdarklord.coolcatcore.api.client.registry.MenuScreenRegistry;
 import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
 import net.ixdarklord.coolcatcore.internal.platform.ClientServices;
@@ -11,17 +13,24 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -103,6 +112,21 @@ public final class ClientServicesImpl implements ClientServices {
     // registered after that go in at once.
     private static final List<Runnable> BLOCK_RENDER_LAYERS = new ArrayList<>();
     private static boolean blockRenderLayersSet;
+
+    // Each of the model's render types, as Forge's chunks build it.
+    @Override
+    public void tesselateWorldBlock(BlockAndTintGetter level, BlockState state, BlockPos pos, PoseStack pose, Function<RenderType, VertexConsumer> buffers, RandomSource random) {
+        BlockRenderDispatcher blocks = Minecraft.getInstance().getBlockRenderer();
+        BakedModel model = blocks.getBlockModel(state);
+        ModelData data = model.getModelData(level, pos, state, ModelData.EMPTY);
+        long seed = state.getSeed(pos);
+        random.setSeed(seed);
+        for (RenderType layer : model.getRenderTypes(state, random, data)) {
+            pose.pushPose();
+            blocks.getModelRenderer().tesselateBlock(level, model, state, pos, pose, buffers.apply(layer), true, random, seed, OverlayTexture.NO_OVERLAY, data, layer);
+            pose.popPose();
+        }
+    }
 
     @Override
     public void registerBlockRenderLayer(Supplier<? extends Block> block, RenderType layer) {

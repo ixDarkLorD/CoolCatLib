@@ -9,6 +9,9 @@
     "ServerPlayerGameModeMixin",
     "ServerPlayerTravelMixin"
   ],
+  "client": [
+    "ClientCommandHandlerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

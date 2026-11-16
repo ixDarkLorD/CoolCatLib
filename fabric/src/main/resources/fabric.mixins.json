@@ -15,6 +15,9 @@
     "BlockStateBaseMixin",
     "ServerPlayerGameModeMixin"
   ],
+  "client": [
+    "ClientCommandInternalsMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

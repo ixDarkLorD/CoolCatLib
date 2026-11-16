@@ -17,7 +17,7 @@ import java.util.function.IntConsumer;
 
 /**
  * Client only: the generated config screens. On Forge every mod with a config gets its screen in the mod list
- * automatically; elsewhere, open it from a button or key with these. {@code /coolcatlib_client config open [mod] [category]}
+ * automatically; elsewhere, open it from a button or key with these. {@code /coolcatlib config [mod] [config]}
  * opens them too.
  */
 public final class ConfigScreens {

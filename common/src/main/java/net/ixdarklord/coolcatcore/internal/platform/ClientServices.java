@@ -3,20 +3,26 @@ package net.ixdarklord.coolcatcore.internal.platform;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.ixdarklord.coolcatcore.api.client.registry.MenuScreenRegistry;
 import net.ixdarklord.coolcatcore.api.network.CustomPacketPayload;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -39,6 +45,12 @@ public interface ClientServices {
     <T extends BlockEntity> void registerBlockEntityRenderer(Supplier<? extends BlockEntityType<? extends T>> type, BlockEntityRendererProvider<T> provider);
 
     void registerBlockRenderLayer(Supplier<? extends Block> block, RenderType layer);
+
+    /**
+     * Builds a block's model as the world's chunks build it (each face shaded by its side, smooth lighting, the light
+     * where it stands, its model offset), into the buffer for each chunk layer the loader draws it in.
+     */
+    void tesselateWorldBlock(BlockAndTintGetter level, BlockState state, BlockPos pos, PoseStack pose, Function<RenderType, VertexConsumer> buffers, RandomSource random);
 
     void sendToServer(CustomPacketPayload payload);
 

@@ -4,9 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import net.ixdarklord.coolcatcore.api.command.ModCommands;
 import net.ixdarklord.coolcatcore.api.config.ConfigEvents;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
 import net.ixdarklord.coolcatcore.api.config.StartupSync;
@@ -16,6 +15,7 @@ import net.ixdarklord.coolcatcore.api.event.v2.client.ClientCommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 import net.ixdarklord.coolcatcore.api.network.Network;
+import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcore.internal.config.ConfigCommands;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
@@ -38,6 +38,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public final class ClientConfigManager {
     private static final int MISMATCH_LINES = 6;
     private static final int MISMATCH_SCREEN_TIMEOUT = 400;
     private static @Nullable Supplier<Screen> pendingScreen;
+    // Whether the server has CoolCatLib's config commands, which the client's own then leave to.
+    private static boolean serverConfigCommands;
     // Offered once the disconnect a startup mismatch caused has shown its screen.
     private static @Nullable List<StartupMismatch> pendingMismatches;
     private static int mismatchTicks;
@@ -84,52 +87,31 @@ public final class ClientConfigManager {
             }
         });
         ClientPlayerEvents.LEAVE.register(player -> onDisconnect());
-        ClientCommandEvents.REGISTER.register((dispatcher, context) -> {
-            LiteralArgumentBuilder<SharedSuggestionProvider> config = LiteralArgumentBuilder.literal("config");
-            config.then(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("open")
-                    .executes(command -> {
-                        pendingScreen = () -> ConfigScreens.createModList(null);
+        // "/coolcatlib config" on the client, for servers without CoolCatLib, where the server's (which asks the client
+        // to open a screen, and reloads the server's configs) isn't there. On a server with it, this one stands aside.
+        ModCommands.registerClient(CoolCatCore.MOD_ID, "coolcatlib", (root, context) -> root.then(ConfigCommands.<SharedSuggestionProvider>anyMod(new ConfigCommands.Actions<>() {
+                    @Override
+                    public int open(CommandContext<SharedSuggestionProvider> command, @Nullable String modId, @Nullable String config) {
+                        Component problem = ConfigCommands.problem(modId, config);
+                        if (problem != null) {
+                            ClientCommandEvents.sendError(problem);
+                            return 0;
+                        }
+                        openScreen(modId, config);
                         return 1;
-                    })
-                    .then(RequiredArgumentBuilder.<SharedSuggestionProvider, String>argument("mod", StringArgumentType.word())
-                            .suggests((command, builder) -> SharedSuggestionProvider.suggest(ConfigManager.modIds(), builder))
-                            .executes(command -> {
-                                String modId = StringArgumentType.getString(command, "mod");
-                                if (ConfigManager.forMod(modId).isEmpty()) {
-                                    ClientCommandEvents.sendError(Component.translatableWithFallback("config.coolcatlib.command.no_config", "No such config"));
-                                    return 0;
-                                }
-                                pendingScreen = () -> ConfigScreens.create(null, modId);
-                                return 1;
-                            })
-                            // One category in a small window, e.g. "client/example_category".
-                            .then(RequiredArgumentBuilder.<SharedSuggestionProvider, String>argument("category", StringArgumentType.greedyString())
-                                    .suggests((command, builder) -> SharedSuggestionProvider.suggest(
-                                            CategoryPopup.paths(StringArgumentType.getString(command, "mod")), builder))
-                                    .executes(command -> {
-                                        String modId = StringArgumentType.getString(command, "mod");
-                                        String category = StringArgumentType.getString(command, "category");
-                                        if (CategoryPopup.create(null, modId, category) == null) {
-                                            ClientCommandEvents.sendError(Component.translatableWithFallback("config.coolcatlib.command.no_category",
-                                                    "No such category: %s", category));
-                                            return 0;
-                                        }
-                                        pendingScreen = () -> ConfigScreens.categoryPopup(null, modId, category);
-                                        return 1;
-                                    }))));
-            ConfigCommands.build(config, found -> found.scope() == ConfigScope.CLIENT, new ConfigCommands.Feedback<>() {
-                @Override
-                public void success(SharedSuggestionProvider source, Component message, boolean broadcast) {
-                    ClientCommandEvents.sendFeedback(message);
-                }
+                    }
 
-                @Override
-                public void failure(SharedSuggestionProvider source, Component message) {
-                    ClientCommandEvents.sendError(message);
-                }
-            });
-            dispatcher.register(LiteralArgumentBuilder.<SharedSuggestionProvider>literal("coolcatlib_client").then(config));
-        });
+                    @Override
+                    public int reload(CommandContext<SharedSuggestionProvider> command, @Nullable String modId, @Nullable String config) {
+                        Component problem = ConfigCommands.problem(modId, config);
+                        if (problem != null) {
+                            ClientCommandEvents.sendError(problem);
+                            return 0;
+                        }
+                        reloadHere(modId, config);
+                        return 1;
+                    }
+                }, source -> true).requires(source -> !serverConfigCommands)));
     }
 
     /** Where a config's edits go from this client. */
@@ -271,6 +253,7 @@ public final class ClientConfigManager {
     }
 
     private static void onDisconnect() {
+        serverConfigCommands = false;
         if (!OWN_VALUES.isEmpty()) CoolCatCore.LOGGER.debug("Restoring this client's own values of {}", OWN_VALUES.keySet());
         OWN_VALUES.forEach((id, values) -> {
             ConfigImpl config = ConfigManager.get(id);
@@ -280,6 +263,47 @@ public final class ClientConfigManager {
         });
         OWN_VALUES.clear();
         CAN_EDIT.clear();
+    }
+
+    /** The server has CoolCatLib's config commands: the client's step aside until the player leaves. */
+    public static void onServerCommands(ConfigNetwork.CommandsPayload payload) {
+        serverConfigCommands = payload.configCommands();
+    }
+
+    /** A config reload command's client configs: reloaded from their files here. */
+    public static void onReload(ConfigNetwork.ReloadPayload payload) {
+        List<ConfigImpl> configs = ConfigCommands.named(payload.modId().isEmpty() ? null : payload.modId(), payload.config().isEmpty() ? null : payload.config());
+        List<String> reloaded = ConfigCommands.reload(configs, true, Platform.getServer() != null);
+        if (!reloaded.isEmpty() || payload.replyIfNone()) ClientCommandEvents.sendFeedback(ConfigCommands.reloaded(reloaded));
+    }
+
+    // The client command's reload: the configs kept on this thread now, and in singleplayer the world's too, on the
+    // server thread, so a player without cheats can reload them as well. One reply once both are done.
+    private static void reloadHere(@Nullable String modId, @Nullable String config) {
+        List<ConfigImpl> configs = ConfigCommands.named(modId, config);
+        MinecraftServer server = Platform.getServer();
+        List<String> reloaded = new ArrayList<>(ConfigCommands.reload(configs, true, server != null));
+        if (server == null) {
+            ClientCommandEvents.sendFeedback(ConfigCommands.reloaded(reloaded));
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        server.submit(() -> ConfigCommands.reload(configs, false, true)).thenAccept(onServer -> minecraft.execute(() -> {
+            reloaded.addAll(onServer);
+            ClientCommandEvents.sendFeedback(ConfigCommands.reloaded(reloaded));
+        }));
+    }
+
+    /** A config command's screen: every mod's configs, a mod's, or one of them. */
+    public static void onOpenScreen(ConfigNetwork.OpenScreenPayload payload) {
+        openScreen(payload.modId().isEmpty() ? null : payload.modId(), payload.config().isEmpty() ? null : payload.config());
+    }
+
+    private static void openScreen(@Nullable String modId, @Nullable String name) {
+        ConfigImpl config = modId == null || name == null ? null
+                : ConfigManager.forMod(modId).stream().filter(found -> found.name().equals(name)).findFirst().orElse(null);
+        openLater(() -> modId == null ? ConfigScreens.createModList(null)
+                : config != null ? ConfigScreens.create(null, config) : ConfigScreens.create(null, modId));
     }
 
     /** Opens a screen next tick, once whatever is closing (the chat, after a command) has closed. */

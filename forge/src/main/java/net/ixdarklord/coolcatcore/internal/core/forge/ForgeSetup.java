@@ -1,6 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.core.forge;
 
-import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
 import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.brewing.forge.ForgeBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.core.forge.ForgeModEntrypoint;
@@ -22,7 +21,6 @@ public class ForgeSetup extends ForgeModEntrypoint {
         this.modEventBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(ForgeSetup::registerBrewingRecipes));
         ForgeEventHooks.register(this.modEventBus);
         this.common(CoolCatCoreConstructor::new);
-        this.common(CoolCatCanvasConstructor::new);
         // Forge 47 has no client-only @Mod classes; the client half is only loaded on a client.
         if (FMLEnvironment.dist.isClient()) ForgeClientSetup.init(this.modEventBus);
     }

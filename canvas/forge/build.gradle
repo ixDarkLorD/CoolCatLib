@@ -1,0 +1,2 @@
+apply from: "${rootProject.sharedScripts}/forge.gradle"
+apply from: rootProject.file("canvas/canvas.gradle")

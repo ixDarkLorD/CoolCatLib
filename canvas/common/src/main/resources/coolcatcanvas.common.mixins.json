@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "net.ixdarklord.coolcatcanvas.internal.mixin",
+  "mixins": [
+    "TextColorAccessor",
+    "TextColorMixin"
+  ],
+  "client": [
+    "client.AbstractContainerScreenMixin",
+    "client.AbstractWidgetMixin",
+    "client.CameraMixin",
+    "client.EffectInstanceAccessor",
+    "client.FontMixin",
+    "client.FontStringRenderOutputMixin",
+    "client.GameRendererMixin",
+    "client.GuiGraphicsMixin",
+    "client.GuiMixin",
+    "client.LevelRendererMixin",
+    "client.ScreenMixin",
+    "client.ShaderInstanceAccessor",
+    "client.ChannelMixin",
+    "client.SoundEngineAccessor",
+    "client.SoundEngineMixin",
+    "client.SoundManagerAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

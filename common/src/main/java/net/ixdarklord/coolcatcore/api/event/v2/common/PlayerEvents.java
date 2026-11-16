@@ -11,10 +11,13 @@ import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Players joining and leaving the server, their tick, respawning and changing dimension, picking items up, and crafting
@@ -93,7 +96,21 @@ public final class PlayerEvents {
         for (Smelted listener : listeners) listener.onSmelted(player, smelted, furnace);
     });
 
+    public static final EventInvoker<ItemFished> ITEM_FISHED = EventInvoker.create(ItemFished.class, listeners -> (player, hook, items) -> {
+        for (ItemFished listener : listeners) listener.onItemFished(player, hook, items);
+    });
+
     private PlayerEvents() {}
+
+    /**
+     * What a player reeled in with a fishing rod (server side), as its own list, before it's thrown to them: change the
+     * list to change the catch. Not fired when nothing but an entity was hooked, or (on Forge) when the catch was
+     * cancelled.
+     */
+    @FunctionalInterface
+    public interface ItemFished {
+        void onItemFished(ServerPlayer player, FishingHook hook, List<ItemStack> items);
+    }
 
     /** A player finished logging in and is in the level. */
     @FunctionalInterface

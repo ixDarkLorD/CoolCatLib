@@ -1,7 +1,14 @@
 apply from: "${rootProject.sharedScripts}/forge.gradle"
 
-// The mixin configs of the visuals (the coolcatcanvas package), beside the ones the shared script names after the mod id.
-loom.forge {
-    mixinConfig "coolcatcanvas.common.mixins.json"
-    mixinConfig "coolcatcanvas.forge.mixins.json"
+// CoolCatLib Canvas, the visuals, is a mod of its own (canvas/) nested in this jar: Loom puts its jar inside and lists
+// it in Forge's jar-in-jar metadata. Published beside this one, and named in this one's POM so Maven users get it too.
+dependencies {
+    include project(":canvas-forge")
+}
+publishing.publications.mavenJava.pom.withXml {
+    def dependency = (asNode().dependencies[0] ?: asNode().appendNode("dependencies")).appendNode("dependency")
+    dependency.appendNode("groupId", "${mod_maven_group}.coolcatlib")
+    dependency.appendNode("artifactId", "coolcatlib-canvas-forge")
+    dependency.appendNode("version", project.version)
+    dependency.appendNode("scope", "runtime")
 }

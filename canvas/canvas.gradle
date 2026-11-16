@@ -1,0 +1,42 @@
+// CoolCatLib Canvas (canvas/): the visuals, a mod of its own (id coolcatcanvas) built on CoolCatLib and nested in
+// CoolCatLib's jars, so the two can be shipped apart later. Applied after the shared scripts; its mod attributes (modid,
+// mod_name, ...) come from the canvas_* properties (see settings.gradle).
+def platform = project.name - "canvas-"
+
+// Published beside CoolCatLib's own: net.ixdarklord.coolcatlib:coolcatlib-canvas-<loader>.
+group = "${mod_maven_group}.coolcatlib"
+base {
+    archivesName = "coolcatlib-canvas" + (platform == "common" ? "" : "-$platform")
+}
+publishing.publications.mavenJava {
+    artifactId = "coolcatlib-canvas-$platform"
+    pom.name = "${mod_name} [${platform}]"
+}
+
+// Built on CoolCatLib: its loader module and, as Loom resolves project dependencies to their own classes, its common
+// one. With remapping, Loom's project dependencies go through their "namedElements" configuration.
+def named = { String path -> rootProject.loomRemap ? dependencies.project(path: path, configuration: "namedElements") : dependencies.project(path: path) }
+dependencies {
+    if (platform != "common") compileOnly named(":$platform")
+    compileOnly named(":common")
+}
+
+if (platform == "common") {
+    // Architectury's transformer keeps the platform it's transforming for in static state, so with parallel builds
+    // Canvas's transform could run beside CoolCatLib's and write one loader's @ExpectPlatform targets into the other's
+    // jar. Canvas's run after CoolCatLib's.
+    tasks.matching { it.name.startsWith("transform") }.configureEach {
+        mustRunAfter(rootProject.project(":common").tasks.matching { it.name.startsWith("transform") })
+    }
+
+    // A plain jar of this module's own classes, like CoolCatLib's common module.
+    shadowJar {
+        configurations = []
+        archiveClassifier = null
+    }
+} else {
+    // Canvas runs through the test mods; its own run configurations would share CoolCatLib's names in the IDE.
+    loom.runs.configureEach {
+        ideConfigGenerated(false)
+    }
+}

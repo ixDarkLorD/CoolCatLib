@@ -99,18 +99,20 @@ public final class BlockViewRegistry {
 
     private static PalettedContainer<BlockState> viewed(PalettedContainer<BlockState> states, Look look) {
         if (!states.maybeHas(state -> look.view(state) != state)) return states;
-        PalettedContainer<BlockState> copy = states.copy();
+        // A fresh container, filled block by block, not a copy(): a copy's palette keeps the original container as the
+        // one it resizes, so a disguise that needs more palette entries would overflow the copy and resize the real
+        // section ("The value 32 is not in the specified inclusive range of 0 to 31").
+        PalettedContainer<BlockState> viewed = states.recreate();
         Map<BlockState, BlockState> seen = new IdentityHashMap<>();
         for (int y = 0; y < 16; y++) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
-                    BlockState state = copy.get(x, y, z);
-                    BlockState shown = seen.computeIfAbsent(state, look::view);
-                    if (shown != state) copy.getAndSetUnchecked(x, y, z, shown);
+                    BlockState state = states.get(x, y, z);
+                    viewed.getAndSetUnchecked(x, y, z, seen.computeIfAbsent(state, look::view));
                 }
             }
         }
-        return copy;
+        return viewed;
     }
 
     /** Whether a block entity is left out of what a player is sent: its block looks like another to them. */
