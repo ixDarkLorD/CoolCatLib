@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v9.0.0 Release | Unreleased
+## v9.0.0 Release | Nov 16, 2026
 ### ✨ New Features
 - Block entity renderers (`coolcatcanvas.api.client.blockentity`), as on 26.1.2: `BlockRenderer`, a base that leaves a mod to write only what it draws (`newState`, `extract`, `render`), culled by distance and view (`viewDistance`, `bounds`), drawn in less detail farther off (`detail` bands, `reach`), its states reused, turned to its block's facing (`facing`), with layers drawn with it (`ItemLayer` for floating items, `LabelLayer` for text, `ChildLayer` for other renderers). Press F3 + B to see each one's bounds, colored by its detail.
 - `ArmatureBlockRenderer` is a `BlockRenderer`: every setting above works on it and chains with its own (`.detail(...).animate(...)`), `bounds` grow from the armature's own, and a subclass draws more with `newState`, `extract` and `render`. It is culled out of view by the armature's bounds, and with `detail` bands set it animates every other frame at `REDUCED` and every fourth at `MINIMAL`, without its attachments.
