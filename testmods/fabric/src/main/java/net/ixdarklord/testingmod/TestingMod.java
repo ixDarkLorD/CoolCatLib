@@ -20,6 +20,7 @@ public class TestingMod implements ModConstructor {
         HookGameTestsB3.register();
         HookGameTests3.register();
         TestAttachments.init();
+        ArmatureDemo.init();
         RegisterBrewingRecipesEvent.EVENT.register(event ->
                 event.getBuilder().addRecipe(Ingredient.of(Items.POTION), Ingredient.of(Items.RAW_COPPER, Items.IRON_NUGGET), Items.COPPER_INGOT.getDefaultInstance()));
     }

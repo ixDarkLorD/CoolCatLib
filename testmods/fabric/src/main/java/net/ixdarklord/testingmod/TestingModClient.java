@@ -18,6 +18,8 @@ public class TestingModClient implements ClientModConstructor {
         ScreenEffectsDemo.init();
         SkyboxDemo.init();
         TextEffectsDemo.init();
+        BlockRendererDemoClient.init();
+        ArmatureDemoClient.init();
         MenuScreenRegistry.register(TestAttachments.CRATE_MENU, CrateScreen::new);
         MenuScreenRegistry.register(TestAttachments.POUCH_MENU, StorageScreen::new);
         ClientGameTestRunner.init();

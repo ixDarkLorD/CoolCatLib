@@ -1,20 +1,24 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v8.3.0 Release | Unreleased
+## v9.0.0 Release | Unreleased
 ### ✨ New Features
 - `ModCommands` (`api.command`): registers a mod's server commands with its mod id and the command's names, the first its own and the others aliases that work the same, e.g. `ModCommands.register("ftbultimineaddition", List.of("ultimine_addition", "ua"), (root, context, selection) -> root.then(...))`. A name another command already has (vanilla's `/tm`, another mod's) is skipped, with a warning in the log. `ModCommands.registerClient(modId, names, (root, context) -> ...)` does the same for client commands. Instead of names, a client command can take its server command's: `ClientNames.MERGED` shares them (one `/folios` for players: what the client's parts can run stays on the client, the rest goes to the server), `ClientNames.SUFFIXED` adds `_client` (`/ua_client` beside `/ua`).
 - Every mod with CoolCatLib configs gets a config command under its own commands: `/<command> config` opens the mod's config screens and `/<command> config <config>` one of them (`/folios config client`). Anyone can open them; what they may change is still up to each config's edit permission.
 - `/<command> config reload [config]` reads the mod's config files again after they were edited by hand, without restarting (for operators): the server's configs on the server, the player's client configs on their own game.
 - `/coolcatlib config [mod] [config]` and `/coolcatlib config reload [mod] [config]` do the same for any mod, and on servers without CoolCatLib the player's own game does it.
+- Block entity renderers come to 1.21.1 with the same API as on 26.1 (`coolcatcanvas.api.client.blockentity`): `BlockRenderer` with culling by bounds, detail by distance, facing and layers (`ItemLayer`, `LabelLayer`, `ChildLayer`); `render` and a layer's `submit` take a `MultiBufferSource` and the `Camera`. Also `EntityRendererRegistry` and `ItemRendererRegistry` in `coolcatcanvas.api.client.registry`, and `ObjModel`.
+- Armatures come to 1.21.1 with the same API as on 26.1 (`api.client.armature`, `api.armature`): `Armature`, `Animator`, `ArmatureMobRenderer`, `ArmatureEntityRenderer`, `ArmatureBlockRenderer`, `ArmatureItems`, `VanillaModels` and `ArmatureControl`. An armature item names its armature in its own model (`models/item/<item>.json`: `"parent": "builtin/entity"` and `"coolcatcanvas:armature": {...}`), as 1.21.1 has no item model types.
 
 ### 🔧 Changes
+- **Breaking:** Canvas's GUI and render helpers moved to tidier packages under `net.ixdarklord.coolcatcanvas.api.client`: `gui.components` and `gui.components.widgets` to `gui.widget`, `gui.components.widgets.panel` to `gui.panel`, `gui.components.animations` to `gui.animation`, `utils.ScreenAnchor` to `gui.placement`, `utils.TextEffects` to `text`, and `utils.RenderUtils`, `Outline` and `NineSliceInfo` to `render`. The class names are the same; mods using them update their imports.
 - CoolCatLib's visuals are a mod of their own again, CoolCatLib Canvas (`coolcatcanvas`), and it comes inside CoolCatLib's jar: nothing more to install. Mods built on its API need `net.ixdarklord.coolcatlib:coolcatlib-canvas-<loader>` beside `coolcatlib-<loader>` (CoolCatLib's POM names it).
 - `/coolcatlib_client` is gone: the client's config command is part of `/coolcatlib` (on servers without CoolCatLib).
 - The config commands no longer get, set or reset values or apply presets from the chat (`/coolcatlib config <id> get|set|reset|preset`): they open the config screens, where all of that is done.
 - `/coolcatlib_client config open [mod]` is now `/coolcatlib config [mod] [config]`.
 - `/coolcatcanvas_client effects` is now `/coolcatcanvas effects`.
 - `CommandEvents.REGISTER` and `ClientCommandEvents.REGISTER` are deprecated: use `ModCommands` (`register` and `registerClient`). Commands registered through it still work, and still get the config command: they're matched to the mod whose configs are built in the same packages.
+- The renderer registries moved to Canvas: `BlockEntityRendererRegistry` and `ItemRendererRegistry` are in `net.ixdarklord.coolcatcanvas.api.client.registry`. The ones in `net.ixdarklord.coolcatcore.api.client.registry` still work but are deprecated.
 
 ### 🐛 Bug Fixes
 - A mod's server command no longer stops working when the mod also has a client command of the same name (`/folios config` beside the client's `/folios guide`): what only the server's command can run now goes to the server instead of failing on the client as an incorrect argument.
