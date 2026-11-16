@@ -5,6 +5,7 @@ import net.ixdarklord.coolcatcore.api.config.format.ConfigFormat;
 import net.ixdarklord.coolcatcore.api.config.format.ConfigFormats;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigType;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigTypes;
+import net.ixdarklord.coolcatcore.internal.config.CommandOwners;
 import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigManager;
@@ -65,6 +66,7 @@ public final class ConfigBuilder {
         this.scope = scope;
         this.name = scope.defaultName();
         this.groups.push(this.root);
+        CommandOwners.configBuilt(modId);
     }
 
     // --- Config settings ---

@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfirmPopup;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.StyledPopup;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ThemeResources;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfirmPopup;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.StyledPopup;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ThemeResources;
 import net.ixdarklord.coolcatcore.api.config.Config;
 import net.ixdarklord.coolcatcore.api.config.ConfigNode;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;

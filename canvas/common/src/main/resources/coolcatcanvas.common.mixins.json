@@ -1,0 +1,48 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_25",
+  "package": "net.ixdarklord.coolcatcanvas.internal.mixin",
+  "mixins": [
+    "TextColorAccessor",
+    "TextColorMixin",
+    "ServerBossEventMixin"
+  ],
+  "client": [
+    "client.AbstractWidgetMixin",
+    "client.CameraMixin",
+    "client.ColoredRectangleRenderStateMixin",
+    "client.EntityRenderStateMixin",
+    "client.FontPreparedTextBuilderMixin",
+    "client.GameRendererMixin",
+    "client.GuiItemRenderStateMixin",
+    "client.GuiMixin",
+    "client.GuiRendererMixin",
+    "client.GuiRenderStateMixin",
+    "client.GuiTextRenderStateMixin",
+    "client.HumanoidModelMixin",
+    "client.ItemInHandRendererMixin",
+    "client.LivingEntityRendererMixin",
+    "client.ModelFeatureRendererMixin",
+    "client.ModelPartAccessor",
+    "client.ModelPartMixin",
+    "client.PlayerModelMixin",
+    "client.ScreenMixin",
+    "client.MouseHandlerMixin",
+    "client.ShaderManagerMixin",
+    "client.SkyRendererMixin",
+    "client.SpecialModelWrapperMixin",
+    "client.BossHealthOverlayMixin",
+    "client.ChannelMixin",
+    "client.SoundEngineAccessor",
+    "client.SoundEngineMixin",
+    "client.SoundManagerAccessor",
+    "client.GuiGraphicsExtractorInvoker",
+    "client.RenderPipelinesAccessor",
+    "client.RenderTypeInvoker",
+    "client.FrustumInvoker"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

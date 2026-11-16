@@ -1,11 +1,16 @@
 apply from: "https://raw.githubusercontent.com/ixDarkLorD/ModResources/main/gradle/v4/fabric.gradle"
 apply from: rootProject.file("testmods/testmod.gradle")
 
+evaluationDependsOn(":canvas-fabric")
+
 dependencies {
     api libs.jei.api.fabric
     implementation libs.jei.fabric
 
     implementation project(":fabric")
+    // CoolCatLib Canvas, its own mod: compiled against its classes, run as its finished jar (a mod jar on the classpath).
+    compileOnly project(":canvas-common")
+    runtimeOnly files(project(":canvas-fabric").tasks.named("shadowJar").flatMap { it.archiveFile }).builtBy(":canvas-fabric:shadowJar")
     // Glazed Menu (its own project), from Maven Local.
     implementation("net.ixdarklord.glazedmenu:glazedmenu-fabric:${glazedmenu_version}") { transitive = false }
 }

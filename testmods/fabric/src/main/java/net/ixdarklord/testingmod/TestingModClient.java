@@ -1,6 +1,6 @@
 package net.ixdarklord.testingmod;
 
-import net.ixdarklord.coolcatcanvas.api.client.gui.theme.ConfigEffects;
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffects;
 import net.ixdarklord.coolcatcore.api.client.gui.screens.StorageScreen;
 import net.ixdarklord.coolcatcore.api.client.registry.MenuScreenRegistry;
 import net.ixdarklord.coolcatcore.api.config.ConfigColorScheme;

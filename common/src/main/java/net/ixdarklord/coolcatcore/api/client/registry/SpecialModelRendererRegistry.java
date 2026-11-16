@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcore.api.client.registry;
 
 import com.mojang.serialization.MapCodec;
-import net.ixdarklord.coolcatcanvas.internal.mixin.client.SpecialModelRenderersAccessor;
+import net.ixdarklord.coolcatcore.internal.mixin.client.SpecialModelRenderersAccessor;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.resources.Identifier;
 
@@ -21,6 +21,6 @@ public final class SpecialModelRendererRegistry {
      * @param codec reads the type's unbaked renderer from the item model JSON
      */
     public static void register(Identifier id, MapCodec<? extends SpecialModelRenderer.Unbaked<?>> codec) {
-        SpecialModelRenderersAccessor.coolcatcanvas$idMapper().put(id, codec);
+        SpecialModelRenderersAccessor.coolcatlib$idMapper().put(id, codec);
     }
 }
