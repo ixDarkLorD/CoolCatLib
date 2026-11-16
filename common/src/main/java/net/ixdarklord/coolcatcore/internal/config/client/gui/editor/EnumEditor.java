@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigIcons;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ConfigStyle;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.DropdownScreen;
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.FlatButton;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.DropdownScreen;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.api.config.type.EnumType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

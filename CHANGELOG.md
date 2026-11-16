@@ -1,6 +1,25 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v8.3.0 Release | Unreleased
+### ✨ New Features
+- `ModCommands` (`api.command`): registers a mod's server commands with its mod id and the command's names, the first its own and the others aliases that work the same, e.g. `ModCommands.register("ftbultimineaddition", List.of("ultimine_addition", "ua"), (root, context, selection) -> root.then(...))`. A name another command already has (vanilla's `/tm`, another mod's) is skipped, with a warning in the log. `ModCommands.registerClient(modId, names, (root, context) -> ...)` does the same for client commands. Instead of names, a client command can take its server command's: `ClientNames.MERGED` shares them (one `/folios` for players: what the client's parts can run stays on the client, the rest goes to the server), `ClientNames.SUFFIXED` adds `_client` (`/ua_client` beside `/ua`).
+- Every mod with CoolCatLib configs gets a config command under its own commands: `/<command> config` opens the mod's config screens and `/<command> config <config>` one of them (`/folios config client`). Anyone can open them; what they may change is still up to each config's edit permission.
+- `/<command> config reload [config]` reads the mod's config files again after they were edited by hand, without restarting (for operators): the server's configs on the server, the player's client configs on their own game.
+- `/coolcatlib config [mod] [config]` and `/coolcatlib config reload [mod] [config]` do the same for any mod, and on servers without CoolCatLib the player's own game does it.
+
+### 🔧 Changes
+- CoolCatLib's visuals are a mod of their own again, CoolCatLib Canvas (`coolcatcanvas`), and it comes inside CoolCatLib's jar: nothing more to install. Mods built on its API need `net.ixdarklord.coolcatlib:coolcatlib-canvas-<loader>` beside `coolcatlib-<loader>` (CoolCatLib's POM names it).
+- Canvas's namespace is `coolcatcanvas`: its shaders and includes (`#moj_import <coolcatcanvas:screen_effect.glsl>`), text effects (`coolcatcanvas:rainbow`, `coolcatcanvas:gradient/...`), the armature item model type (`coolcatcanvas:armature`), its built-in effects (`coolcatcanvas:tint`, `coolcatcanvas:bloom`), lang keys, key bindings and payload ids. Resource packs and mods that name these with `coolcatlib:` need the new name. The effects screen's choices and saved cutscenes move to `config/coolcatcanvas-screen-effects.json` and `config/coolcatcanvas/cutscenes/`, carried over from where they were.
+- The config screens' look belongs to CoolCatLib itself: `ConfigEffect` and `ConfigEffects` moved to `net.ixdarklord.coolcatcore.api.config.client`, and the dark or light choice is saved in `config/coolcatlib-style.json`.
+- Needs Glazed Menu 1.2.2 or newer when it's installed: older ones look for the config screen effects where they were.
+- `/coolcatlib_client` is gone: the client's config command is part of `/coolcatlib` (on servers without CoolCatLib), and the visuals' commands are `/coolcatcanvas effects` and `/coolcatcanvas cutscene ...`.
+- The config commands no longer get, set or reset values or apply presets from the chat (`/coolcatlib config <id> get|set|reset|preset`): they open the config screens, where all of that is done.
+- `CommandEvents.REGISTER` and `ClientCommandEvents.REGISTER` are deprecated: use `ModCommands` (`register` and `registerClient`). Commands registered through it still work, and still get the config command: they're matched to the mod whose configs are built in the same packages.
+
+### 🐛 Bug Fixes
+- A mod's server command no longer stops working when the mod also has a client command of the same name (`/folios config` beside the client's `/folios guide`): what only the server's command can run now goes to the server instead of failing on the client as an incorrect argument.
+
 ## v8.2.0 Release | Nov 10, 2026
 ### ✨ New Features
 - More common events (`api.event.v2.common`), fired the same on every loader:
@@ -13,12 +32,20 @@ This file is for listing all the changes to this project
   - `MerchantEvents.OFFERS`: the trades a player is shown, as their own list; take trades out to hide them (they can't make them either).
   - `EnchantEvents.TABLE_OPTIONS` (the enchantments an enchanting table's offer gives) and `ANVIL_RESULT` (what an anvil makes; interrupt with another stack or none).
   - `LootEvents.MODIFY`: any loot table's loot as it's rolled (chests, block drops, mobs, fishing), with the table's id; change the list.
+  - `PlayerEvents.ITEM_FISHED`: what a player reeled in with a fishing rod, as its own list, before it's thrown to them; change the list.
 - Blocks that look like other blocks to some players (`api.block.BlockViews`): `BlockViews.register(id, view)` adds a `BlockView`, which groups players by a key (players with the same key see the same, and a null key leaves everything as it is for them) and says what a block looks like to them. What the server sends them (chunks, block changes, block entities' data) has that block in its place, so their client never knows the real one, while the server keeps it for everything else. `BlockViews.refresh(player)` sends them their chunks again when what they should see changes.
 - `SpecialModelRendererRegistry` (`api.client.registry`): registers special item model renderer types, the code-drawn parts of item models (`"type": "minecraft:special"`), the same on every loader.
+- `SceneViewport.blockEntity(pos, blockEntity)`: a block entity in a viewport's scene, drawn by its renderer as in the world (its camera-facing parts face the viewer).
 - `SceneViewport.sprite(...)`: a glowing, camera-facing picture at a place in the scene (rays, halos, flares), added on as light and hidden by nearer blocks and entities.
+- `GhostBlocks.Light.WORLD`: ghosts lit as the world lights a real block there (each face shaded by its side, smooth lighting, the block and sky light where it stands), so a ghost of one block over another matches it exactly. Pass it to the new `GhostBlocks.draw(blocks, argb, show, light)`; `BRIGHT` and `SHADED` are the old full-bright and shaded looks.
+- `GhostBlocks.draw(groups, argbs, show, light)`: several groups of ghosts at once, each with its own colour and opacity (a reveal fading in waves). World-lit groups of solid blocks go over the world in one pass instead of one pass a group.
+- `GhostBlocks.drawEffect(blocks, show, light, shader, texture, params)`: ghosts of blocks' real models (a flower's petals, grass's blades) with a fragment shader of the mod's own laid over the world where they show, in place of a flat colour: a force field running over the blocks, a scan, frost creeping across them. The shader imports `coolcatlib:ghost_effect.glsl`, which gives each pixel's place in the world, the ghosts' colour, a texture of the mod's choosing and up to sixteen numbers of its own.
 
 ### 🔧 Changes
 - CoolCatLib's mixin configs declare Java 25 (`compatibilityLevel`), so loading no longer warns that a mixin needs a newer class version.
+- `GhostBlocks.Show.OVER_BLOCK` ghosts are drawn a hair nearer the camera instead of a little larger, so they cover exactly their blocks' faces and no longer spill onto the blocks beside them.
+- World-lit ghosts keep their lighting from frame to frame and build it again only when their block changes, or twice a second for changes in the light.
+- World-lit ghosts of blocks drawn off the middle of their block (flowers, grass, other plants) sit where the real ones are, instead of in the middle.
 
 ## v8.1.0 Release | Nov 3, 2026
 

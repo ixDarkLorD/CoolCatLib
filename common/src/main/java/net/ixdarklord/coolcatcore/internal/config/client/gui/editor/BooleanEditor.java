@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
-import net.ixdarklord.coolcatcanvas.internal.client.gui.style.ToggleSwitch;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ToggleSwitch;
 
 // A sliding switch.
 public final class BooleanEditor implements ValueEditor {

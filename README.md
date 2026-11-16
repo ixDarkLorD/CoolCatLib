@@ -55,7 +55,7 @@ Everything works from common code on every loader.
 - **🧶 Attachments.** Typed data on players, entities, block entities and item stacks: saved, synced to the players you
   pick, kept on death, with change listeners.
 - **⚙️ Configs.** Client, common, server, world and startup scopes in TOML or JSON5, with validation, presets,
-  migrations, hot reloading and `/coolcatlib config` commands.
+  migrations, hot reloading and a `/<mod> config` command that opens their screens.
 - **🌈 Screen effects.** Full-screen shaders in layers, with fades and pulses, controlled from the server, and an
   Effects screen for players.
 - **🌌 Custom skies.** Cubemaps, panoramas, sprites, gradients and shaders inside the vanilla sky, added with a resource

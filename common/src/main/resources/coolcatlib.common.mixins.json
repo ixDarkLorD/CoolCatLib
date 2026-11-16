@@ -21,6 +21,8 @@
     "EndermanLeaveBlockGoalMixin",
     "EntityMixin",
     "EntityTypeMixin",
+    "FarmlandBlockMixin",
+    "FishingHookMixin",
     "FurnaceResultSlotMixin",
     "ItemEntityMixin",
     "LevelChunkSectionMixin",
@@ -49,6 +51,7 @@
     "WorldGenRegionMixin"
   ],
   "client": [
+    "client.SpecialModelRenderersAccessor",
     "client.GuiGraphicsExtractorMixin",
     "client.ItemInHandRendererMixin",
     "client.ItemStackMixin"

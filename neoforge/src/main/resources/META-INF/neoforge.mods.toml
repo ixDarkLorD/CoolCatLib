@@ -22,7 +22,7 @@ configuredProviders = ["net.ixdarklord.coolcatcore.internal.integration.configur
 config = "${modid}.common.mixins.json"
 
 [[mixins]]
-config = "coolcatcanvas.common.mixins.json"
+config = "${modid}.neoforge.mixins.json"
 
 
 [[dependencies.${modid}]]
@@ -39,7 +39,8 @@ versionRange = "[${project.supported_min_mc_version},${max_mc_version}]"
 ordering = "NONE"
 side = "BOTH"
 
-# The two mods CoolCatLib used to be: their classes are in this jar now.
+# CoolCatLib: Core, which this jar replaces, and the old CoolCatLib: Canvas jars (versioned 26.x): Canvas comes inside
+# this jar now.
 [[dependencies.${modid}]]
 modId = "coolcatcore"
 type = "incompatible"
@@ -50,6 +51,14 @@ side = "BOTH"
 [[dependencies.${modid}]]
 modId = "coolcatcanvas"
 type = "incompatible"
-reason = "CoolCatLib: Core and Canvas are part of CoolCatLib now; remove their jars."
-versionRange = "[0,)"
+reason = "CoolCatLib Canvas comes inside CoolCatLib now; remove the old CoolCatLib: Canvas jar."
+versionRange = "[26,)"
 side = "BOTH"
+
+# Glazed Menu before 1.2.2 (and its old 26.x versions) looks for the config screen effects where they were before 8.3.0.
+[[dependencies.${modid}]]
+modId = "glazedmenu"
+type = "incompatible"
+reason = "This CoolCatLib needs Glazed Menu 1.2.2 or newer; update Glazed Menu."
+versionRange = "(,1.2.2),[26,)"
+side = "CLIENT"
