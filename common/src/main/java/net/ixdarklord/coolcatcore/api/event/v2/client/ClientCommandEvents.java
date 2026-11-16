@@ -1,7 +1,9 @@
 package net.ixdarklord.coolcatcore.api.event.v2.client;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.ixdarklord.coolcatcore.api.command.ModCommands;
 import net.ixdarklord.coolcatcore.api.event.v2.core.EventInvoker;
+import net.ixdarklord.coolcatcore.internal.config.CommandOwners;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
@@ -15,7 +17,15 @@ import net.minecraft.network.chat.Component;
  * built with here. Reply through {@link #sendFeedback} / {@link #sendError}.
  */
 public final class ClientCommandEvents {
+    /**
+     * The client's commands are being made: on joining a world or server.
+     *
+     * @deprecated Use {@link ModCommands#registerClient}, which takes the mod's id and its command's names (and
+     * aliases). Listeners here still work.
+     */
+    @Deprecated
     public static final EventInvoker<Register> REGISTER = EventInvoker.create(Register.class, listeners -> (dispatcher, context) -> {
+        CommandOwners.registerDeclaredClient(dispatcher, context);
         for (Register listener : listeners) listener.register(dispatcher, context);
     });
 
@@ -31,6 +41,8 @@ public final class ClientCommandEvents {
         sendFeedback(message.copy().withStyle(ChatFormatting.RED));
     }
 
+    /** @deprecated Use {@link ModCommands.ClientBuilder}, through {@link ModCommands#registerClient}. */
+    @Deprecated
     @FunctionalInterface
     public interface Register {
         void register(CommandDispatcher<SharedSuggestionProvider> dispatcher, CommandBuildContext context);

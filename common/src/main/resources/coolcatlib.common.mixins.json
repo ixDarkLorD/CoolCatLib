@@ -21,6 +21,8 @@
     "EndermanLeaveBlockGoalMixin",
     "EntityMixin",
     "EntityTypeMixin",
+    "FarmBlockMixin",
+    "FishingHookMixin",
     "FurnaceResultSlotMixin",
     "GameTestHelperAccessor",
     "GameTestRegistryMixin",

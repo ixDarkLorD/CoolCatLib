@@ -1,7 +1,20 @@
-// The mod's modules (common and one per loader) are in the root folder; the test mods are in testmods/, left out with
-// -Ptestmods=false (the Maven workflow does: they need mods from Maven Local).
+// The mod's modules (common and one per loader) are in the root folder. CoolCatLib Canvas, the visuals, is a mod of its
+// own in canvas/ (:canvas-common, :canvas-<loader>), nested in CoolCatLib's jars. The test mods are in testmods/, left
+// out with -Ptestmods=false (the Maven workflow does: they need mods from Maven Local).
 def loaders = project_loaders.split(",").toList()
 (["common"] + loaders).each { include(":$it") }
+(["common"] + loaders).each { module ->
+    include(":canvas-$module")
+    project(":canvas-$module").projectDir = file("canvas/$module")
+}
+// Canvas's projects take their mod attributes (modid, mod_name, ...) from the canvas_* properties, before any build
+// script runs: the shared scripts read them as the mod's own.
+def canvasAttributes = providers.gradlePropertiesPrefixedBy("canvas_").get().collectEntries { key, value -> [(key - "canvas_"): value] }
+gradle.projectsLoaded {
+    it.rootProject.subprojects.findAll { it.name.startsWith("canvas-") }.each { project ->
+        canvasAttributes.each { key, value -> project.ext.set(key, value) }
+    }
+}
 def testmods = providers.gradleProperty("testmods").getOrElse("true").toBoolean()
 loaders.findAll { testmods && file("testmods/$it").isDirectory() }.each { loader ->
     include(":testmod-$loader")

@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "[${min_forge_fml_version},)"
+issueTrackerURL = "${mod_issue_url}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${modid}"
+displayName = "${mod_name}"
+version = "${version}"
+description = "${mod_description}"
+authors = "${mod_author}"
+displayURL = "${mod_page_url}"
+logoFile = "mod_logo.png"
+displayTest = "${mod_forge_display_test}"
+
+[[dependencies.${modid}]]
+modId = "coolcatlib"
+mandatory = true
+versionRange = "[${mod_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${modid}]]
+modId = "forge"
+mandatory = true
+versionRange = "[${min_forge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${modid}]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${mc_version},) , (,${max_mc_version}]"
+ordering = "NONE"
+side = "BOTH"
+
+# A library: mod lists like Glazed Menu show it under Libraries.
+[modproperties.${modid}]
+catalogueImageIcon = "mod_logo.png"
+library = true

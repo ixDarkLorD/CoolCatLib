@@ -1,7 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.core.forge;
 
-import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
-import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
 import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.brewing.forge.ForgeBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.core.forge.ForgeModEntrypoint;
@@ -26,10 +24,8 @@ public class ForgeSetup extends ForgeModEntrypoint {
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, BrewingRecipeRegisterEvent.class, ForgeSetup::onRegisterBrewingRecipes);
         ForgeEventHooks.register();
         this.common(CoolCatCoreConstructor::new);
-        this.common(CoolCatCanvasConstructor::new);
         if (FMLEnvironment.dist == Dist.CLIENT) ForgeClientSetup.init(this.modEventBus);
         this.client(() -> CoolCatCoreClientConstructor::new);
-        this.client(() -> CoolCatCanvasClientConstructor::new);
     }
 
     private static void onRegisterBrewingRecipes(BrewingRecipeRegisterEvent event) {

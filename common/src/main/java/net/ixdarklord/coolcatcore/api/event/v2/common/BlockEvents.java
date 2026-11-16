@@ -38,8 +38,25 @@ public final class BlockEvents {
     public static final EventInvoker<Drops> DROPS = EventInvoker.create(Drops.class, listeners -> (level, pos, state, breaker, tool, drops, experience) -> {
         for (Drops listener : listeners) listener.onDrops(level, pos, state, breaker, tool, drops, experience);
     });
+    public static final EventInvoker<Trample> TRAMPLE = EventInvoker.create(Trample.class, listeners -> (level, pos, state, entity) -> {
+        for (Trample listener : listeners) {
+            EventResult result = listener.onTrample(level, pos, state, entity);
+            if (result.isInterrupt()) return result;
+        }
+        return EventResult.PASS;
+    });
 
     private BlockEvents() {}
+
+    /**
+     * An entity landing on farmland is about to trample it into dirt (server side), breaking what grows on it;
+     * interrupting keeps the farmland and its crop. The entity is whoever landed: a player, a mob, or the mount a
+     * player rides.
+     */
+    @FunctionalInterface
+    public interface Trample {
+        EventResult onTrample(ServerLevel level, BlockPos pos, BlockState state, Entity entity);
+    }
 
     /** A player is about to break a block (server side); interrupting cancels it. */
     @FunctionalInterface

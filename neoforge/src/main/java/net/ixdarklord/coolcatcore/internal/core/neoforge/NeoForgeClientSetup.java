@@ -1,6 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.core.neoforge;
 
-import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigScreens;
 import net.ixdarklord.coolcatcore.api.core.neoforge.NeoForgeModEntrypoint;
 import net.ixdarklord.coolcatcore.api.item.ComponentItem;
@@ -25,7 +24,6 @@ public class NeoForgeClientSetup extends NeoForgeModEntrypoint {
         NeoForgeClientEventHooks.register(this.modEventBus);
         NeoForge.EVENT_BUS.addListener(ItemTooltipEvent.class, event -> ComponentItem.onTooltip(event.getItemStack(), event.getToolTip()));
         this.client(() -> CoolCatCoreClientConstructor::new);
-        this.client(() -> CoolCatCanvasClientConstructor::new);
         this.modEventBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(() -> {
             ClientServicesImpl.setBlockRenderLayers();
             registerConfigScreens();

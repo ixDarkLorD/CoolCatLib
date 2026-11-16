@@ -1,1 +1,14 @@
 apply from: "${rootProject.sharedScripts}/neoforge.gradle"
+
+// CoolCatLib Canvas, the visuals, is a mod of its own (canvas/) nested in this jar: Loom puts its jar inside and lists
+// it in the metadata. Published beside this one, and named in this one's POM so Maven users get it too.
+dependencies {
+    include project(":canvas-neoforge")
+}
+publishing.publications.mavenJava.pom.withXml {
+    def dependency = (asNode().dependencies[0] ?: asNode().appendNode("dependencies")).appendNode("dependency")
+    dependency.appendNode("groupId", "${mod_maven_group}.coolcatlib")
+    dependency.appendNode("artifactId", "coolcatlib-canvas-neoforge")
+    dependency.appendNode("version", project.version)
+    dependency.appendNode("scope", "runtime")
+}

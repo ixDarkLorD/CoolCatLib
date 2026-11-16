@@ -16,9 +16,6 @@ updateJSONURL = "${mod_neoforge_update_url}"
 config = "${modid}.common.mixins.json"
 
 [[mixins]]
-config = "coolcatcanvas.common.mixins.json"
-
-[[mixins]]
 config = "coolcatlib.neoforge.mixins.json"
 
 [[dependencies.${modid}]]
@@ -35,7 +32,8 @@ versionRange = "[${mc_version},) , (,${max_mc_version}]"
 ordering = "NONE"
 side = "BOTH"
 
-# The two mods CoolCatLib used to be: their classes are in this jar now.
+# CoolCatLib: Core, which this jar replaces, and the old CoolCatLib: Canvas jars (versioned 2100.x): Canvas comes inside
+# this jar now.
 [[dependencies.${modid}]]
 modId = "coolcatcore"
 type = "incompatible"
@@ -46,6 +44,6 @@ side = "BOTH"
 [[dependencies.${modid}]]
 modId = "coolcatcanvas"
 type = "incompatible"
-reason = "CoolCatLib: Core and Canvas are part of CoolCatLib now; remove their jars."
-versionRange = "[0,)"
+reason = "CoolCatLib Canvas comes inside CoolCatLib now; remove the old CoolCatLib: Canvas jar."
+versionRange = "[2100,)"
 side = "BOTH"

@@ -1,9 +1,15 @@
 apply from: "${rootProject.sharedScripts}/fabric.gradle"
 apply from: rootProject.file("testmods/testmod.gradle")
 
+evaluationDependsOn(":canvas-fabric")
+
 dependencies {
     modApi libs.jei.api.fabric
     modImplementation libs.jei.fabric
 
     implementation project(path: ":fabric", configuration: "namedElements")
+    // CoolCatLib Canvas, its own mod: compiled against its classes, run as its loader module's jar with its common
+    // classes in (the dev-mapped one: the remapped final jar is for production).
+    compileOnly project(path: ":canvas-common", configuration: "namedElements")
+    runtimeOnly files(project(":canvas-fabric").tasks.named("shadowJar").flatMap { it.archiveFile }).builtBy(":canvas-fabric:shadowJar")
 }

@@ -37,8 +37,7 @@
   },
   "mixins": [
     "${modid}.fabric.mixins.json",
-    "${modid}.common.mixins.json",
-    "coolcatcanvas.common.mixins.json"
+    "${modid}.common.mixins.json"
   ],
 
   "custom": {
@@ -54,7 +53,7 @@
 
   "breaks": {
     "coolcatcore": "*",
-    "coolcatcanvas": "*"
+    "coolcatcanvas": ">=2100.0.0"
   },
 
   "depends": {

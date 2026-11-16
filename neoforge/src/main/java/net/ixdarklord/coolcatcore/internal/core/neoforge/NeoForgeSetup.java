@@ -1,6 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.core.neoforge;
 
-import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvasConstructor;
 import net.ixdarklord.coolcatcore.api.brewing.IBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.brewing.neoforge.NeoForgeBrewingRecipe;
 import net.ixdarklord.coolcatcore.api.core.neoforge.NeoForgeModEntrypoint;
@@ -19,7 +18,6 @@ public class NeoForgeSetup extends NeoForgeModEntrypoint {
         NeoForge.EVENT_BUS.addListener(NeoForgeSetup::onRegisterBrewingRecipes);
         NeoForgeEventHooks.register(this.modEventBus);
         this.common(CoolCatCoreConstructor::new);
-        this.common(CoolCatCanvasConstructor::new);
     }
 
     private static void onRegisterBrewingRecipes(net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent event) {

@@ -6,6 +6,9 @@
   "mixins": [
     "ServerPlayerMenuMixin"
   ],
+  "client": [
+    "ClientCommandHandlerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

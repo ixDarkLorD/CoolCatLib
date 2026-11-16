@@ -9,6 +9,7 @@
     "ServerPlayerGameModeMixin"
   ],
   "client": [
+    "ClientCommandHandlerMixin",
     "GuiMixin"
   ],
   "injectors": {

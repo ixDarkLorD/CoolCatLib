@@ -34,7 +34,7 @@ final class ConfigFileWatcher implements Runnable {
             thread.start();
             return watcher;
         } catch (IOException | UnsupportedOperationException e) {
-            CoolCatCore.LOGGER.warn("Config files can't be watched; edits made while the game runs need /coolcatlib config <id> reload", e);
+            CoolCatCore.LOGGER.warn("Config files can't be watched; edits made while the game runs apply after a restart", e);
             return null;
         }
     }
