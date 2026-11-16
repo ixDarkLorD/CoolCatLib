@@ -193,6 +193,6 @@ Letterbox.hide(20);
 
 ## The in-game editor
 
-`Cutscenes.openEditor()` opens the editor, which players also reach with a key (unbound by default) or, in development, `/coolcatcanvas_client cutscene editor`. Fly to a spot and press K to drop a keyframe; the path is drawn in the world, one dot a tick, so spacing shows speed. Its screen has a timeline to scrub and drag keyframes on, the selected keyframe's numbers, easing and path, the cutscene's letterbox, blends, fades and end hold, a live preview through the camera, and Play.
+`Cutscenes.openEditor()` opens the editor, which players also reach with a key (unbound by default) or, in development, `/coolcatcanvas cutscene editor` (`/coolcatcanvas cutscene play <id>` and `stop` play one and end it). Fly to a spot and press K to drop a keyframe; the path is drawn in the world, one dot a tick, so spacing shows speed. Its screen has a timeline to scrub and drag keyframes on, the selected keyframe's numbers, easing and path, the cutscene's letterbox, blends, fades and end hold, a live preview through the camera, and Play.
 
-It saves JSON to `config/coolcatcanvas/cutscenes/`, playable as `coolcatcanvas:saved/<name>` and ready to copy into a resource pack. Focuses, subtitles and markers are kept when a cutscene is loaded but are edited in the file.
+It saves JSON to `config/coolcatcanvas/cutscenes/` (before 9.0.0, `config/coolcatlib/cutscenes/`; carried over), playable as `coolcatcanvas:saved/<name>` and ready to copy into a resource pack. Focuses, subtitles and markers are kept when a cutscene is loaded but are edited in the file.

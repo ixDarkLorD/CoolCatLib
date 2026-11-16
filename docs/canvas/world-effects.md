@@ -303,11 +303,11 @@ WorldVfx.register(MyMod.id("shield"), frame -> {
 });
 ```
 
-The id `mymod:core/force_field` reads `assets/mymod/shaders/core/force_field.fsh`. It imports `coolcatlib:ghost_effect.glsl`:
+The id `mymod:core/force_field` reads `assets/mymod/shaders/core/force_field.fsh`. It imports `coolcatcanvas:ghost_effect.glsl`:
 
 ```glsl title="assets/mymod/shaders/core/force_field.fsh"
 #version 330
-#moj_import <coolcatlib:ghost_effect.glsl>
+#moj_import <coolcatcanvas:ghost_effect.glsl>
 
 out vec4 fragColor;
 
@@ -336,4 +336,4 @@ After the game's models are reloaded, `GhostBlocks.clearModels()` forgets the bl
 
 !!! info "Since"
     `GhostBlocks`: since **26.1.2-6** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1), with `draw(blocks, argb, show, shaded)`, where `shaded` is `SHADED` and false is `BRIGHT`. `Show.OVER_BLOCK`: since **8.0.0** on 26.1.2, 26.2 and 26.3.
-    `Light`, `draw(blocks, argb, show, light)`, `draw(groups, argbs, show, light)` and `drawEffect`: since **8.2.0**, on 26.1.2 only for now.
+    `Light`, `draw(blocks, argb, show, light)`, `draw(groups, argbs, show, light)` and `drawEffect`: since **8.2.0**, on every version (`Show.OVER_BLOCK` too, on 1.21.1 and 1.20.1). The include was `coolcatlib:ghost_effect.glsl` before 9.0.0; on 1.21.1 and 1.20.1 the shader is GLSL 150.

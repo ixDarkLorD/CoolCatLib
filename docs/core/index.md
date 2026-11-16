@@ -19,7 +19,13 @@ CoolCatLib's foundation: one common codebase for Fabric, NeoForge and Forge. Pac
 
     ---
 
-    Deferred registers, commands and client registries.
+    Deferred registers, argument types and client registries.
+
+-   :material-console-line:{ .lg .middle } **[Commands](commands.md)**
+
+    ---
+
+    Your mod's commands under its names and aliases, client commands, and the config command players get.
 
 -   :material-access-point-network:{ .lg .middle } **[Networking](networking.md)**
 

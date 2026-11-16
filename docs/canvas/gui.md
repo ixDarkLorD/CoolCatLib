@@ -5,7 +5,10 @@ description: Windows, panels, pan and zoom, animations, items at an opacity, sce
 
 # GUI
 
-GUI building blocks: draggable windows, scrolling, stacked panels with pan and zoom, slide animations, 3D scene viewports and drawing helpers. Packages: `net.ixdarklord.coolcatcanvas.api.client.gui.components` (and its `widgets`, `widgets.panel` and `animations` subpackages), `api.client.viewport` and `api.client.utils`.
+GUI building blocks: draggable windows, scrolling, stacked panels with pan and zoom, slide animations, placing things out of the way of the rest of the screen, 3D scene viewports and drawing helpers. Packages under `net.ixdarklord.coolcatcanvas.api.client`: `gui.widget` (windows and widgets), `gui.panel` (panels), `gui.animation`, `gui.placement`, `viewport` and `render` (drawing helpers).
+
+!!! info "Moved in 9.0.0"
+    Before 9.0.0, these were in `gui.components` (and its `widgets`, `widgets.panel` and `animations` subpackages) and `utils`. The class names are the same.
 
 !!! warning
     `AbstractMultiPanelWidget`, `Panel`, `ScrollPanel`, `ViewportPanel`, `SceneViewport` and `SceneViewportWidget` are marked `@ApiStatus.Experimental`: they may still change.
@@ -53,9 +56,23 @@ class MapPanel extends ViewportPanel {
 
 | Class | Description |
 |---|---|
-| `AnimatedComponent` | A timeline in seconds that pauses with the game: `play(reverse[, AnimMode])`, `update()` every frame, `isPlaying()`, `isFinished()`. Modes: `LOOP`, `PING_PONG`, `HOLD_LAST_FRAME`. |
-| `SlideAnimation` | Slides an element in from off-screen, horizontally or vertically, anchored with a `ScreenAnchor`. |
-| `ScreenAnchor` | `TOP_LEFT` … `BOTTOM_RIGHT` and `CENTER`: `getX(screenWidth, width, padding)`, `getY(...)`, `next()`, `previous()`. |
+| `gui.animation.AnimatedComponent` | A timeline in seconds that pauses with the game: `play(reverse[, AnimMode])`, `update()` every frame, `isPlaying()`, `isFinished()`. Modes: `LOOP`, `PING_PONG`, `HOLD_LAST_FRAME`. |
+| `gui.animation.SlideAnimation` | Slides an element in from off-screen, horizontally or vertically, anchored with a `ScreenAnchor`. |
+| `gui.placement.ScreenAnchor` | `TOP_LEFT` … `BOTTOM_RIGHT` and `CENTER`: `getX(screenWidth, width, padding)`, `getY(...)`, `next()`, `previous()`. |
+
+## Out of the way
+
+`GuiPlacement` (`gui.placement`) finds where to put something of your own, a HUD card or a toast, so it doesn't cover what else is on the screen. Give it a size and where you'd like it; it comes back there if that's clear, or at the nearest clear place, slid in the directions you allow.
+
+```java
+GuiPlacement.Position at = GuiPlacement.hud()
+        .size(width, 16).at(x, 4).gap(2)
+        .directions(GuiPlacement.Direction.DOWN)
+        .find();
+GuiAreas.unrecorded(() -> drawCard(graphics, at.x(), at.y()));   // so the card isn't in its own way next frame
+```
+
+`GuiAreas.hud()` and `screen()` are the boxes of what the HUD and the open screen drew last frame: the game's own, every mod's HUD layers (a minimap, a block tooltip, the boss bars), the screen's widgets, slots and items, though not its background or the tooltip under the mouse. `GuiPlacement` reads them: `hud()`, `screen()` or `among(areas)`, then `within(...)` to stay inside bounds, `ignore(...)` and `ignoreOverlays(share)` (anything covering more than 40% of the screen is left out by default), and `find()`, whose `moved()` says whether it had to move. Client and render thread only.
 
 ## Items at an opacity
 
@@ -141,10 +158,12 @@ view.block(BlockPos.ZERO, MyBlocks.PEDESTAL.get().defaultBlockState())
 ```
 
 !!! info "Since"
-    `SceneViewport` and `SceneViewportWidget`: since **26.1.2-5** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1). `perspective`: since **8.0.0** on 26.1.2, 26.2 and 26.3.
-    `sprite`, `uprightSprite` and `clearSprites`: since **8.2.0** on 26.1.2, 26.2 and 26.3. `blockEntity`: since **8.2.0**, on 26.1.2 only for now.
+    `SceneViewport` and `SceneViewportWidget`: since **26.1.2-5** (and 26.2, 26.3), **2100.4.0.0** (1.21.1) and **2001.4.0.0** (1.20.1). `perspective`: since **8.0.0** on 26.1.2, 26.2 and 26.3, **8.2.0** on 1.21.1 and 1.20.1.
+    `sprite`, `uprightSprite`, `clearSprites` and `blockEntity`: since **8.2.0**, on every version.
 
 ## Drawing helpers
+
+In `render`, except `ColorableImageButton` (`gui.widget`):
 
 | Class | Description |
 |---|---|

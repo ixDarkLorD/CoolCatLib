@@ -10,7 +10,7 @@ import re
 import urllib.request
 
 REPO = "https://raw.githubusercontent.com/ixDarkLorD/CoolCatLib"
-BRANCHES = [("26.1.2", "26.1 – 26.1.2"), ("1.21", "1.21 – 1.21.1"), ("1.20.1", "1.20.1")]
+BRANCHES = [("26.3", "26.3"), ("26.2", "26.2"), ("26.1.2", "26.1 – 26.1.2"), ("1.21", "1.21 – 1.21.1"), ("1.20.1", "1.20.1")]
 # (file on each branch, name, icon)
 MODS = [("CHANGELOG.md", "CoolCatLib", ":material-toolbox-outline:"),
         ("CHANGELOG-canvas.md", "CoolCatLib: Canvas (until the merge)", ":material-palette-outline:")]
@@ -84,7 +84,8 @@ def render():
     out.append("")
 
     out += ["## What's new", ""]
-    newest_branch = BRANCHES[0][0]
+    # The docs are written against 26.1.2, so its newest release is the one shown here.
+    newest_branch = "26.1.2"
     for mod, name, icon in MODS:
         entries = data.get((mod, newest_branch))
         if not entries:

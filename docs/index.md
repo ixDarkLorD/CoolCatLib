@@ -55,11 +55,11 @@ hide:
 </div>
 
 <div class="ccl-ribbon" aria-hidden="true"><div class="ccl-ribbon__track">
-<span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
-<span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
+<span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Commands</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Block renderers</span><span>Armatures</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
+<span>Entrypoints</span><span>Events</span><span>Registration</span><span>Networking</span><span>Synced configs</span><span>Attachments</span><span>Storage menus</span><span>Item decorators</span><span>Game tests</span><span>Commands</span><span>Screen effects</span><span>Skyboxes</span><span>World effects</span><span>Block renderers</span><span>Armatures</span><span>Cutscenes</span><span>Sound filters</span><span>Gradient text</span><span>GUI widgets</span>
 </div></div>
 
-## One mod, two halves
+## One download, two halves
 
 <div class="ccl-halves" markdown>
 
@@ -69,7 +69,7 @@ hide:
 
 <p class="ccl-half__pkg"><code>net.ixdarklord.coolcatcore</code> · the purr-fect foundation</p>
 
-Entrypoints that replace per-loader setup; events, registration and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
+Entrypoints that replace per-loader setup; events, registration, commands and networking; synced TOML configs; attachments; containers and storage menus; item decorators.
 
 [Getting started :material-arrow-right:](getting-started.md){ .ccl-half__link }
 
@@ -81,7 +81,7 @@ Entrypoints that replace per-loader setup; events, registration and networking; 
 
 <p class="ccl-half__pkg"><code>net.ixdarklord.coolcatcanvas</code> · the cat's whiskers of visuals</p>
 
-Live post-processing shaders, layered skyboxes, gradient and rainbow text, outlines, panels, pan & zoom views and easing curves.
+Live post-processing shaders, layered skyboxes, world effects, block entity renderers, animated armatures, cutscenes, gradient and rainbow text, panels, pan & zoom views and easing curves. Its own mod, `coolcatcanvas`, inside CoolCatLib's jar.
 
 [Screen effects :material-arrow-right:](canvas/screen-effects.md){ .ccl-half__link }
 
@@ -115,7 +115,7 @@ Live post-processing shaders, layered skyboxes, gradient and rainbow text, outli
 
 -   :material-creation-outline:{ .lg .middle } **Visuals without the pain**
 
-    Shader effects with per-frame uniforms, layered skies, gradient text and outlines, all animated.
+    Shader effects with per-frame uniforms, layered skies, animated models from Blockbench, gradient text and outlines.
 
 </div>
 
@@ -157,7 +157,7 @@ flowchart LR
     end
     subgraph CCL["CoolCatLib"]
         CORE["Core<br/>events · registries · network<br/>configs · attachments"]
-        CANVAS["Canvas<br/>effects · skyboxes · text · GUI"]
+        CANVAS["Canvas (coolcatcanvas)<br/>effects · skyboxes · armatures · GUI"]
     end
     F -- "coolcatlib:* entrypoints" --> C
     N -- "NeoForgeModEntrypoint<br/>ForgeModEntrypoint" --> C
@@ -170,11 +170,11 @@ flowchart LR
 
 | Minecraft | Latest | NeoForge | Forge | Fabric | Source |
 |---|---|:-:|:-:|:-:|---|
-| **26.3** | `26.3-7` | :material-check: | – | :material-check: | [`26.3`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.3) |
-| **26.2** | `26.2-6` | :material-check: | – | :material-check: | [`26.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.2) |
-| **26.1 – 26.1.2** | `26.1.2-6` | :material-check: | – | :material-check: | [`26.1.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.1.2) |
-| **1.21 – 1.21.1** | `2100.4.0.0` | :material-check: | :material-check: | :material-check: | [`1.21`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.21) |
-| **1.20.1** | `2001.4.0.1` | – | :material-check: | :material-check: | [`1.20.1`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.20.1) |
+| **26.3** | `9.0.0+26.3` | :material-check: | – | :material-check: | [`26.3`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.3) |
+| **26.2** | `9.0.0+26.2` | :material-check: | – | :material-check: | [`26.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.2) |
+| **26.1 – 26.1.2** | `9.0.0+26.1.2` | :material-check: | – | :material-check: | [`26.1.2`](https://github.com/ixDarkLorD/CoolCatLib/tree/26.1.2) |
+| **1.21 – 1.21.1** | `9.0.0+1.21.1` | :material-check: | :material-check: | :material-check: | [`1.21`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.21) |
+| **1.20.1** | `9.0.0+1.20.1` | – | :material-check: | :material-check: | [`1.20.1`](https://github.com/ixDarkLorD/CoolCatLib/tree/1.20.1) |
 
 !!! note "About these docs"
     The pages are written against **26.1.2**; 26.2 and 26.3 have the same API. Pages say when something is newer than the latest release, or missing from a version. The backports share the same API, adjusted for their Minecraft version: `ResourceLocation` instead of `Identifier`, `GuiGraphics` instead of `GuiGraphicsExtractor`, and a Forge entrypoint.

@@ -5,7 +5,7 @@ description: Every public package and class
 
 # API Reference
 
-Every public API package and class of CoolCatLib (26.1.2), in its two packages, Core and Canvas, with what it's for. Anything under an `internal` package is not API and may change without notice. The guide pages go into detail and have examples.
+Every public API package and class of CoolCatLib (26.1.2), in its two packages: Core, in the `coolcatlib` mod, and Canvas, in the `coolcatcanvas` mod that comes inside it (artifacts `coolcatlib-<module>` and `coolcatlib-canvas-<module>`), with what it's for. Anything under an `internal` package is not API and may change without notice. The guide pages go into detail and have examples.
 
 # Core
 
@@ -24,6 +24,12 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `core.forge.ForgeModEntrypoint` | The same for Forge (1.21.1 and 1.20.1). |
 | `core.commands.ArgumentTypeRegistry` | Registers custom command argument types. |
 
+### `command` ([Commands](../core/commands.md))
+| Class | Functionality |
+|---|---|
+| `ModCommands` | Registers a mod's server and client commands under its names and aliases, which get the config command. |
+| `ModCommands.ClientNames` | `MERGED`, `SUFFIXED`: a client command named after its server command. |
+
 ### `event.v2.core`: the event system ([Events](../core/events.md))
 | Class | Functionality |
 |---|---|
@@ -40,10 +46,10 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `PlayerEvents` | `JOIN`, `LEAVE`, `START_TICK`, `END_TICK`, `CLONE`, `RESPAWN`, `TRAVEL_TO_DIMENSION` (cancellable), `CHANGE_DIMENSION`, `PICKUP_ITEM` (cancellable), `CRAFTED`, `SMELTED`, `ADVANCEMENT_EARNED`, `ITEM_FISHED` (change the catch) |
 | `LivingEvents` | `DAMAGE`, `DEATH` (cancellable), `EQUIPMENT_CHANGE` |
 | `EntityEvents` | `LOAD`, `UNLOAD` |
-| `BlockEvents` | `BREAK`, `PLACE` (cancellable), `PLACED` |
+| `BlockEvents` | `BREAK`, `PLACE` (cancellable), `PLACED`, `DROPS`, `TRAMPLE` (cancellable) |
 | `InteractionEvents` | `USE_BLOCK`, `USE_ITEM`, `USE_ENTITY` (answer with an `InteractionResult`), `ATTACK_BLOCK`, `ATTACK_ENTITY` (cancellable) |
 | `RecipeEvents` | `CRAFT_RESULT` (change or empty a crafting result) |
-| `CommandEvents` | `REGISTER` |
+| `CommandEvents` | `REGISTER` (deprecated: `ModCommands`), `EXECUTE` |
 | `LootTableEvents` | `MODIFY` (add pools to a loot table as it loads) |
 | `AttachmentEvents` | `CHANGING`, `ADDED`, `CHANGED`, `REMOVED`, `START_TRACKING`, `STOP_TRACKING`, `RECEIVED` |
 
@@ -54,7 +60,7 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `ClientPlayerEvents` | `JOIN`, `LEAVE` |
 | `ClientGuiEvents` | `RENDER_HUD` |
 | `ItemTooltipEvents` | `MODIFY`, `APPEND` |
-| `ClientCommandEvents` | `REGISTER`; `sendFeedback`, `sendError` |
+| `ClientCommandEvents` | `REGISTER` (deprecated: `ModCommands`); `sendFeedback`, `sendError` |
 
 ### `event.v1`: legacy events
 | Class | Functionality |
@@ -77,8 +83,7 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `KeyMappingRegistry` | Registers key mappings. |
 | `MenuScreenRegistry` | Binds screens to menu types. |
 | `TooltipComponentRegistry` | Binds client tooltip components to tooltip data. |
-| `EntityRendererRegistry`, `BlockEntityRendererRegistry` | Registers entity and block entity renderers. |
-| `SpecialModelRendererRegistry` | Registers special item model renderer types (`"type": "minecraft:special"`). |
+| `EntityRendererRegistry`, `BlockEntityRendererRegistry`, `SpecialModelRendererRegistry` | Deprecated: moved to [Canvas's `client.registry`](#clientregistry-renderers-registration). |
 | `BlockRenderLayers` | Draws a block's model in the cutout or translucent layer (1.21.1 and 1.20.1). |
 
 ### `item` and `client.gui` ([Item Decorators](../core/item-decorators.md))
@@ -118,6 +123,7 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 | `type.ValidationResult` | Ok, corrected or error. |
 | `format.ConfigFormat`, `format.ConfigFormats`, `format.ConfigDocument`, `format.ConfigFormatException` | File formats: `TOML` (default), `JSON5`. |
 | `client.ConfigScreens` | The bridge to Glazed Menu's config screens, category popups and color picker; `isAvailable()`, `tellUnavailable(config)` without it. |
+| `client.ConfigEffects`, `client.ConfigEffect` | Animated config screen backgrounds and widget effects, by id. |
 
 ### `attachment` ([Attachments](../core/attachments.md))
 | Class | Functionality |
@@ -218,6 +224,13 @@ Package prefix: `net.ixdarklord.coolcatcore.api`.
 
 Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 
+### `client.registry`: renderers ([Registration](../core/registration.md#renderers))
+| Class | Functionality |
+|---|---|
+| `BlockEntityRendererRegistry` | Registers block entity renderers. |
+| `EntityRendererRegistry` | Registers entity renderers. |
+| `ItemRendererRegistry` | Items drawn by code: special item model renderer types on 26.x, `builtin/entity` items on 1.21.1 and 1.20.1. |
+
 ### `client.effect` ([Canvas Screen Effects](../canvas/screen-effects.md))
 | Class | Functionality |
 |---|---|
@@ -261,6 +274,27 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `BlockRenderLayer` | A layer drawn with a renderer's block entities, with a typed state of its own. |
 | `ItemLayer`, `LabelLayer`, `ChildLayer` | Built-in layers: a floating item, text over the block, another block entity's renderer. |
 
+### `client.armature` and `armature` ([Canvas Armatures](../canvas/armatures.md))
+| Class | Functionality |
+|---|---|
+| `client.armature.Armature` | An armature by name, read from Blockbench or Bedrock files. |
+| `client.armature.Animator`, `AnimLayer`, `ArmatureContext` | One thing's animation: layers that play and blend clips, and what it's doing. |
+| `client.armature.JointMask`, `LayerBlend`, `TransitionRule` | Which joints a layer moves, how it combines, and how its clips meet. |
+| `client.armature.LookAt`, `Spring`, `Fabric`, `JointModifier` | Procedural motion: looking, springs, cloth and changes of your own. |
+| `client.armature.ArmatureTrail`, `ArmatureEmitter`, `ObjProp` | Wakes, particles and `.obj` models at points of the armature. |
+| `client.armature.ArmatureEvent`, `ArmatureMaterial` | A clip's keyframe events; how a joint is drawn. |
+| `client.armature.molang.ArmatureQueries` | Molang queries of your own. |
+| `client.armature.render.ArmatureMobRenderer`, `ArmatureEntityRenderer`, `ArmatureBlockRenderer` | Renderers for mobs, other entities and block entities. |
+| `client.armature.render.ArmatureItems`, `ArmatureAttachment`, `ItemSocket` | Armature items; drawing and items at points. |
+| `client.armature.vanilla.VanillaModels`, `VanillaModel` | Clips, part changes and worn armatures on vanilla mobs and players. |
+| `armature.Motion`, `Transition`, `LoopMode` | How to play a clip and blend into it, on both sides. |
+| `armature.ArmatureControl` | Plays clips and sets variables from the server, seen by every player. |
+
+### `client.model`
+| Class | Functionality |
+|---|---|
+| `ObjModel`, `ObjModels` | Wavefront `.obj` models, read from resource packs. |
+
 ### `client.vfx` and `vfx` ([Canvas World Effects](../canvas/world-effects.md))
 | Class | Functionality |
 |---|---|
@@ -279,7 +313,7 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | Class | Functionality |
 |---|---|
 | `SceneViewport` | A small 3D scene drawn into a texture: blocks, block entities, entities, items, glowing sprites and text, with a camera that circles them. |
-| `client.gui.components.SceneViewportWidget` | A scene viewport in a screen: drag to turn, scroll to zoom. |
+| `client.gui.widget.SceneViewportWidget` | A scene viewport in a screen: drag to turn, scroll to zoom. |
 
 ### `client.sound` and `sound` ([Canvas Sound Filters](../canvas/sound-filters.md))
 | Class | Functionality |
@@ -301,14 +335,15 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | `client.cutscene.Letterbox` | Letterbox bars without a cutscene. |
 | `event.v2.client.CutsceneEvents`, `event.v2.common.ServerCutsceneEvents` | What a cutscene does as it plays, on the client and as each player's client reports it to the server. |
 
-### `client.utils` ([Canvas Text and Colors](../canvas/text-and-colors.md), [Canvas GUI](../canvas/gui.md))
+### `client.render` and `client.text` ([Canvas Text and Colors](../canvas/text-and-colors.md), [Canvas GUI](../canvas/gui.md#drawing-helpers))
 | Class | Functionality |
 |---|---|
-| `TextEffects` | Gradient, rainbow and outlined text. |
-| `Outline` | Solid or gradient outlines. |
-| `RenderUtils` | Shapes, gradients, text and nine-slice blits. |
-| `NineSliceInfo` | Nine-slice parameters. |
-| `ScreenAnchor` | Screen anchoring. |
+| `text.TextEffects` | Gradient, rainbow and outlined text. |
+| `render.Outline` | Solid or gradient outlines. |
+| `render.RenderUtils` | Shapes, gradients, text and nine-slice blits. |
+| `render.NineSliceInfo` | Nine-slice parameters. |
+
+Before 9.0.0, these were in `client.utils`.
 
 ### `utils` ([Canvas Text and Colors](../canvas/text-and-colors.md))
 | Class | Functionality |
@@ -320,22 +355,28 @@ Package prefix: `net.ixdarklord.coolcatcanvas.api`.
 | Class | Functionality |
 |---|---|
 | `ItemOpacityRenderer` | Items drawn in a GUI at a fixed or fading opacity; `OpacityTween` eases one in or out. |
+| `HudTakeover` | Hides the HUD while a condition holds and draws a view of your own in its place: a scope, a lens, a visor. |
 
-### `client.gui.components` ([Canvas GUI](../canvas/gui.md), [Canvas Text and Colors](../canvas/text-and-colors.md))
+### `client.gui.widget`, `panel`, `animation` and `placement` ([Canvas GUI](../canvas/gui.md), [Canvas Text and Colors](../canvas/text-and-colors.md))
 | Class | Functionality |
 |---|---|
-| `ColorableImageButton` | A tintable image button. |
-| `ElementOutlines` | Outlines attached to any widget. |
-| `animations.AnimatedComponent`, `animations.SlideAnimation` | Timeline and slide-in animations. |
-| `widgets.MovableElement` | Anything that can be moved. |
-| `widgets.AbstractDraggableWidget` | A draggable window with its own children. |
-| `widgets.AbstractScrollableWidget` | A draggable window with scrolling. |
-| `widgets.AbstractMultiPanelWidget` | A window of stacked panels (experimental). |
-| `widgets.panel.Panel`, `ScrollPanel`, `ViewportPanel` | Panel types: plain, scrolling, pan and zoom (experimental). |
+| `widget.ColorableImageButton` | A tintable image button. |
+| `widget.ElementOutlines` | Outlines attached to any widget. |
+| `widget.MovableElement` | Anything that can be moved. |
+| `widget.AbstractDraggableWidget` | A draggable window with its own children. |
+| `widget.AbstractScrollableWidget` | A draggable window with scrolling. |
+| `widget.AbstractMultiPanelWidget` | A window of stacked panels (experimental). |
+| `panel.Panel`, `ScrollPanel`, `ViewportPanel` | Panel types: plain, scrolling, pan and zoom (experimental). |
+| `animation.AnimatedComponent`, `animation.SlideAnimation` | Timeline and slide-in animations. |
+| `placement.ScreenAnchor` | Screen anchoring. |
+| `placement.GuiPlacement`, `GuiAreas`, `GuiArea` | Placing your own elements out of the way of what the HUD and screen drew. |
+
+Before 9.0.0, these were in `client.gui.components` (with `widgets`, `widgets.panel` and `animations`) and `client.utils`.
 
 ### Shader includes ([Canvas Screen Effects](../canvas/screen-effects.md), [Canvas Skyboxes](../canvas/skyboxes.md), [Canvas World Effects](../canvas/world-effects.md#with-a-shader))
 | Include | Functionality |
 |---|---|
 | `coolcatcanvas:screen_effect.glsl` | `Strength`, `Time`, `Age` and `Seed` for screen effect shaders, plus luminance, noise and edge helpers. |
 | `coolcatcanvas:sky.glsl` | Layer inputs, the `SkyLayerInfo` block and `sky_finish` for sky layer shaders. |
-| `coolcatlib:ghost_effect.glsl` | `ghost_depth`, `ghost_world_position`, `ghost_color`, `EffectSampler` and `GhostParams0` to `GhostParams3` for `GhostBlocks.drawEffect` shaders. |
+| `coolcatcanvas:vfx.glsl` | The camera, the time and depth-fade helpers for `VfxMaterial.withShader` shaders. |
+| `coolcatcanvas:ghost_effect.glsl` | `ghost_depth`, `ghost_world_position`, `ghost_color`, `EffectSampler` and `GhostParams0` to `GhostParams3` for `GhostBlocks.drawEffect` shaders. |

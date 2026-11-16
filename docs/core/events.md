@@ -23,9 +23,6 @@ PlayerEvents.JOIN.register(player -> player.sendSystemMessage(Component.literal(
 BlockEvents.BREAK.register((level, pos, state, player) ->
         state.is(Blocks.BEDROCK) ? EventResult.interrupt() : EventResult.pass());
 
-CommandEvents.REGISTER.register((dispatcher, context, selection) ->
-        dispatcher.register(Commands.literal("hello").executes(ctx -> 1)));
-
 // Order listeners with phases (FIRST, EARLY, DEFAULT, LATE, LAST).
 ServerTickEvents.END.register(EventPhase.LATE, server -> { });
 
@@ -98,13 +95,14 @@ For custom combining, use `EventInvoker.create(Class<T> type, Function<List<T>, 
 | | `PLACE` | `EventResult (Level, BlockPos, BlockState, @Nullable Entity placer, ItemStack)`: before any block item places (players, dispensers, machines) or an enderman sets its block down; interrupt and nothing is placed, the item kept |
 | | `PLACED` | `(Level, BlockPos, BlockState, @Nullable Entity placer)` |
 | | `DROPS` | `(ServerLevel, BlockPos, BlockState, @Nullable Entity breaker, ItemStack tool, List<ItemStack> drops, MutableInt experience)`: a broken block is about to drop its items and experience; change them (not for blocks blown up) |
+| | `TRAMPLE` | `EventResult (ServerLevel, BlockPos, BlockState, Entity)`: an entity landing on farmland is about to trample it into dirt (a player, a mob, or the mount a player rides); interrupt to keep the farmland and its crop |
 | `InteractionEvents` | `USE_BLOCK` | `InteractionResult (Player, InteractionHand, BlockHitResult)`: before the game uses the block; `PASS` lets it go on, anything else is the result |
 | | `USE_ITEM`, `USE_ENTITY` | `InteractionResult (Player, InteractionHand[, Entity target])`: the same, for the item in hand and for an entity |
 | | `ATTACK_BLOCK` | `EventResult (Player, InteractionHand, BlockPos, Direction)`: interrupt to stop it |
 | | `ATTACK_ENTITY` | `EventResult (Player, Entity target)`: interrupt to stop it |
 | `RecipeEvents` | `CRAFT_RESULT` | `EventResultHolder<ItemStack> (@Nullable Player, RecipeHolder<?>, CraftingInput, ItemStack result)`: a crafting grid's or a crafter's result; interrupt with another stack, or `ItemStack.EMPTY` so nothing can be crafted |
 | | `MATCH` | `EventResult (ServerLevel, RecipeHolder<?>, @Nullable BlockEntity, @Nullable Player)`: a recipe matched where the game looks one up (furnaces, campfires, smithing tables, stonecutters, crafting grids, other mods' machines), with who asks; interrupt to pass it over for the next match |
-| `CommandEvents` | `REGISTER` | `(CommandDispatcher<CommandSourceStack>, CommandBuildContext, Commands.CommandSelection)` |
+| `CommandEvents` | `REGISTER` | Deprecated: register commands with [`ModCommands`](commands.md). `(CommandDispatcher<CommandSourceStack>, CommandBuildContext, Commands.CommandSelection)` |
 | | `EXECUTE` | `EventResult (ParseResults<CommandSourceStack>, String command)`: a command is about to run; interrupt to stop it |
 | `MerchantEvents` | `OFFERS` | `(ServerPlayer, Merchant, MerchantOffers)`: the trades a player is shown, as their own list; take trades out to hide them (they can't make them either) |
 | `EnchantEvents` | `TABLE_OPTIONS` | `(Player, ItemStack, int slot, List<EnchantmentInstance>)`: what an enchanting table's offer gives; change the list |
@@ -139,7 +137,8 @@ PlayerEvents.ITEM_FISHED.register((player, hook, items) -> items.removeIf(stack 
     `BlockEvents.PLACE`, `PlayerEvents.PICKUP_ITEM` / `TRAVEL_TO_DIMENSION` / `CRAFTED` / `SMELTED`, `LivingEvents.EQUIPMENT_CHANGE` and `RecipeEvents`: since **8.0.0**, on every version. On 1.20.1, `CRAFT_RESULT` takes `(Player, Recipe<?>, CraftingContainer, ItemStack)`, as that version has no `RecipeHolder` or `CraftingInput`, and there's no crafter.
     `PlayerEvents.ADVANCEMENT_EARNED`: since **8.2.0**, on every version.
     `EntityEvents.SPAWN` / `MOUNT`, `PlayerEvents.OPEN_MENU` / `BREAK_SPEED` / `HARVEST_CHECK`, `LivingEvents.EFFECT_APPLICABLE`, `BlockEvents.DROPS`, `RecipeEvents.MATCH`, `CommandEvents.EXECUTE`, `MerchantEvents`, `EnchantEvents` and `LootEvents`: since **8.2.0** on every version. On 1.21.1 and 1.20.1, `SPAWN` gives a `MobSpawnType`, null when the game doesn't say (a mob summoned or spawned with data). On 1.20.1, `MATCH` gives a `Recipe<?>`, `ADVANCEMENT_EARNED` an `Advancement`, and `LootEvents.MODIFY` the table's `ResourceLocation`. On Forge, `HARVEST_CHECK` isn't told where the block is.
-    `PlayerEvents.ITEM_FISHED` and `LootTableEvents`: since **8.2.0**, on 26.1.2 only for now.
+    `PlayerEvents.ITEM_FISHED`: since **8.2.0**, on every version. `LootTableEvents`: since **8.2.0**, on 26.1.2 only for now.
+    `BlockEvents.TRAMPLE`: since **9.0.0**, on every version. `CommandEvents.REGISTER` and `ClientCommandEvents.REGISTER`: deprecated since **9.0.0**; they still work.
 
 ### Client (`api.event.v2.client`)
 
@@ -151,11 +150,12 @@ PlayerEvents.ITEM_FISHED.register((player, hook, items) -> items.removeIf(stack 
 | `ClientGuiEvents` | `RENDER_HUD` | `(GuiGraphicsExtractor graphics, DeltaTracker delta)`: draws over the vanilla HUD every frame |
 | `ItemTooltipEvents` | `MODIFY` | `(ItemStack, Item.TooltipContext, TooltipFlag, List<Component> lines)`: the finished lines, name included |
 | | `APPEND` | `(ItemStack, Item.TooltipContext, @Nullable Player, TooltipFlag, List<Component> lines)`: after every other mod's lines; what you add comes last |
-| `ClientCommandEvents` | `REGISTER` | `(CommandDispatcher<SharedSuggestionProvider>, CommandBuildContext)`. Reply with `ClientCommandEvents.sendFeedback(component)` or `sendError(component)`. |
+| `ClientCommandEvents` | `REGISTER` | Deprecated: use [`ModCommands.registerClient`](commands.md#client-commands). `(CommandDispatcher<SharedSuggestionProvider>, CommandBuildContext)`. Reply to any client command with `ClientCommandEvents.sendFeedback(component)` or `sendError(component)`. |
 
 ### Elsewhere
 
 - Config events (`ConfigEvents`): see [Configs](configs.md).
+- Commands: see [Commands](commands.md).
 - Blocks that look like other blocks to some players (`api.block.BlockViews`, since **8.2.0** on every version): `BlockViews.register(id, view)` with a `BlockView` that groups players by a key and says what a block looks like to them; chunks, block changes and block entities are sent that way, while the server keeps the real block. `BlockViews.refresh(player)` re-sends their chunks when what they should see changes.
 - Screen effect events (`ScreenEffectEvents`, in Canvas): see [Canvas Screen Effects](../canvas/screen-effects.md).
 - Brewing recipes: `api.event.v1.server.RegisterBrewingRecipesEvent.EVENT.register(event -> event.getBuilder().addRecipe(input, ingredient, output))`, from the older `event.v1` API.

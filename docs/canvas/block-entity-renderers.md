@@ -8,9 +8,9 @@ description: Block entity renderers with culling, detail by distance, reused sta
 `BlockRenderer` is a base for block entity renderers that does the work every renderer otherwise repeats: culling, detail by distance, turning to the block's facing, and reusing its render states so nothing is allocated per frame. You write what it draws. Package: `net.ixdarklord.coolcatcanvas.api.client.blockentity` (client).
 
 !!! info "Since"
-    CoolCatLib **8.2.0**, on 26.1.2 only for now.
+    CoolCatLib **8.2.0** on 26.1.2, **9.0.0** on 26.2, 26.3, 1.21.1 and 1.20.1. On 1.21.1 and 1.20.1, see [below](#on-1211-and-1201) for how drawing differs.
 
-A `BlockRenderer` is a plain vanilla `BlockEntityRenderer`, so it's registered like any other, draws in a [scene viewport](gui.md#scene-viewports), and can sit inside another renderer.
+A `BlockRenderer` is a plain vanilla `BlockEntityRenderer`, so it's registered like any other (with Canvas's `BlockEntityRendererRegistry`, in `api.client.registry`), draws in a [scene viewport](gui.md#scene-viewports), and can sit inside another renderer.
 
 | You want | Use |
 |---|---|
@@ -21,6 +21,7 @@ A `BlockRenderer` is a plain vanilla `BlockEntityRenderer`, so it's registered l
 | Text over the block | [`LabelLayer`](#layers). |
 | Another block entity drawn inside it | [`ChildLayer`](#layers). |
 | An animated model | [`ArmatureBlockRenderer`](#armatures): a `BlockRenderer` already. |
+| Entities and items too | `EntityRendererRegistry` and `ItemRendererRegistry`, beside it in `api.client.registry` (see [Registration](../core/registration.md#client-registries)). |
 
 ## A renderer
 
@@ -172,18 +173,36 @@ States come from a pool per renderer: one handed out in a frame is handed out ag
 
 ## Armatures
 
-[`ArmatureBlockRenderer`](../reference/api.md) is a `BlockRenderer`. It is culled by its armature's bounds, and once `detail` bands are set it animates every other frame at `REDUCED` and every fourth frame at `MINIMAL`, without its attachments. Its setup is unchanged:
+[`ArmatureBlockRenderer`](armatures.md#blocks) is a `BlockRenderer` whose drawing is an [armature](armatures.md). Every setting on this page works on it and chains with its own, its `bounds` grow from the armature's own, and it is culled by them. Once `detail` bands are set it animates every other frame at `REDUCED` and every fourth frame at `MINIMAL`, without its attachments.
 
 ```java
-BlockEntityRendererRegistry.register(MyBlocks.TURRET_ENTITY, ArmatureBlockRenderer.<TurretEntity>of(Armature.of("mymod", "turret"), renderer -> {
-    renderer.animate(animator -> animator.lookAt("barrel").range(12));
-    renderer.viewDistance(96).detail(Detail.FULL, 24).detail(Detail.REDUCED, 48);
-}));
+BlockEntityRendererRegistry.register(MyBlocks.TURRET_ENTITY, ArmatureBlockRenderer.<TurretEntity>of(Armature.of("mymod", "turret"), renderer -> renderer
+        .viewDistance(96).detail(Detail.FULL, 24).detail(Detail.REDUCED, 48)
+        .facing(Facing.HORIZONTAL)
+        .animate(animator -> animator.lookAt("barrel").range(12))));
+```
+
+It turns to its block with `facing(Facing)`, `Facing.ALL` by default. `facing(boolean)` and overriding `facing(blockEntity, state)` are deprecated since 9.0.0: override `direction` instead. To draw more than the armature, extend it like any `BlockRenderer`: a `State` subclass from `newState`, and `extract` and `render` that call the armature's first.
+
+## On 1.21.1 and 1.20.1
+
+The API is the same, but these versions draw straight into buffers instead of submitting:
+
+- `render(state, poseStack, buffers, camera)` takes a `MultiBufferSource` and the `Camera`, and so does a layer's `submit(state, layer, poseStack, buffers, camera)`.
+- The states are CoolCatLib's own `BlockRenderState`s, with `lightCoords` and `overlayCoords` set for you, as the game has no render states there.
+- `BlockEntityRendererRegistry.register` takes a `BlockEntityRendererProvider<T>`, with no state type.
+
+```java
+@Override
+protected void render(State state, PoseStack poseStack, MultiBufferSource buffers, Camera camera) {
+    VertexConsumer glow = buffers.getBuffer(RenderType.entityTranslucentEmissive(RUNES));
+    drawRunes(glow, poseStack, state.lightCoords, state.glow);
+}
 ```
 
 ## Keeping it fast
 
 - **Static parts belong in the block model.** It's baked into the chunk once; a renderer draws every frame. Draw only what moves.
-- **Share render types.** Everything submitted with the same `RenderType` is drawn together, across every block entity.
+- **Share render types.** Everything drawn with the same `RenderType` is drawn together, across every block entity.
 - **Use the detail bands.** Skip particles, text and fine parts farther off.
 - **Don't allocate in `extract` or `render`.** Keep objects in the state or in the renderer (render runs on the client thread only), and prefer `poseStack.mulPose(quaternion.rotationY(angle))` with a kept `Quaternionf` over `Axis.YP.rotationDegrees`.

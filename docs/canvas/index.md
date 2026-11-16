@@ -5,7 +5,9 @@ description: Rendering and visuals
 
 # Canvas
 
-CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`, in the `coolcatlib` mod (it was the mod CoolCatLib: Canvas before CoolCatLib became one mod). Its asset namespace is still `coolcatcanvas`.
+CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`, in the mod CoolCatLib Canvas (`coolcatcanvas`), which comes inside CoolCatLib's jar: players install CoolCatLib alone. Its namespace is `coolcatcanvas`, for its shaders and includes, text colors, item model types, built-in effects, lang keys and config files.
+
+To build on its API, add the `coolcatlib-canvas-<module>` artifact beside CoolCatLib's (see [Getting Started](../getting-started.md)).
 
 <div class="grid cards" markdown>
 
@@ -26,6 +28,18 @@ CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`,
     ---
 
     Glowing particles, beams, flashes and trails in the world, rifts that tear open, and effects the server starts.
+
+-   :material-cube-scan:{ .lg .middle } **[Block Entity Renderers](block-entity-renderers.md)**
+
+    ---
+
+    A base for block entity renderers with culling, detail by distance, facing and layers.
+
+-   :material-human-handsup:{ .lg .middle } **[Armatures](armatures.md)**
+
+    ---
+
+    Animated models from Blockbench for mobs, entities, blocks and items, and clips on vanilla models.
 
 -   :material-movie-open-outline:{ .lg .middle } **[Cutscenes](cutscenes.md)**
 
@@ -49,6 +63,6 @@ CoolCatLib's visuals, built on its Core. Package `net.ixdarklord.coolcatcanvas`,
 
     ---
 
-    Draggable windows, scrolling, panels with pan and zoom, slide animations.
+    Draggable windows, scrolling, panels with pan and zoom, slide animations, placing things out of the way, scene viewports.
 
 </div>

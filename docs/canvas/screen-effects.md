@@ -251,7 +251,7 @@ ScreenEffectControl.tint(serverPlayer, MyMod.id("hurt"), 0x59FF0000, 10);
 
 ### The effects screen
 
-`ScreenEffects.openScreen()` (also a key, unbound by default) lists every selectable effect with a switch, and the active ones as drag-and-drop layers with a strength slider each, previewed live. Players' choices (on/off, strengths, order) are saved to `config/coolcatcanvas-screen-effects.json`. Give effects a `displayName` and `description` for it, or keep one out with `selectable(false)`.
+`ScreenEffects.openScreen()` (also a key, unbound by default) lists every selectable effect with a switch, and the active ones as drag-and-drop layers with a strength slider each, previewed live. Players' choices (on/off, strengths, order) are saved to `config/coolcatcanvas-screen-effects.json` (before 9.0.0, `config/coolcatlib-screen-effects.json` on 26.x; carried over). Give effects a `displayName` and `description` for it, or keep one out with `selectable(false)`.
 
 <div class="ccl-shots ccl-shots--wide">
   <figure><img src="../../assets/screen-effects/effects-screen.webp" alt="The effects screen: a list of effects and the active layers" loading="lazy"><figcaption>The effects screen, previewing the three effects that are on</figcaption></figure>
@@ -273,7 +273,7 @@ A missing file or a shader that doesn't compile is logged, and that effect is sk
 | `get(id)`, `all()`, `unregister(id)` | Look up, list, or remove an effect (freeing its GPU resources). |
 | `disableAllInstantly()` | Hides every effect at once. |
 | `layers()` | The draw order (`ScreenEffectLayers`). |
-| `createScreen(parent)`, `openScreen()` | The effects screen: every selectable effect with a switch and a strength slider, reorderable layers, live preview. Also on a key (unbound by default) and `/coolcatcanvas_client effects` in development. |
+| `createScreen(parent)`, `openScreen()` | The effects screen: every selectable effect with a switch and a strength slider, reorderable layers, live preview. Also on a key (unbound by default) and `/coolcatcanvas effects` in development. |
 
 ### `ScreenEffect` (the handle; render thread only)
 The drawn strength is fade × manual strength × strength function, and a strength of 0 skips the effect. Durations are ticks of real time.

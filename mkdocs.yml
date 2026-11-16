@@ -112,6 +112,7 @@ nav:
       - core/index.md
       - Events: core/events.md
       - Registration: core/registration.md
+      - Commands: core/commands.md
       - Networking: core/networking.md
       - Configs: core/configs.md
       - Attachments: core/attachments.md
@@ -125,6 +126,7 @@ nav:
       - Skyboxes: canvas/skyboxes.md
       - World Effects: canvas/world-effects.md
       - Block Entity Renderers: canvas/block-entity-renderers.md
+      - Armatures: canvas/armatures.md
       - Cutscenes: canvas/cutscenes.md
       - Sound Filters: canvas/sound-filters.md
       - Text and Colors: canvas/text-and-colors.md

@@ -99,18 +99,33 @@ Annotations (in `ConfigEntry`):
 
 ## Editing in game
 
-Core loads, saves, syncs and hot reloads configs, and has commands to read and change them. It has config screens of its own, and [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu), a separate client-side mod, replaces them with its own when it's installed.
+Core loads, saves, syncs and hot reloads configs, and gives every mod with configs a [command](#the-config-command) that opens them. It has config screens of its own, and [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu), a separate client-side mod, replaces them with its own when it's installed (1.2.2 or newer, since CoolCatLib 9.0.0).
 
 | Installed | What players get |
 |---|---|
 | [Glazed Menu](https://github.com/ixDarkLorD/GlazedMenu) | Searchable editor screens with sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from its mod list, from `/glazedmenu [mod] [config/category]`, or from your code. |
 | Configured (MrCrayfish) | Configured's own screens, from the NeoForge mod list and from Mod Menu on Fabric. Booleans, numbers, enums and text get its widgets; colors, ids and lists are edited as text. Synced configs are edited on the server by players allowed to. |
-| Neither | CoolCatLib's own screens: a card for each config, then the config's screen with its categories, search, sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from Mod Menu and NeoForge's mod list. The files and the `/coolcatlib config` commands (`list`, `get`, `set`, `reset`, `reload`, `preset`) work too. |
+| Neither | CoolCatLib's own screens: a card for each config, then the config's screen with its categories, search, sliders, a color picker, undo/redo, presets and reset buttons, in your mod's theme. They open from Mod Menu, NeoForge's mod list and the [config command](#the-config-command). |
 
 With both installed, Glazed Menu's screens show the configs.
 
 !!! info "Since"
     CoolCatLib's own screens are back on 26.x in **8.0.0**, the same as on 1.21.1 and 1.20.1, where they always were. Before it, 26.x had no editor without Glazed Menu.
+
+### The config command
+
+Every mod with CoolCatLib configs gets `config` under its own [commands](commands.md), with nothing to register:
+
+| Command | Who | What it does |
+|---|---|---|
+| `/<command> config` | Anyone | Opens the mod's config screens. |
+| `/<command> config <config>` | Anyone | Opens one of them: `/folios config client`. |
+| `/<command> config reload [config]` | Operators | Reads the mod's config files again after they were edited by hand, without restarting: the server's configs on the server, the player's client configs on their own game. |
+| `/coolcatlib config [mod] [config]`, `/coolcatlib config reload [mod] [config]` | The same | The same for any mod, including mods without commands of their own. |
+
+Anyone can open the screens; what they may change is still up to each config's `editPermission`. On a server without CoolCatLib, `/coolcatlib config` runs on the player's own game. Values are no longer read or changed from the chat (the old `get`, `set`, `reset` and `preset` subcommands are gone since 9.0.0): that is done in the screens.
+
+### From code
 
 Open the screens from code through `ConfigScreens`: with Glazed Menu installed it opens Glazed Menu's screens, and without it CoolCatLib's own. It returns `null` only where there are no screens at all (on a dedicated server, say), so check before you use the result:
 
@@ -145,7 +160,9 @@ ConfigTheme.setForMod(MyMod.MOD_ID, ConfigTheme.builder()
 - Pictures: `icon`, `background`, `mode` (`COVER`, `STRETCH`, `TILE`), `tiled`.
 - Opacity: `backgroundOpacity`, `textureOpacity`, `backgroundInWorld`.
 - `popupSprite`: a nine-slice sprite for category popups.
-- `effects`: animated effects by id. They are registered with Canvas's `ConfigEffects.register(id, effect)` (`net.ixdarklord.coolcatcanvas.api.client.gui.theme`).
+- `effects`: animated effects by id. They are registered with `ConfigEffects.register(id, effect)` (`net.ixdarklord.coolcatcore.api.config.client`).
+
+Players switch CoolCatLib's own screens between dark and light; the choice is saved in `config/coolcatlib-style.json`.
 
 ## Startup configs
 
@@ -171,5 +188,5 @@ A `STARTUP` config is read before content is registered, so it can decide which 
 | `type.EnumType.Displayable` | Implement on an enum to name its constants in the editor. |
 | `format.ConfigFormats` | `TOML` (default), `JSON5`. |
 | `client.ConfigScreens` | The bridge to Glazed Menu's screens (each returns `null` or does nothing without it): `isAvailable()`, `create(parent, modId)`, `create(parent, config)`, `createModList(parent)`, `categoryPopup(parent, config, path[, theme])`, `open(modId)`, `openCategory(modId, path)`, `colorPicker(...)`, `hasConfigs(modId)`; `unavailableMessage(config)`, `tellUnavailable(config)`. |
-| Canvas: `api.client.gui.theme.ConfigEffects`, `ConfigEffect` | Animated screen backgrounds and widget effects (moved from Core's `api.config.client` in 26.1.2-2). |
+| `client.ConfigEffects`, `client.ConfigEffect` | Animated screen backgrounds and widget effects (on 26.x they were in Canvas's `api.client.gui.theme` before 9.0.0). |
 | Glazed Menu: `net.ixdarklord.glazedmenu.api.editor.ConfigEditors`, `ValueEditor`, `EditSlot` | Custom editor widgets for your own config types (moved from Core's `api.config.client` in 26.1.2-2). |

@@ -5,7 +5,7 @@ description: Gradients, rainbows and outlines
 
 # Text and Colors
 
-Animated gradients and rainbows, gradient and outlined text, and outlines around widgets. Packages: `net.ixdarklord.coolcatcanvas.api.utils` (`ColorGradient`, `Easing`) and `api.client.utils` (`TextEffects`, `Outline`), plus `api.client.gui.components.ElementOutlines`.
+Animated gradients and rainbows, gradient and outlined text, and outlines around widgets. Packages: `net.ixdarklord.coolcatcanvas.api.utils` (`ColorGradient`, `Easing`), `api.client.text` (`TextEffects`), `api.client.render` (`Outline`) and `api.client.gui.widget` (`ElementOutlines`). Before 9.0.0, `TextEffects` and `Outline` were in `api.client.utils` and `ElementOutlines` in `api.client.gui.components`.
 
 ## Gradient components
 
@@ -31,7 +31,7 @@ In JSON text and commands, the color is a string:
 /tellraw @a {"text":"Hello","color":"coolcatcanvas:gradient/0.5/0.05/#FF4000/#FFD000"}
 ```
 
-Players without Canvas can't read these colors.
+Players without CoolCatLib can't read these colors. Before 9.0.0 they were `coolcatlib:rainbow` and so on on 26.x; those names no longer work.
 
 ## Drawing text
 

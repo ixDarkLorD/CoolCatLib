@@ -5,13 +5,13 @@ description: Platform info, brewing, datagen and helpers
 
 # Platform and Utilities
 
-Platform information, brewing recipes, datagen helpers and small utilities. Packages: `net.ixdarklord.coolcatcore.api.platform`, `api.hooks`, `api.brewing`, `api.core`, `api.datagen.language`, `api.item`, `api.data`, `api.utils`, `api.client.utils`.
+Platform information, brewing recipes, datagen helpers and small utilities. Packages: `net.ixdarklord.coolcatcore.api.platform`, `api.hooks`, `api.brewing`, `api.core`, `api.datagen.language`, `api.item`, `api.data`, `api.utils`, `api.client.utils`. Drawing helpers (`RenderUtils`, `Outline`, `TextEffects`) are Canvas's: see [GUI](../canvas/gui.md#drawing-helpers) and [Text and Colors](../canvas/text-and-colors.md). Commands are on [their own page](commands.md).
 
 ## Platform
 
 ```java
 if (Platform.isModLoaded("jei")) { /* optional integration */ }
-if (Platform.isDevelopmentEnvironment()) { /* dev-only commands */ }
+if (Platform.isDevelopmentEnvironment()) { /* dev-only commands, through ModCommands */ }
 Path configs = Platform.getConfigFolder();
 MinecraftServer server = Platform.getServer();          // null on a client with no server running
 Platform.runOnClient(() -> MyClientHooks::init);        // never loads the class on a dedicated server
