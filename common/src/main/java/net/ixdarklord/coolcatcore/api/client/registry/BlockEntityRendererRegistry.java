@@ -13,7 +13,11 @@ import java.util.function.Supplier;
  * <pre>{@code
  * BlockEntityRendererRegistry.register(MyBlockEntities.PEDESTAL, PedestalRenderer::new);
  * }</pre>
+ *
+ * @deprecated Moved to CoolCatLib Canvas: use {@code net.ixdarklord.coolcatcanvas.api.client.registry.BlockEntityRendererRegistry}, which works the same.
+ * This one still works, for mods built against older versions.
  */
+@Deprecated
 public final class BlockEntityRendererRegistry {
     private BlockEntityRendererRegistry() {}
 

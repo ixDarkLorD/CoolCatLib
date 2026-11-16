@@ -2,7 +2,7 @@ package net.ixdarklord.coolcatcanvas.internal.client.armature.vanilla;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.ixdarklord.coolcatcanvas.internal.mixin.client.ModelPartAccessor;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.armature.ModelPartAccessor;
 import net.minecraft.client.model.geom.ModelPart;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;

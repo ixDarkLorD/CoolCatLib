@@ -12,7 +12,11 @@ import java.util.function.Supplier;
  * <pre>{@code
  * EntityRendererRegistry.register(MyEntities.WISP, WispRenderer::new);
  * }</pre>
+ *
+ * @deprecated Moved to CoolCatLib Canvas: use {@code net.ixdarklord.coolcatcanvas.api.client.registry.EntityRendererRegistry}, which works the same.
+ * This one still works, for mods built against older versions.
  */
+@Deprecated
 public final class EntityRendererRegistry {
     private EntityRendererRegistry() {}
 

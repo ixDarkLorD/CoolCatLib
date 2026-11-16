@@ -12,7 +12,11 @@ import net.minecraft.resources.Identifier;
  * <pre>{@code
  * SpecialModelRendererRegistry.register(MyMod.id("trophy_icon"), TrophyIconRenderer.Unbaked.MAP_CODEC);
  * }</pre>
+ *
+ * @deprecated Moved to CoolCatLib Canvas: use {@code net.ixdarklord.coolcatcanvas.api.client.registry.ItemRendererRegistry}, which works the same.
+ * This one still works, for mods built against older versions.
  */
+@Deprecated
 public final class SpecialModelRendererRegistry {
     private SpecialModelRendererRegistry() {}
 

@@ -9,7 +9,7 @@ displayName = "${mod_name}"
 version = "${version}"
 description = "${mod_description}"
 authors = "${mod_author}"
-logoFile = "mod_logo.png"
+iconFile = "mod_logo.png"
 updateJSONURL = "${mod_neoforge_update_url}"
 
 # Configured (MrCrayfish) lists every mod's CoolCatLib configs in its screens through this provider.
@@ -55,7 +55,7 @@ reason = "CoolCatLib Canvas comes inside CoolCatLib now; remove the old CoolCatL
 versionRange = "[26,)"
 side = "BOTH"
 
-# Glazed Menu before 1.2.2 (and its old 26.x versions) looks for the config screen effects where they were before 8.3.0.
+# Glazed Menu before 1.2.2 (and its old 26.x versions) looks for the config screen effects where they were before 9.0.0.
 [[dependencies.${modid}]]
 modId = "glazedmenu"
 type = "incompatible"
