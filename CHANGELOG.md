@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v9.0.0 Release | Unreleased
+## v9.0.0 Release | Nov 16, 2026
 ### ✨ New Features
 - `ModCommands` (`api.command`): registers a mod's server commands with its mod id and the command's names, the first its own and the others aliases that work the same, e.g. `ModCommands.register("ftbultimineaddition", List.of("ultimine_addition", "ua"), (root, context, selection) -> root.then(...))`. A name another command already has (vanilla's `/tm`, another mod's) is skipped, with a warning in the log. `ModCommands.registerClient(modId, names, (root, context) -> ...)` does the same for client commands. Instead of names, a client command can take its server command's: `ClientNames.MERGED` shares them (one `/folios` for players: what the client's parts can run stays on the client, the rest goes to the server), `ClientNames.SUFFIXED` adds `_client` (`/ua_client` beside `/ua`).
 - Every mod with CoolCatLib configs gets a config command under its own commands: `/<command> config` opens the mod's config screens and `/<command> config <config>` one of them (`/folios config client`). Anyone can open them; what they may change is still up to each config's edit permission.
