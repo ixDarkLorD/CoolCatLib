@@ -11,10 +11,13 @@ import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Players joining and leaving the server, their tick, respawning and changing dimension, picking items up, and crafting
@@ -66,6 +69,9 @@ public final class PlayerEvents {
     });
     public static final EventInvoker<AdvancementEarned> ADVANCEMENT_EARNED = EventInvoker.create(AdvancementEarned.class, listeners -> (player, advancement) -> {
         for (AdvancementEarned listener : listeners) listener.onAdvancementEarned(player, advancement);
+    });
+    public static final EventInvoker<ItemFished> ITEM_FISHED = EventInvoker.create(ItemFished.class, listeners -> (player, hook, items) -> {
+        for (ItemFished listener : listeners) listener.onItemFished(player, hook, items);
     });
     public static final EventInvoker<BreakSpeed> BREAK_SPEED = EventInvoker.create(BreakSpeed.class, listeners -> (player, state, pos, speed) -> {
         float current = speed;
@@ -231,5 +237,16 @@ public final class PlayerEvents {
     @FunctionalInterface
     public interface HarvestCheck {
         EventResultHolder<Boolean> onHarvestCheck(Player player, BlockState state, @Nullable BlockPos pos, boolean canHarvest);
+    }
+
+    /**
+     * A player reeled in a catch with a fishing rod, on the server: what the fishing loot table gave, before it's thrown
+     * to them. Not fired for a hooked entity.
+     *
+     * @param items what they caught, to add to or change (a mutable list); each is thrown to them
+     */
+    @FunctionalInterface
+    public interface ItemFished {
+        void onItemFished(ServerPlayer player, FishingHook hook, List<ItemStack> items);
     }
 }

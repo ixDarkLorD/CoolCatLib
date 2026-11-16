@@ -2,7 +2,6 @@ package net.ixdarklord.coolcatcore.internal.core.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.ixdarklord.coolcatcanvas.internal.core.client.CoolCatCanvasClientConstructor;
 import net.ixdarklord.coolcatcore.api.core.ClientModConstructor;
 import net.ixdarklord.coolcatcore.api.item.ComponentItem;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
@@ -15,7 +14,6 @@ public class FabricClientSetup implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((stack, context, flag, lines) -> ComponentItem.onTooltip(stack, lines));
         FabricClientEventHooks.register();
         ClientModConstructor.construct(CoolCatCore.MOD_ID, CoolCatCoreClientConstructor::new);
-        ClientModConstructor.construct(CoolCatCore.MOD_ID, CoolCatCanvasClientConstructor::new);
         FabricEntrypoints.construct(FabricEntrypoints.CLIENT, ClientModConstructor.class, ClientModConstructor::construct);
     }
 }

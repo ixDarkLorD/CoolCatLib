@@ -1,7 +1,6 @@
 package net.ixdarklord.coolcatcore.internal.config;
 
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
-import net.ixdarklord.coolcatcore.api.event.v2.common.CommandEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.PlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerLifecycleEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.common.ServerTickEvents;
@@ -45,7 +44,6 @@ public final class ConfigManager {
             flushSyncs();
         });
         PlayerEvents.JOIN.register(ConfigNetwork::sendAll);
-        CommandEvents.REGISTER.register((dispatcher, context, selection) -> ConfigCommands.registerServer(dispatcher));
     }
 
     public static void register(ConfigImpl config) {

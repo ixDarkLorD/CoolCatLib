@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * A named set of values applied together, like "Performance" or "Quality". Presets are declared on the
- * {@link ConfigBuilder}, and chosen from the config screen or with {@code /coolcatlib config <id> preset <name>}.
+ * {@link ConfigBuilder}, and chosen from the config screen.
  */
 public final class ConfigPreset {
     private final String name;

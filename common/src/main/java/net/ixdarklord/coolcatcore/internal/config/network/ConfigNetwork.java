@@ -43,6 +43,9 @@ public final class ConfigNetwork {
     public static void init() {
         Network.registerClientbound(SyncPayload.TYPE, SyncPayload.STREAM_CODEC, (payload, context) -> ClientConfigManager.onSync(payload));
         Network.registerClientbound(UpdateResultPayload.TYPE, UpdateResultPayload.STREAM_CODEC, (payload, context) -> ClientConfigManager.onUpdateResult(payload));
+        Network.registerClientbound(OpenScreenPayload.TYPE, OpenScreenPayload.STREAM_CODEC, (payload, context) -> ClientConfigManager.onOpenScreen(payload));
+        Network.registerClientbound(ReloadPayload.TYPE, ReloadPayload.STREAM_CODEC, (payload, context) -> ClientConfigManager.onReload(payload));
+        Network.registerClientbound(CommandsPayload.TYPE, CommandsPayload.STREAM_CODEC, (payload, context) -> ClientConfigManager.onServerCommands(payload));
         Network.registerServerbound(UpdatePayload.TYPE, UpdatePayload.STREAM_CODEC, (payload, context) -> {
             if (context.getPlayer() instanceof ServerPlayer player) handleUpdate(payload, player);
         });
@@ -72,6 +75,7 @@ public final class ConfigNetwork {
     }
 
     public static void sendAll(ServerPlayer player) {
+        if (Network.canPlayerReceive(player, CommandsPayload.TYPE)) Network.sendToPlayer(player, new CommandsPayload(true));
         for (ConfigImpl config : ConfigManager.all()) {
             if (config.scope().isSynced() && config.isLoaded()) send(player, config);
         }
@@ -194,6 +198,51 @@ public final class ConfigNetwork {
 
         @Override
         public Type<UpdateResultPayload> type() {
+            return TYPE;
+        }
+    }
+
+    /** Opens config screens on the client, from a config command: a mod's ("" for every mod's), and one of its configs ("" for all). */
+    public record OpenScreenPayload(String modId, String config) implements CustomPacketPayload {
+        public static final Type<OpenScreenPayload> TYPE = new Type<>(CoolCatCore.rl("config_open_screen"));
+        public static final StreamCodec<FriendlyByteBuf, OpenScreenPayload> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.stringUtf8(256), OpenScreenPayload::modId,
+                ByteBufCodecs.stringUtf8(256), OpenScreenPayload::config,
+                OpenScreenPayload::new);
+
+        @Override
+        public Type<OpenScreenPayload> type() {
+            return TYPE;
+        }
+    }
+
+    /**
+     * Reloads client configs from their files, from a config reload command: a mod's ("" for every mod's), one of its
+     * configs ("" for all). {@code replyIfNone}: the server reloaded nothing, so the client says when it hasn't either.
+     */
+    public record ReloadPayload(String modId, String config, boolean replyIfNone) implements CustomPacketPayload {
+        public static final Type<ReloadPayload> TYPE = new Type<>(CoolCatCore.rl("config_reload"));
+        public static final StreamCodec<FriendlyByteBuf, ReloadPayload> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.stringUtf8(256), ReloadPayload::modId,
+                ByteBufCodecs.stringUtf8(256), ReloadPayload::config,
+                ByteBufCodecs.BOOL, ReloadPayload::replyIfNone,
+                ReloadPayload::new);
+
+        @Override
+        public Type<ReloadPayload> type() {
+            return TYPE;
+        }
+    }
+
+    /** Tells a joining player's client the server has CoolCatLib's config commands, so the client's own stand aside. */
+    public record CommandsPayload(boolean configCommands) implements CustomPacketPayload {
+        public static final Type<CommandsPayload> TYPE = new Type<>(CoolCatCore.rl("config_commands"));
+        public static final StreamCodec<FriendlyByteBuf, CommandsPayload> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, CommandsPayload::configCommands,
+                CommandsPayload::new);
+
+        @Override
+        public Type<CommandsPayload> type() {
             return TYPE;
         }
     }
