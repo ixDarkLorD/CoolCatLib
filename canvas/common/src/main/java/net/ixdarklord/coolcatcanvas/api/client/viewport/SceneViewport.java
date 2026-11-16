@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * A small 3D scene drawn to a texture of its own: blocks, whole structures, entities and items' icons, seen from a camera that
  * circles them. Because it is a texture, what it shows is always kept inside the rectangle it is drawn in, wherever
- * that is: a GUI ({@link net.ixdarklord.coolcatcanvas.api.client.gui.components.SceneViewportWidget}), or a face in
+ * that is: a GUI ({@link net.ixdarklord.coolcatcanvas.api.client.gui.widget.SceneViewportWidget}), or a face in
  * the world (use {@link #texture()} with any textured render type).
  * <pre>{@code
  * SceneViewport view = SceneViewport.create(MyMod.id("altar_view"), 256, 256);

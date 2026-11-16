@@ -25,6 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 import java.util.ArrayList;
@@ -266,7 +267,14 @@ public abstract class BlockRenderer<T extends BlockEntity, S extends BlockRender
 
     @Override
     public boolean shouldRenderOffScreen() {
-        if (this.offScreen != null) return this.offScreen;
+        return this.offScreen != null ? this.offScreen : this.reachesOut();
+    }
+
+    /**
+     * Whether it may reach past its block, so it's drawn while its block's section is out of view (unless
+     * {@link #offScreen} is set): by default, when it has {@link #bounds}.
+     */
+    protected boolean reachesOut() {
         return this.bounds != null;
     }
 
@@ -345,6 +353,15 @@ public abstract class BlockRenderer<T extends BlockEntity, S extends BlockRender
         if (state.posed) poseStack.mulPose(UNTURNS[state.facing.ordinal()]);
     }
 
+    /**
+     * Turns a matrix at its block's corner to its facing, as {@link #submit} turns the pose: for working out where
+     * something drawn will be in the world (from {@code extract}).
+     */
+    public static Matrix4f turn(BlockRenderState state, Matrix4f matrix) {
+        if (state.posed) matrix.rotateAround(TURNS[state.facing.ordinal()], 0.5F, 0.5F, 0.5F);
+        return matrix;
+    }
+
     @SuppressWarnings("unchecked")
     private static <T extends BlockEntity, S extends BlockRenderState, L> void extractLayer(BlockRenderLayer<? super T, ? super S, L> layer, T blockEntity, S state,
                                                                                             Object layerState, BlockRenderContext context) {
@@ -363,8 +380,17 @@ public abstract class BlockRenderer<T extends BlockEntity, S extends BlockRender
 
     private RenderBounds boundsOf(T blockEntity) {
         RenderBounds box = this.box.reset();
-        if (this.bounds != null) this.bounds.bounds(blockEntity, box);
+        this.growBounds(blockEntity, box);
         return box;
+    }
+
+    /**
+     * Grows the box, its block to start with, to the space this block entity draws in: by default with
+     * {@link #bounds}. A subclass with bounds of its own sets them here and calls this after, so {@link #bounds} grows
+     * from them.
+     */
+    protected void growBounds(T blockEntity, RenderBounds box) {
+        if (this.bounds != null) this.bounds.bounds(blockEntity, box);
     }
 
     private int detailAt(double distanceSq, double reach) {

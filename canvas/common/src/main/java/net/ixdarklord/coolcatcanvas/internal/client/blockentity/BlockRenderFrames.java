@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.client.blockentity;
 
-import net.ixdarklord.coolcatcanvas.internal.mixin.client.FrustumInvoker;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.render.FrustumInvoker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;

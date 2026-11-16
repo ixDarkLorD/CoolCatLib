@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 // The special item model types, so the armature item model ("coolcatcanvas:armature") and mods' own
-// (api/client/registry/SpecialModelRendererRegistry) can be among them on either loader.
+// (Canvas's ItemRendererRegistry) can be among them on either loader.
 @Mixin(SpecialModelRenderers.class)
 public interface SpecialModelRenderersAccessor {
     @Accessor("ID_MAPPER")

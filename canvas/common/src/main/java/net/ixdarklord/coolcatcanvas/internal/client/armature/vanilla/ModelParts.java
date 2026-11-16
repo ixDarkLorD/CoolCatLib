@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcanvas.internal.client.armature.vanilla;
 
 import net.ixdarklord.coolcatcanvas.api.client.armature.BakedArmature;
-import net.ixdarklord.coolcatcanvas.internal.mixin.client.ModelPartAccessor;
+import net.ixdarklord.coolcatcanvas.internal.mixin.client.armature.ModelPartAccessor;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import org.jetbrains.annotations.Nullable;

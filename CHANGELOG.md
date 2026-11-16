@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v8.3.0 Release | Unreleased
+## v9.0.0 Release | Unreleased
 ### ✨ New Features
 - `ModCommands` (`api.command`): registers a mod's server commands with its mod id and the command's names, the first its own and the others aliases that work the same, e.g. `ModCommands.register("ftbultimineaddition", List.of("ultimine_addition", "ua"), (root, context, selection) -> root.then(...))`. A name another command already has (vanilla's `/tm`, another mod's) is skipped, with a warning in the log. `ModCommands.registerClient(modId, names, (root, context) -> ...)` does the same for client commands. Instead of names, a client command can take its server command's: `ClientNames.MERGED` shares them (one `/folios` for players: what the client's parts can run stays on the client, the rest goes to the server), `ClientNames.SUFFIXED` adds `_client` (`/ua_client` beside `/ua`).
 - Every mod with CoolCatLib configs gets a config command under its own commands: `/<command> config` opens the mod's config screens and `/<command> config <config>` one of them (`/folios config client`). Anyone can open them; what they may change is still up to each config's edit permission.
@@ -9,6 +9,7 @@ This file is for listing all the changes to this project
 - `/coolcatlib config [mod] [config]` and `/coolcatlib config reload [mod] [config]` do the same for any mod, and on servers without CoolCatLib the player's own game does it.
 
 ### 🔧 Changes
+- **Breaking:** Canvas's GUI and render helpers moved to tidier packages under `net.ixdarklord.coolcatcanvas.api.client`: `gui.components` and `gui.components.widgets` to `gui.widget`, `gui.components.widgets.panel` to `gui.panel`, `gui.components.animations` to `gui.animation`, `utils.ScreenAnchor` to `gui.placement`, `utils.TextEffects` to `text`, and `utils.RenderUtils`, `Outline` and `NineSliceInfo` to `render`. The class names are the same; mods using them update their imports.
 - CoolCatLib's visuals are a mod of their own again, CoolCatLib Canvas (`coolcatcanvas`), and it comes inside CoolCatLib's jar: nothing more to install. Mods built on its API need `net.ixdarklord.coolcatlib:coolcatlib-canvas-<loader>` beside `coolcatlib-<loader>` (CoolCatLib's POM names it).
 - Canvas's namespace is `coolcatcanvas`: its shaders and includes (`#moj_import <coolcatcanvas:screen_effect.glsl>`), text effects (`coolcatcanvas:rainbow`, `coolcatcanvas:gradient/...`), the armature item model type (`coolcatcanvas:armature`), its built-in effects (`coolcatcanvas:tint`, `coolcatcanvas:bloom`), lang keys, key bindings and payload ids. Resource packs and mods that name these with `coolcatlib:` need the new name. The effects screen's choices and saved cutscenes move to `config/coolcatcanvas-screen-effects.json` and `config/coolcatcanvas/cutscenes/`, carried over from where they were.
 - The config screens' look belongs to CoolCatLib itself: `ConfigEffect` and `ConfigEffects` moved to `net.ixdarklord.coolcatcore.api.config.client`, and the dark or light choice is saved in `config/coolcatlib-style.json`.
@@ -16,6 +17,8 @@ This file is for listing all the changes to this project
 - `/coolcatlib_client` is gone: the client's config command is part of `/coolcatlib` (on servers without CoolCatLib), and the visuals' commands are `/coolcatcanvas effects` and `/coolcatcanvas cutscene ...`.
 - The config commands no longer get, set or reset values or apply presets from the chat (`/coolcatlib config <id> get|set|reset|preset`): they open the config screens, where all of that is done.
 - `CommandEvents.REGISTER` and `ClientCommandEvents.REGISTER` are deprecated: use `ModCommands` (`register` and `registerClient`). Commands registered through it still work, and still get the config command: they're matched to the mod whose configs are built in the same packages.
+- The renderer registries moved to Canvas, beside its renderers, in `net.ixdarklord.coolcatcanvas.api.client.registry`: `BlockEntityRendererRegistry`, `EntityRendererRegistry`, and `ItemRendererRegistry` (was `SpecialModelRendererRegistry`; registers item model types drawn by code). The ones in `net.ixdarklord.coolcatcore.api.client.registry` still work but are deprecated.
+- `ArmatureBlockRenderer` works like any `BlockRenderer`: it turns to its block with `facing(Facing)` (`Facing.ALL` by default; `facing(boolean)` and overriding `facing(blockEntity, state)` are deprecated, override `direction` instead), every `BlockRenderer` setting chains with its own (`.detail(...).animate(...)`), `bounds` grow from the armature's own instead of replacing them, `offScreen` is respected, and its layers turn with it. A subclass draws more the `BlockRenderer` way, with `newState`, `extract` and `render`, keeping its states reused.
 
 ### 🐛 Bug Fixes
 - A mod's server command no longer stops working when the mod also has a client command of the same name (`/folios config` beside the client's `/folios guide`): what only the server's command can run now goes to the server instead of failing on the client as an incorrect argument.
