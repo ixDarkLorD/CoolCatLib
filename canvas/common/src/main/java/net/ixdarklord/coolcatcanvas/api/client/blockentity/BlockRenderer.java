@@ -1,0 +1,442 @@
+package net.ixdarklord.coolcatcanvas.api.client.blockentity;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.ixdarklord.coolcatcanvas.internal.client.blockentity.BlockRenderFrames;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.ToDoubleFunction;
+
+/**
+ * A block entity renderer that does the work every renderer otherwise repeats, so a subclass writes only what it
+ * draws: {@link #newState}, {@link #extract} and {@link #render}.
+ * <ul>
+ *     <li><b>Culling.</b> A block entity farther off than its {@link #viewDistance} or out of view ({@link #bounds}) is
+ *     skipped before anything of it is worked out, on every loader (Fabric doesn't cull block entities by view at all).</li>
+ *     <li><b>Detail by distance.</b> {@link #detail} bands set what each one's state is drawn at, and every band
+ *     reaches farther for one shown larger ({@link #reach}). Layers are skipped past the detail they're drawn to.</li>
+ *     <li><b>No allocation per frame.</b> Each block entity is read into a state right before it's drawn; one state
+ *     is reused for all of them ({@link #pooled}).</li>
+ *     <li><b>Facing.</b> Turns what it draws to its block's facing ({@link #facing}), with no math in {@code render}.</li>
+ *     <li><b>Layers</b> ({@link #layer}): floating items, text, other renderers, drawn with it.</li>
+ * </ul>
+ * It's a plain {@link BlockEntityRenderer}, registered as any other:
+ * <pre>{@code
+ * public final class PedestalRenderer extends BlockRenderer<PedestalBlockEntity, PedestalRenderer.State> {
+ *     public PedestalRenderer(BlockEntityRendererProvider.Context context) {
+ *         super(context);
+ *         this.viewDistance(96).detail(Detail.FULL, 24).detail(Detail.REDUCED, 48)
+ *                 .facing(Facing.HORIZONTAL)
+ *                 .bounds((pedestal, box) -> box.up(1.5F))
+ *                 .layer(ItemLayer.<PedestalBlockEntity, State>of(PedestalBlockEntity::display).at(0.5F, 1.2F, 0.5F).spin(2.0F));
+ *     }
+ *     protected State newState() { return new State(); }
+ *     protected void extract(PedestalBlockEntity pedestal, State state, BlockRenderContext context) { ... }
+ *     protected void render(State state, PoseStack poseStack, MultiBufferSource buffers, Camera camera) { ... }
+ *     public static final class State extends BlockRenderState { ... }
+ * }
+ *
+ * BlockEntityRendererRegistry.register(MyBlockEntities.PEDESTAL, PedestalRenderer::new);
+ * }</pre>
+ * Set it up in the constructor: a renderer is made again on every resource reload, and its settings are read every
+ * frame. Like all rendering, it runs on the client thread only.
+ */
+public abstract class BlockRenderer<T extends BlockEntity, S extends BlockRenderState> implements BlockEntityRenderer<T> {
+    // A model's turn to each facing, from facing north, about its block's middle.
+    private static final Quaternionf[] TURNS = new Quaternionf[Direction.values().length];
+    private static final Quaternionf[] UNTURNS = new Quaternionf[Direction.values().length];
+    // (Infinite on every side.)
+    private static final AABB EVERYWHERE = new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,
+            Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    private static final int BOUNDS_COLOR = 0xFF55FFFF, REDUCED_BOUNDS_COLOR = 0xFFFFFF55, MINIMAL_BOUNDS_COLOR = 0xFFFF5555;
+
+    static {
+        for (Direction direction : Direction.values()) {
+            Quaternionf turn = switch (direction) {
+                case UP -> new Quaternionf().rotationX(Mth.HALF_PI);
+                case DOWN -> new Quaternionf().rotationX(-Mth.HALF_PI);
+                default -> new Quaternionf().rotationY((180.0F - direction.toYRot()) * Mth.DEG_TO_RAD);
+            };
+            TURNS[direction.ordinal()] = turn;
+            UNTURNS[direction.ordinal()] = new Quaternionf(turn).conjugate();
+        }
+    }
+
+    protected final BlockEntityRendererProvider.Context context;
+    private final BlockRenderContext extractContext;
+    private final List<BlockRenderLayer<? super T, ? super S, ?>> layers = new ArrayList<>();
+    private final RenderBounds box = new RenderBounds();
+    private @Nullable S shared;
+    private int viewDistance = 64;
+    private double[] bands = new double[0];
+    private @Nullable BoundsFunction<? super T> bounds;
+    private @Nullable ToDoubleFunction<? super T> reach;
+    private Facing facing = Facing.NONE;
+    private boolean pooled = true;
+    private boolean trackLookedAt;
+    private @Nullable Boolean offScreen;
+    private int lastFrame = Integer.MIN_VALUE;
+
+    protected BlockRenderer(BlockEntityRendererProvider.Context context) {
+        this.context = context;
+        this.extractContext = new BlockRenderContext(context);
+    }
+
+    // Settings: set in the constructor.
+
+    /** How far away, in blocks, it is drawn at all; 64 by default (vanilla's). Grows with {@link #reach}. */
+    public BlockRenderer<T, S> viewDistance(int blocks) {
+        this.viewDistance = blocks;
+        return this;
+    }
+
+    /**
+     * Draws it at this {@link Detail} up to this far away, in blocks (grown with {@link #reach}); past the last band
+     * set, it's drawn at the next level down, out to its {@link #viewDistance}. With no bands, it's always FULL.
+     * <pre>{@code
+     * this.detail(Detail.FULL, 16).detail(Detail.REDUCED, 40);  // FULL to 16, REDUCED to 40, MINIMAL beyond
+     * }</pre>
+     */
+    public BlockRenderer<T, S> detail(int detail, double blocks) {
+        if (detail < 0) throw new IllegalArgumentException("Detail levels start at 0 (Detail.FULL)");
+        if (detail >= this.bands.length) {
+            int from = this.bands.length;
+            this.bands = Arrays.copyOf(this.bands, detail + 1);
+            Arrays.fill(this.bands, from, detail, Double.NaN);
+        }
+        this.bands[detail] = blocks;
+        return this;
+    }
+
+    /**
+     * The space each block entity draws in, for culling it out of view: the box starts as its own block, and the
+     * function grows it. By default it's the block alone. Bounds that reach past the block also make it drawn while
+     * its block's section is out of view (vanilla's {@code shouldRenderOffScreen}), unless {@link #offScreen} says otherwise.
+     * <pre>{@code
+     * this.bounds((pedestal, box) -> box.grow(pedestal.scale(), 0.0F, pedestal.scale()).up(2.0F + pedestal.height()));
+     * }</pre>
+     */
+    public BlockRenderer<T, S> bounds(BoundsFunction<? super T> bounds) {
+        this.bounds = bounds;
+        return this;
+    }
+
+    /**
+     * How many times farther than usual one is drawn, and in detail: for a block entity shown larger, seen from farther
+     * off. Scales {@link #viewDistance} and every {@link #detail} band. 1 by default.
+     */
+    public BlockRenderer<T, S> reach(ToDoubleFunction<? super T> reach) {
+        this.reach = reach;
+        return this;
+    }
+
+    /** Turns what it draws to its block's facing (and sets {@link BlockRenderState#facing}); {@link Facing#NONE} by default. */
+    public BlockRenderer<T, S> facing(Facing facing) {
+        this.facing = facing;
+        return this;
+    }
+
+    /**
+     * Whether one state is reused for every block entity it draws; on by default. Turn it off only if something keeps
+     * a state past the draw it was made for.
+     */
+    public BlockRenderer<T, S> pooled(boolean pooled) {
+        this.pooled = pooled;
+        return this;
+    }
+
+    /** Works out {@link BlockRenderState#lookedAt} for each one (off by default: one check against the crosshair). */
+    public BlockRenderer<T, S> trackLookedAt() {
+        this.trackLookedAt = true;
+        return this;
+    }
+
+    /** Whether it's drawn while its block's section is out of view; by default, when its {@link #bounds} reach out. */
+    public BlockRenderer<T, S> offScreen(boolean offScreen) {
+        this.offScreen = offScreen;
+        return this;
+    }
+
+    /** Adds a layer, drawn after it (and after the layers added before it). */
+    public BlockRenderer<T, S> layer(BlockRenderLayer<? super T, ? super S, ?> layer) {
+        this.layers.add(layer);
+        return this;
+    }
+
+    // What a subclass writes.
+
+    /** A new, empty state. */
+    protected abstract S newState();
+
+    /**
+     * Reads what this block entity shows into its state. The base fields ({@link BlockRenderState#detail},
+     * {@link BlockRenderState#time}, {@link BlockRenderState#facing}, ...) are set already; call
+     * {@link BlockRenderState#skip()} to draw nothing.
+     */
+    protected abstract void extract(T blockEntity, S state, BlockRenderContext context);
+
+    /**
+     * Draws it. The pose is at its block's corner, turned to its facing if it {@link #facing turns}, and is popped
+     * afterwards; its layers are drawn after this.
+     */
+    protected abstract void render(S state, PoseStack poseStack, MultiBufferSource buffers, Camera camera);
+
+    /** Called once a frame, before the frame's first block entity is extracted: for work every one of them shares. */
+    protected void onFrame() {
+    }
+
+    /** Which way it faces; by default the block's facing as {@link #facing} reads it (north for {@link Facing#NONE}). */
+    protected Direction direction(T blockEntity) {
+        if (this.facing == Facing.NONE) return Direction.NORTH;
+        BlockState block = blockEntity.getBlockState();
+        if (this.facing == Facing.ALL && block.hasProperty(BlockStateProperties.FACING)) return block.getValue(BlockStateProperties.FACING);
+        if (block.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) return block.getValue(BlockStateProperties.HORIZONTAL_FACING);
+        if (block.hasProperty(BlockStateProperties.FACING)) {
+            Direction direction = block.getValue(BlockStateProperties.FACING);
+            return direction.getAxis().isHorizontal() ? direction : Direction.NORTH;
+        }
+        return Direction.NORTH;
+    }
+
+    // The game's side.
+
+    /** The state the next block entity is read into: the shared one (or a new one if it isn't {@link #pooled}). */
+    public S createRenderState() {
+        if (!this.pooled) return this.createUnpooledState();
+        if (this.shared == null) this.shared = this.createUnpooledState();
+        return this.shared;
+    }
+
+    /** A new state of its own, outside the pool: for a state kept across frames, or drawn inside another renderer's. */
+    public final S createUnpooledState() {
+        S state = this.newState();
+        state.layers = this.newLayerStates();
+        return state;
+    }
+
+    private Object[] newLayerStates() {
+        Object[] states = new Object[this.layers.size()];
+        for (int i = 0; i < states.length; i++) states[i] = this.layers.get(i).newState();
+        return states;
+    }
+
+    /** Culls it by distance and view before anything of it is worked out. */
+    @Override
+    public boolean shouldRender(T blockEntity, Vec3 cameraPosition) {
+        BlockPos pos = blockEntity.getBlockPos();
+        double dx = pos.getX() + 0.5 - cameraPosition.x, dy = pos.getY() + 0.5 - cameraPosition.y, dz = pos.getZ() + 0.5 - cameraPosition.z;
+        double far = this.viewDistance * this.reachOf(blockEntity);
+        if (dx * dx + dy * dy + dz * dz >= far * far) return false;
+        RenderBounds box = this.boundsOf(blockEntity);
+        return BlockRenderFrames.inView(pos, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+    }
+
+    /**
+     * Kept for the same API as later versions, where NeoForge culls a block entity by this box before
+     * {@link #shouldRender}; nothing calls it on 1.20.1. Forge 47 culls by the block entity's own
+     * {@code getRenderBoundingBox()} instead (its block's collision box by default), before this renderer is asked: a
+     * block entity drawn past its block should override that on Forge, returning
+     * {@code IForgeBlockEntity.INFINITE_EXTENT_AABB} to leave the culling to this renderer's {@link #bounds}.
+     */
+    public AABB getRenderBoundingBox(T blockEntity) {
+        return EVERYWHERE;
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen(T blockEntity) {
+        return this.offScreen != null ? this.offScreen : this.reachesOut();
+    }
+
+    /**
+     * Whether it may reach past its block, so it's drawn while its block's section is out of view (unless
+     * {@link #offScreen} is set): by default, when it has {@link #bounds}.
+     */
+    protected boolean reachesOut() {
+        return this.bounds != null;
+    }
+
+    @Override
+    public int getViewDistance() {
+        return this.viewDistance;
+    }
+
+    /**
+     * Draws a block entity the game hands it: reads it into a state ({@link #extractRenderState}) and draws that
+     * ({@link #submit}) at once.
+     */
+    @Override
+    public void render(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay) {
+        Camera camera = camera(this.context);
+        S state = this.createRenderState();
+        this.extractRenderState(blockEntity, state, partialTick, camera.getPosition());
+        state.lightCoords = light;
+        state.overlayCoords = overlay;
+        this.submit(state, poseStack, buffers, camera);
+    }
+
+    /**
+     * Fills the base fields, then {@link #extract}, then the layers. A subclass overriding this calls it first.
+     */
+    public void extractRenderState(T blockEntity, S state, float partialTicks, Vec3 cameraPosition) {
+        Level level = blockEntity.getLevel();
+        BlockPos pos = blockEntity.getBlockPos();
+        state.blockPos = pos;
+        state.blockState = blockEntity.getBlockState();
+        state.blockEntityType = blockEntity.getType();
+        state.lightCoords = level != null ? LevelRenderer.getLightColor(level, pos) : LightTexture.FULL_BRIGHT;
+        state.overlayCoords = OverlayTexture.NO_OVERLAY;
+        int frame = BlockRenderFrames.current();
+        if (frame != this.lastFrame) {
+            this.lastFrame = frame;
+            this.onFrame();
+        }
+        double dx = pos.getX() + 0.5 - cameraPosition.x, dy = pos.getY() + 0.5 - cameraPosition.y, dz = pos.getZ() + 0.5 - cameraPosition.z;
+        double reach = this.reachOf(blockEntity);
+        state.distanceSq = dx * dx + dy * dy + dz * dz;
+        state.reach = (float) reach;
+        state.detail = this.detailAt(state.distanceSq, reach);
+        state.partialTicks = partialTicks;
+        state.gameTime = level != null ? level.getGameTime() : 0L;
+        state.time = state.gameTime + partialTicks;
+        state.facing = this.direction(blockEntity);
+        state.posed = this.facing != Facing.NONE;
+        state.lookedAt = this.trackLookedAt && lookedAt(pos);
+        state.skip = false;
+        state.showBounds = Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes();
+        if (state.showBounds) {
+            RenderBounds box = this.boundsOf(blockEntity);
+            state.minX = box.minX;
+            state.minY = box.minY;
+            state.minZ = box.minZ;
+            state.maxX = box.maxX;
+            state.maxY = box.maxY;
+            state.maxZ = box.maxZ;
+        }
+        // (A state made by a subclass's own createRenderState, or before a layer was added, gets its layers' states now.)
+        if (state.layers.length != this.layers.size()) state.layers = this.newLayerStates();
+        this.extractContext.set(cameraPosition, partialTicks, level);
+        this.extract(blockEntity, state, this.extractContext);
+        if (state.skip) return;
+        for (int i = 0; i < this.layers.size(); i++) {
+            BlockRenderLayer<? super T, ? super S, ?> layer = this.layers.get(i);
+            if (state.detail <= layer.detail()) extractLayer(layer, blockEntity, state, state.layers[i], this.extractContext);
+        }
+    }
+
+    /** Draws it in its pose: {@link #render}, then the layers. A subclass overriding this calls it. */
+    public void submit(S state, PoseStack poseStack, MultiBufferSource buffers, Camera camera) {
+        if (state.skip) return;
+        poseStack.pushPose();
+        if (state.posed) poseStack.rotateAround(TURNS[state.facing.ordinal()], 0.5F, 0.5F, 0.5F);
+        this.render(state, poseStack, buffers, camera);
+        for (int i = 0; i < this.layers.size(); i++) {
+            BlockRenderLayer<? super T, ? super S, ?> layer = this.layers.get(i);
+            if (state.detail <= layer.detail()) submitLayer(layer, state, state.layers[i], poseStack, buffers, camera);
+        }
+        poseStack.popPose();
+        if (state.showBounds) submitBounds(state, poseStack, buffers);
+    }
+
+    /**
+     * Undoes the turn to its facing that {@link #submit} applied, about the pose's current point: for something that
+     * must not turn with it (text that faces the camera, a beam that stands upright).
+     */
+    public static void unturn(BlockRenderState state, PoseStack poseStack) {
+        if (state.posed) poseStack.mulPose(UNTURNS[state.facing.ordinal()]);
+    }
+
+    /**
+     * Turns a matrix at its block's corner to its facing, as {@link #submit} turns the pose: for working out where
+     * something drawn will be in the world (from {@code extract}).
+     */
+    public static Matrix4f turn(BlockRenderState state, Matrix4f matrix) {
+        if (state.posed) matrix.rotateAround(TURNS[state.facing.ordinal()], 0.5F, 0.5F, 0.5F);
+        return matrix;
+    }
+
+    // The camera block entities are drawn from (the main one while a block entity is drawn as an item, with none set).
+    static Camera camera(BlockEntityRendererProvider.Context context) {
+        Camera camera = context.getBlockEntityRenderDispatcher().camera;
+        return camera != null ? camera : Minecraft.getInstance().gameRenderer.getMainCamera();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends BlockEntity, S extends BlockRenderState, L> void extractLayer(BlockRenderLayer<? super T, ? super S, L> layer, T blockEntity, S state,
+                                                                                            Object layerState, BlockRenderContext context) {
+        layer.extract(blockEntity, state, (L) layerState, context);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <S extends BlockRenderState, L> void submitLayer(BlockRenderLayer<?, ? super S, L> layer, S state, Object layerState, PoseStack poseStack,
+                                                                    MultiBufferSource buffers, Camera camera) {
+        layer.submit(state, (L) layerState, poseStack, buffers, camera);
+    }
+
+    private double reachOf(T blockEntity) {
+        return this.reach == null ? 1.0 : Math.max(1.0E-3, this.reach.applyAsDouble(blockEntity));
+    }
+
+    private RenderBounds boundsOf(T blockEntity) {
+        RenderBounds box = this.box.reset();
+        this.growBounds(blockEntity, box);
+        return box;
+    }
+
+    /**
+     * Grows the box, its block to start with, to the space this block entity draws in: by default with
+     * {@link #bounds}. A subclass with bounds of its own sets them here and calls this after, so {@link #bounds} grows
+     * from them.
+     */
+    protected void growBounds(T blockEntity, RenderBounds box) {
+        if (this.bounds != null) this.bounds.bounds(blockEntity, box);
+    }
+
+    private int detailAt(double distanceSq, double reach) {
+        for (int i = 0; i < this.bands.length; i++) {
+            double band = this.bands[i] * reach;
+            if (!Double.isNaN(band) && distanceSq <= band * band) return i;
+        }
+        return this.bands.length;
+    }
+
+    private static boolean lookedAt(BlockPos pos) {
+        return Minecraft.getInstance().hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK && hit.getBlockPos().equals(pos);
+    }
+
+    // Its bounds as a line box, colored by its detail, while hitboxes are shown (F3 + B).
+    private static void submitBounds(BlockRenderState state, PoseStack poseStack, MultiBufferSource buffers) {
+        int color = state.detail <= Detail.FULL ? BOUNDS_COLOR : state.detail == Detail.REDUCED ? REDUCED_BOUNDS_COLOR : MINIMAL_BOUNDS_COLOR;
+        LevelRenderer.renderLineBox(poseStack, buffers.getBuffer(RenderType.lines()), state.minX, state.minY, state.minZ, state.maxX, state.maxY, state.maxZ,
+                (color >> 16 & 0xFF) / 255.0F, (color >> 8 & 0xFF) / 255.0F, (color & 0xFF) / 255.0F, 1.0F);
+    }
+
+    /** Grows a block entity's {@link RenderBounds} to the space it draws in. */
+    @FunctionalInterface
+    public interface BoundsFunction<T> {
+        void bounds(T blockEntity, RenderBounds box);
+    }
+}

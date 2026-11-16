@@ -19,7 +19,11 @@ import java.util.function.Supplier;
  * <pre>{@code
  * ItemRendererRegistry.register(MyItems.ORB, (stack, context, pose, buffers, light, overlay) -> ...);
  * }</pre>
+ *
+ * @deprecated Moved to CoolCatLib Canvas: use {@code net.ixdarklord.coolcatcanvas.api.client.registry.ItemRendererRegistry}, which works the same.
+ * This one still works, for mods built against older versions.
  */
+@Deprecated
 public final class ItemRendererRegistry {
     private static final Map<Supplier<? extends ItemLike>, Renderer> PENDING = new ConcurrentHashMap<>();
     private static final Map<Item, Renderer> RENDERERS = new ConcurrentHashMap<>();

@@ -1,6 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.client.gui;
 
-import net.ixdarklord.coolcatcanvas.api.client.utils.Outline;
+import net.ixdarklord.coolcatcanvas.api.client.render.Outline;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import org.jetbrains.annotations.Nullable;

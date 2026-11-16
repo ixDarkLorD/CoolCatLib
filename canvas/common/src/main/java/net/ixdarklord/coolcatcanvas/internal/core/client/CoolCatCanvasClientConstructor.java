@@ -1,5 +1,6 @@
 package net.ixdarklord.coolcatcanvas.internal.core.client;
 
+import net.ixdarklord.coolcatcanvas.internal.client.armature.ArmatureClient;
 import net.ixdarklord.coolcatcanvas.internal.client.camera.CameraShakeManager;
 import net.ixdarklord.coolcatcanvas.internal.client.effect.ScreenEffectsClient;
 import net.ixdarklord.coolcatcanvas.internal.client.sound.SoundFilterManager;
@@ -15,6 +16,7 @@ public final class CoolCatCanvasClientConstructor implements ClientModConstructo
         ScreenEffectsClient.init();
         VfxManager.init();
         RiftManager.init();
+        ArmatureClient.init();
         ClientTickEvents.END.register(minecraft -> {
             CameraShakeManager.tick(minecraft);
             RiftManager.tick(minecraft);

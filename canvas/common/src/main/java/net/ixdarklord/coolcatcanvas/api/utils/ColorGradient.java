@@ -17,7 +17,7 @@ import java.util.Optional;
  * An animated color gradient: color stops placed evenly around a loop (the last blends back into the first, so it
  * never jumps), or the full {@linkplain #rainbow() rainbow} of hues. The loop scrolls over time ({@link #speed()}) and
  * along a position ({@link #spread()}): a character's index in the text, or the distance around an
- * {@link net.ixdarklord.coolcatcanvas.api.client.utils.Outline Outline}.
+ * {@link net.ixdarklord.coolcatcanvas.api.client.render.Outline Outline}.
  * <pre>{@code
  * ColorGradient.of(0xFF4000, 0xFFD000)          // fire: orange to yellow and back, each letter its own color
  * ColorGradient.RAINBOW.wholeText()             // the whole text in one color, cycling through the rainbow

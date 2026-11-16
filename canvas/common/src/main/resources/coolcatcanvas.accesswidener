@@ -33,3 +33,8 @@ accessible class net/minecraft/client/renderer/RenderType$CompositeState
 accessible field net/minecraft/client/renderer/RenderType$CompositeState textureState Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;
 accessible class net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard
 accessible method net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard cutoutTexture ()Ljava/util/Optional;
+
+# Armature limb bending: a vanilla part's faces, drawn bent (LimbBend)
+accessible class net/minecraft/client/model/geom/ModelPart$Polygon
+accessible class net/minecraft/client/model/geom/ModelPart$Vertex
+accessible field net/minecraft/client/model/geom/ModelPart$Cube polygons [Lnet/minecraft/client/model/geom/ModelPart$Polygon;
