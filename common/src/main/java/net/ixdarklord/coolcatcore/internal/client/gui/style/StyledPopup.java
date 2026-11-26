@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcore.internal.client.gui.style;
 
-import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
+import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;

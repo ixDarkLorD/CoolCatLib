@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
-import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
-import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.api.config.ConfigDependency;
 import net.ixdarklord.coolcatcore.api.config.ConfigNode;
 import net.ixdarklord.coolcatcore.api.config.RestartRequirement;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.internal.config.ConfigGroupImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;

@@ -15,6 +15,7 @@
     "client.armature.EntityRenderStateMixin",
     "client.text.FontPreparedTextBuilderMixin",
     "client.render.GameRendererMixin",
+    "client.render.LevelRendererMixin",
     "client.gui.GuiItemRenderStateMixin",
     "client.gui.GuiMixin",
     "client.gui.GuiRendererMixin",

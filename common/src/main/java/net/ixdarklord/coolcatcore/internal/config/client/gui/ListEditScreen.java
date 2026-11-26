@@ -1,9 +1,5 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
-import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
-import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
-import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
-import net.ixdarklord.coolcatcore.internal.client.gui.style.StyledScreen;
 import net.ixdarklord.coolcatcore.api.config.type.BooleanType;
 import net.ixdarklord.coolcatcore.api.config.type.ColorType;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigType;
@@ -13,6 +9,10 @@ import net.ixdarklord.coolcatcore.api.config.type.ListType;
 import net.ixdarklord.coolcatcore.api.config.type.NumberType;
 import net.ixdarklord.coolcatcore.api.config.type.StringType;
 import net.ixdarklord.coolcatcore.api.config.type.ValidationResult;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.StyledScreen;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ConfigEditors;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.EditSlot;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.editor.ValueEditor;

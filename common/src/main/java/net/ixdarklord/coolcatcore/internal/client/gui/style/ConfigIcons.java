@@ -1,7 +1,7 @@
 package net.ixdarklord.coolcatcore.internal.client.gui.style;
 
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.ixdarklord.coolcatcore.api.config.ConfigScope;
+import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
