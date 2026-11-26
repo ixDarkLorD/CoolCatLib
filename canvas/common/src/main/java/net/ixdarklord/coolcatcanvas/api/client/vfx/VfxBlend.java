@@ -13,6 +13,11 @@ public enum VfxBlend {
     /** Painted over the scene by its alpha: smoke, dust, anything that should darken as well as lighten. */
     ALPHA(false),
     /**
+     * Multiplies the scene by its colour: coloured light on a surface, which tints what's there and keeps its detail (a
+     * white stone turns the light's colour, a dark trim stays dark). White changes nothing; the alpha is not used.
+     */
+    MULTIPLY(false),
+    /**
      * Painted over like {@link #ALPHA}, taking the alpha from how bright each texel is: for glow textures drawn on
      * black with no alpha channel, which additive blending would lose against a bright sky. (Canvas's own textures
      * keep their brightness in alpha, so they need only {@link #ALPHA} for that.)

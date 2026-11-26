@@ -35,6 +35,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
@@ -250,8 +251,14 @@ public final class VfxManager {
     // ---- Frame ----
 
     /** Keeps the level's projection, as the level is about to be drawn with it. */
-    public static void beginLevel() {
-        CAMERA.projection.set(RenderSystem.getProjectionMatrix());
+    /** The view matrix the level is drawn with this frame (the camera's rotation, and any bobbing a shader mod moved there). */
+    public static void levelView(Matrix4fc view) {
+        CAMERA.levelView(view);
+    }
+
+    /** The projection matrix the level is drawn with this frame. */
+    public static void levelProjection(Matrix4fc projection) {
+        CAMERA.projection.set(projection);
     }
 
     /** Draws every world effect. Called with the level drawn and its depth still there, before the hand. */
@@ -429,6 +436,8 @@ public final class VfxManager {
                 program.setSampler("DepthSampler", 1);
                 if (material.blend() == VfxBlend.ADDITIVE) {
                     RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+                } else if (material.blend() == VfxBlend.MULTIPLY) {
+                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.ZERO, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
                 } else {
                     RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
                 }

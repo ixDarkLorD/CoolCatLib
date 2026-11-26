@@ -161,6 +161,19 @@ final class VfxBatch implements VfxDraw {
     }
 
     @Override
+    public VfxDraw quad(Vec3 a, float ua, float va, int argbA, Vec3 b, float ub, float vb, int argbB, Vec3 c, float uc, float vc, int argbC,
+                        Vec3 d, float ud, float vd, int argbD) {
+        if (FastColor.ARGB32.alpha(argbA) == 0 && FastColor.ARGB32.alpha(argbB) == 0 && FastColor.ARGB32.alpha(argbC) == 0 && FastColor.ARGB32.alpha(argbD) == 0) return this;
+        VfxCamera cam = this.camera;
+        int base = this.reserve();
+        this.corner(base, 0, cam.relX(a.x), cam.relY(a.y), cam.relZ(a.z), ua, va, argbA);
+        this.corner(base, 1, cam.relX(b.x), cam.relY(b.y), cam.relZ(b.z), ub, vb, argbB);
+        this.corner(base, 2, cam.relX(c.x), cam.relY(c.y), cam.relZ(c.z), uc, vc, argbC);
+        this.corner(base, 3, cam.relX(d.x), cam.relY(d.y), cam.relZ(d.z), ud, vd, argbD);
+        return this;
+    }
+
+    @Override
     public VfxDraw flat(double x, double y, double z, float halfSize, float yaw, int argb) {
         if (FastColor.ARGB32.alpha(argb) == 0 || halfSize <= 0.0F) return this;
         float cx = this.camera.relX(x), cy = this.camera.relY(y), cz = this.camera.relZ(z);

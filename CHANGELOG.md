@@ -1,6 +1,14 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v9.0.1 Release | Nov 26, 2026
+### ✨ New Features
+- `VfxBlend.MULTIPLY`: a world effect that multiplies the scene by its colour, for coloured light falling on a surface: it tints what's there and keeps its detail.
+- `VfxDraw.quad` with a UV and a colour at each corner, for laying something onto a surface at an angle with a shader of your own, such as light projected onto it.
+
+### 🐛 Fixes
+- World effects stay on what they're drawn on with a shader pack on and view bobbing turned on, instead of sliding away as the view bobs: they now use the view the level is drawn with, where shader mods such as Iris move the bobbing.
+
 ## v9.0.0 Release | Nov 16, 2026
 ### ✨ New Features
 - `ModCommands` (`api.command`): registers a mod's server commands with its mod id and the command's names, the first its own and the others aliases that work the same, e.g. `ModCommands.register("ftbultimineaddition", List.of("ultimine_addition", "ua"), (root, context, selection) -> root.then(...))`. A name another command already has (vanilla's `/tm`, another mod's) is skipped, with a warning in the log. `ModCommands.registerClient(modId, names, (root, context) -> ...)` does the same for client commands. Instead of names, a client command can take its server command's: `ClientNames.MERGED` shares them (one `/folios` for players: what the client's parts can run stays on the client, the rest goes to the server), `ClientNames.SUFFIXED` adds `_client` (`/ua_client` beside `/ua`).

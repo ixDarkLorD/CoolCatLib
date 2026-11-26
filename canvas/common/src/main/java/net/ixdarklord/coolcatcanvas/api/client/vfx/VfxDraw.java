@@ -43,6 +43,14 @@ public interface VfxDraw {
     VfxDraw quad(Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u0, float v0, float u1, float v1, int argb);
 
     /**
+     * A flat quad with a UV and a colour of the caller's choosing at each corner, for materials with a
+     * {@linkplain VfxMaterial#withShader shader}: something laid onto a surface at an angle, say, such as light
+     * projected onto it. The shader sees the UVs and colours blended across the quad.
+     */
+    VfxDraw quad(Vec3 a, float ua, float va, int argbA, Vec3 b, float ub, float vb, int argbB, Vec3 c, float uc, float vc, int argbC,
+                 Vec3 d, float ud, float vd, int argbD);
+
+    /**
      * A square lying flat, facing up: a circle on the ground.
      *
      * @param halfSize half its width, in blocks

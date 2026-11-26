@@ -3,6 +3,7 @@ package net.ixdarklord.coolcatcanvas.internal.client.vfx;
 import net.minecraft.client.Camera;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
 
 // The camera of the frame being drawn: where it is, and which ways are right and up for things that face it.
@@ -12,6 +13,8 @@ final class VfxCamera {
     float upX, upY, upZ;
     final Matrix4f view = new Matrix4f();
     final Matrix4f projection = new Matrix4f();
+    private final Matrix4f levelView = new Matrix4f();
+    private boolean hasLevelView;
     float far;
 
     void set(Camera camera, float far) {
@@ -19,9 +22,12 @@ final class VfxCamera {
         this.x = position.x;
         this.y = position.y;
         this.z = position.z;
-        // The level's view matrix: the camera's rotation, undone.
-        this.view.rotation(camera.rotation().conjugate(new Quaternionf()));
-        // The view matrix is a pure rotation, so its rows are the camera's axes in world space.
+        // The level's view matrix as the level was drawn with it, or else the camera's rotation, undone. They differ only when
+        // a shader mod puts the view bobbing into the view: the effects have to bob with the level then.
+        if (this.hasLevelView) this.view.set(this.levelView);
+        else this.view.rotation(camera.rotation().conjugate(new Quaternionf()));
+        this.hasLevelView = false;
+        // Its rotation's rows are the camera's axes in world space (bobbing tilts them a little, as it does the level).
         this.rightX = this.view.m00();
         this.rightY = this.view.m10();
         this.rightZ = this.view.m20();
@@ -29,6 +35,11 @@ final class VfxCamera {
         this.upY = this.view.m11();
         this.upZ = this.view.m21();
         this.far = far;
+    }
+
+    void levelView(Matrix4fc view) {
+        this.levelView.set(view);
+        this.hasLevelView = true;
     }
 
     float relX(double worldX) {
