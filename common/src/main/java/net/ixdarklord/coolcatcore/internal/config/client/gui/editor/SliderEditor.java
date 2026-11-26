@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
 import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
+import net.ixdarklord.coolcatcore.api.config.type.NumberType;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.ThemeEffects;
-import net.ixdarklord.coolcatcore.api.config.type.NumberType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

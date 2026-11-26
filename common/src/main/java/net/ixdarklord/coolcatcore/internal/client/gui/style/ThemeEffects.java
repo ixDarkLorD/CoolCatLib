@@ -1,9 +1,9 @@
 package net.ixdarklord.coolcatcore.internal.client.gui.style;
 
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigEffect;
 import net.ixdarklord.coolcatcore.api.config.client.ConfigEffects;
 import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;

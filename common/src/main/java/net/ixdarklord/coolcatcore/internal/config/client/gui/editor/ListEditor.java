@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
-import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.api.config.type.ConfigType;
 import net.ixdarklord.coolcatcore.api.config.type.ListType;
+import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.ListEditScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
