@@ -1,11 +1,11 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui;
 
+import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigIcons;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.FlatButton;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.StyledScreen;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.ThemeResources;
-import net.ixdarklord.coolcatcore.api.config.ConfigTheme;
 import net.ixdarklord.coolcatcore.internal.config.ConfigImpl;
 import net.ixdarklord.coolcatcore.internal.config.ConfigValueImpl;
 import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;

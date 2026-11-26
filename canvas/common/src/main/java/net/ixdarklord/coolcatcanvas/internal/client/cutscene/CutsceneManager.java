@@ -22,7 +22,6 @@ import net.ixdarklord.coolcatcore.api.event.v2.client.ClientPlayerEvents;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 import net.ixdarklord.coolcatcore.api.network.Network;
 import net.ixdarklord.coolcatcore.api.platform.Platform;
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

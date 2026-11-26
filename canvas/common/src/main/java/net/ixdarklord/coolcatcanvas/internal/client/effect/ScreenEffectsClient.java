@@ -1,15 +1,14 @@
 package net.ixdarklord.coolcatcanvas.internal.client.effect;
 
-import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.ixdarklord.coolcatcanvas.api.client.effect.ScreenEffects;
+import net.ixdarklord.coolcatcanvas.internal.core.CoolCatCanvas;
 import net.ixdarklord.coolcatcore.api.client.registry.KeyMappingRegistry;
 import net.ixdarklord.coolcatcore.api.command.ModCommands;
 import net.ixdarklord.coolcatcore.api.event.v2.client.ClientTickEvents;
 import net.ixdarklord.coolcatcore.api.platform.Platform;
 import net.ixdarklord.coolcatcore.internal.config.client.ClientConfigManager;
-import net.ixdarklord.coolcatcore.internal.core.CoolCatCore;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.commands.SharedSuggestionProvider;
 

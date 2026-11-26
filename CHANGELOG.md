@@ -1,6 +1,14 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v9.0.1 Release | Nov 26, 2026
+### ✨ New Features
+- `VfxBlend.MULTIPLY`: a world effect that multiplies the scene by its colour, for coloured light falling on a surface: it tints what's there and keeps its detail.
+- `VfxDraw.quad` with a UV and a colour at each corner, for laying something onto a surface at an angle with a shader of your own, such as light projected onto it.
+
+### 🐛 Fixes
+- World effects stay on what they're drawn on with a shader pack on and view bobbing turned on, instead of sliding away as the view bobs: they now use the view the level is drawn with, where shader mods such as Iris move the bobbing.
+
 ## v9.0.0 Release | Nov 16, 2026
 ### ✨ New Features
 - Block entity renderers (`coolcatcanvas.api.client.blockentity`), as on 26.1.2: `BlockRenderer`, a base that leaves a mod to write only what it draws (`newState`, `extract`, `render`), culled by distance and view (`viewDistance`, `bounds`), drawn in less detail farther off (`detail` bands, `reach`), its states reused, turned to its block's facing (`facing`), with layers drawn with it (`ItemLayer` for floating items, `LabelLayer` for text, `ChildLayer` for other renderers). Press F3 + B to see each one's bounds, colored by its detail.

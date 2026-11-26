@@ -1,8 +1,8 @@
 package net.ixdarklord.coolcatcore.internal.config.client.gui.editor;
 
+import net.ixdarklord.coolcatcore.api.config.type.ColorType;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.ConfigStyle;
 import net.ixdarklord.coolcatcore.internal.client.gui.style.StyledEditBox;
-import net.ixdarklord.coolcatcore.api.config.type.ColorType;
 import net.ixdarklord.coolcatcore.internal.config.client.gui.ColorPickerScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

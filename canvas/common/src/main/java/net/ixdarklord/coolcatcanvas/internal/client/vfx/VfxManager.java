@@ -44,6 +44,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -258,6 +259,11 @@ public final class VfxManager {
     }
 
     // ---- Frame ----
+
+    /** The view matrix the level is drawn with this frame (the camera's rotation, and any bobbing a shader mod moved there). */
+    public static void levelView(Matrix4fc view) {
+        CAMERA.levelView(view);
+    }
 
     /** Draws every world effect. Called with the level drawn, its projection still set and its depth still there. */
     public static void render(CameraRenderState camera, DeltaTracker deltaTracker) {

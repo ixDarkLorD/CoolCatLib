@@ -16,6 +16,7 @@
     "client.text.FontPreparedTextBuilderMixin",
     "client.render.FrustumInvoker",
     "client.render.GameRendererMixin",
+    "client.render.LevelRendererMixin",
     "client.gui.GuiItemRenderStateMixin",
     "client.gui.GuiMixin",
     "client.gui.GuiFrameMixin",
