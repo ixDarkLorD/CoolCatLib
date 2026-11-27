@@ -1,7 +1,7 @@
 # Changelog
 This file is for listing all the changes to this project
 
-## v9.0.2 Release | Unreleased
+## v9.0.2 Release | Nov 27, 2026
 ### 🐛 Fixes
 - Config screens on Forge show their settings again, instead of only a blurred background: the blur behind them left a depth that hid everything drawn after it.
 
