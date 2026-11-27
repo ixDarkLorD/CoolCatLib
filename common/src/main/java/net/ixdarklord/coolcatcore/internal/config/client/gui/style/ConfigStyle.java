@@ -25,6 +25,7 @@ import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -239,7 +240,12 @@ public final class ConfigStyle {
         }
         graphics.flush();
         blurEffect.process(minecraft.getFrameTime());
-        target.bindWrite(false);
+        // The blur's last pass leaves the main target unbound and its depth written over the whole screen. On Forge
+        // the GUI sits deeper than that (its far plane is moved for layered screens), so everything drawn after would
+        // fail the depth test and only the blur would show. Bind the target again first (the clear goes to whatever is
+        // bound), then clear the depth: the screen is drawn from here up, so nothing below needs it.
+        target.bindWrite(true);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
     }
 
     // --- Background ---

@@ -1,6 +1,10 @@
 # Changelog
 This file is for listing all the changes to this project
 
+## v9.0.2 Release | Unreleased
+### 🐛 Fixes
+- Config screens on Forge show their settings again, instead of only a blurred background: the blur behind them left a depth that hid everything drawn after it.
+
 ## v9.0.1 Release | Nov 26, 2026
 ### ✨ New Features
 - `VfxBlend.MULTIPLY`: a world effect that multiplies the scene by its colour, for coloured light falling on a surface: it tints what's there and keeps its detail.
